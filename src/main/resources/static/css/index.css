@@ -1,0 +1,228 @@
+/* ============================================================
+   INDEX PAGE CSS - Converted from index.scss.liquid
+   ============================================================ */
+:root {
+    --mainColor: #c8986a;
+    --supColor: #c8986a;
+    --textColor: #231f20;
+}
+
+/* ---- Swiper pagination (trang chủ) ---- */
+.swiper-pagination-bullets {
+    text-align: center; bottom: 30px;
+}
+.swiper-pagination-bullet {
+    box-shadow: none; outline: 0;
+    width: 12px; height: 12px;
+    border: 1px solid #fff; background: #fff;
+    border-radius: 50%; opacity: 1;
+}
+.swiper-pagination-bullet.swiper-pagination-bullet-active {
+    transition: all .2s; background: transparent;
+}
+
+/* ---- Swiper next/prev (hiện khi hover) ---- */
+.section_slider .swiper-button-next,
+.section-product-slider .swiper-button-next,
+.section_services .swiper-button-next {
+    font-size: 0; position: absolute; top: 50%;
+    display: flex; width: 30px; height: 30px; padding: 0; cursor: pointer;
+    color: #fff; border: 1px solid #ddd; border-right: 0;
+    background: var(--mainColor); text-align: center; border-radius: 8px 0 0 8px;
+    z-index: 2; right: -35px; opacity: 0; transition: all .25s ease;
+    transform: translate(32px, -50%); margin-top: 0;
+}
+.section_slider .swiper-button-prev,
+.section-product-slider .swiper-button-prev,
+.section_services .swiper-button-prev {
+    font-size: 0; position: absolute; top: 50%;
+    display: flex; width: 30px; height: 30px; padding: 0; cursor: pointer;
+    color: #fff; background: var(--mainColor); border-radius: 0 8px 8px 0;
+    border: 1px solid #ddd; border-left: 0; text-align: center;
+    z-index: 2; left: -35px; opacity: 0; transition: all .25s ease;
+    transform: translate(-32px, -50%); margin-top: 0;
+}
+.section_slider:hover .swiper-button-next,
+.section-product-slider:hover .swiper-button-next,
+.section_services:hover .swiper-button-next {
+    right: 0; opacity: 1; transform: translateY(-50%);
+}
+.section_slider:hover .swiper-button-prev,
+.section-product-slider:hover .swiper-button-prev,
+.section_services:hover .swiper-button-prev {
+    left: 0; opacity: 1; transform: translateY(-50%);
+}
+.swiper-button-next:after, .swiper-button-prev:after { color: #fff; }
+@media (max-width: 767px) {
+    .swiper-button-next, .swiper-button-prev { display: none; }
+}
+
+/* ---- Slider aspect ratio ---- */
+.section_slider .swiper-slide { aspect-ratio: 1170 / 355; }
+@media (max-width: 767px) {
+    .section_slider .swiper-slide { aspect-ratio: 375 / 250; }
+}
+
+/* ---- Animations ---- */
+@keyframes fadeInUp {
+    0%   { opacity: 0; transform: translate3d(0, 50px, 0); }
+    100% { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+@keyframes snakeItem {
+    50% { transform: translate(0, -8px); }
+}
+
+/* ---- null item placeholder ---- */
+.item_null .item_product_main {
+    aspect-ratio: 300/465; background: #f1f1f1;
+    border-radius: 8px; margin-bottom: 20px;
+}
+
+/* ============================================================
+   SLIDER HERO
+   ============================================================ */
+.section_slider { position: relative; overflow: hidden; }
+.slide-item {
+    position: relative;
+    display: flex; align-items: center; justify-content: center;
+}
+.slide-content {
+    position: relative; z-index: 2; color: #fff;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+.slide-sub {
+    font-size: 14px; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 8px;
+}
+.slide-title {
+    font-size: 42px; font-weight: 700; margin-bottom: 24px;
+    line-height: 1.2;
+}
+.btn-slide {
+    display: inline-block;
+    padding: 12px 36px;
+    border: 2px solid #fff; color: #fff;
+    text-decoration: none; font-size: 14px; letter-spacing: 2px;
+    text-transform: uppercase; transition: all .3s;
+}
+.btn-slide:hover {
+    background: #fff; color: var(--textColor); text-decoration: none;
+}
+@media (max-width: 767px) {
+    .slide-title { font-size: 24px; }
+    .slide-item { height: 280px !important; }
+}
+
+/* ============================================================
+   SECTION HEADINGS
+   ============================================================ */
+.section-title {
+    font-size: 28px; font-weight: 700; color: var(--textColor);
+    position: relative; display: inline-block; margin-bottom: 8px;
+}
+.section-title::after {
+    content: ''; display: block; width: 40px; height: 2px;
+    background: var(--mainColor); margin: 8px auto 0;
+}
+.section-subtitle {
+    color: #888; font-size: 14px;
+}
+
+/* ============================================================
+   CATEGORIES
+   ============================================================ */
+.category-item { text-decoration: none; color: var(--textColor); }
+.category-item:hover { text-decoration: none; }
+.category-item:hover .category-name { color: var(--mainColor); }
+.category-img-wrap { overflow: hidden; border-radius: 8px; }
+.category-img-wrap img { transition: transform .4s ease; }
+.category-item:hover .category-img-wrap img { transform: scale(1.05); }
+.category-name { font-size: 16px; font-weight: 600; }
+
+/* ============================================================
+   PRODUCTS
+   ============================================================ */
+.product-item { position: relative; }
+.product-img-wrap { position: relative; overflow: hidden; border-radius: 6px; }
+.product-img { transition: transform .4s ease; }
+.product-img-wrap:hover .product-img { transform: scale(1.05); }
+
+.product-actions {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    background: rgba(255,255,255,0.95);
+    display: flex; align-items: center; justify-content: center; gap: 12px;
+    padding: 10px;
+    transform: translateY(100%); transition: transform .3s ease;
+}
+.product-img-wrap:hover .product-actions { transform: translateY(0); }
+
+.btn-wishlist {
+    background: none; border: 1px solid #ccc; border-radius: 50%;
+    width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: var(--textColor); transition: all .2s;
+    flex-shrink: 0;
+}
+.btn-wishlist:hover { border-color: #e74c3c; color: #e74c3c; }
+.btn-quick-view {
+    font-size: 12px; text-transform: uppercase; letter-spacing: 1px;
+    color: var(--textColor); text-decoration: none; white-space: nowrap;
+}
+.btn-quick-view:hover { color: var(--mainColor); text-decoration: none; }
+
+.product-name a {
+    font-size: 14px; color: var(--textColor); text-decoration: none;
+    font-weight: 500;
+}
+.product-name a:hover { color: var(--mainColor); }
+.product-price { display: flex; gap: 10px; align-items: center; }
+.price-current { font-weight: 700; color: var(--mainColor); font-size: 15px; }
+.price-original {
+    font-size: 13px; color: #999;
+    text-decoration: line-through;
+}
+.btn-add-cart {
+    background: var(--textColor); color: #fff;
+    border: none; padding: 9px 16px; font-size: 13px;
+    text-transform: uppercase; letter-spacing: 1px;
+    cursor: pointer; border-radius: 4px; transition: background .2s;
+}
+.btn-add-cart:hover { background: var(--mainColor); }
+
+.btn-view-all {
+    display: inline-block; padding: 12px 40px;
+    border: 2px solid var(--textColor); color: var(--textColor);
+    text-decoration: none; font-size: 13px; letter-spacing: 2px;
+    text-transform: uppercase; transition: all .3s;
+}
+.btn-view-all:hover {
+    background: var(--textColor); color: #fff; text-decoration: none;
+}
+
+/* ============================================================
+   BANNER SECTION
+   ============================================================ */
+.banner-link {
+    position: relative; display: block;
+    overflow: hidden; border-radius: 8px;
+    text-decoration: none;
+}
+.banner-link img { transition: transform .4s ease; }
+.banner-link:hover img { transform: scale(1.04); }
+.banner-text-overlay {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    background: linear-gradient(transparent, rgba(0,0,0,0.5));
+    padding: 30px 20px 20px;
+    text-align: center;
+}
+.banner-text-overlay span {
+    color: #fff; font-size: 20px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 2px;
+}
+
+/* ============================================================
+   LOOKBOOK
+   ============================================================ */
+.section-lookbook img {
+    transition: transform .4s ease;
+    border-radius: 6px;
+}
+.section-lookbook img:hover { transform: scale(1.04); }

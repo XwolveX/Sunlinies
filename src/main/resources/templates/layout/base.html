@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<!--
+  Fragment dùng chung cho HEAD (CSS, JS, meta)
+  Cách dùng trong từng trang:
+  <head th:replace="~{layout/base :: head('Tên trang')}">
+-->
+<head th:fragment="head(pageTitle)">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noodp,index,follow" />
+    <title th:text="${pageTitle} + ' - SUNILIES'">SUNILIES</title>
+    <link rel="icon" th:href="@{/image/favicon.png}" type="image/x-icon" />
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" th:href="@{/bootstrap-4-3-min.css}">
+    <!-- Main CSS -->
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+
+    <!-- jQuery -->
+    <script th:src="@{/jquery.js}"></script>
+    <!-- Swiper JS -->
+    <script th:src="@{/swiper.js}"></script>
+    <!-- Lazy Load JS -->
+    <script th:src="@{/lazy.js}"></script>
+
+    <style>
+        :root {
+            --mainColor: #c8986a;
+            --supColor:  #c8986a;
+            --textColor: #231f20;
+        }
+    </style>
+</head>
+</html>

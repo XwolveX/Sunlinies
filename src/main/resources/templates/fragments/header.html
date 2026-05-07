@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<header class="header" th:fragment="header">
+    <!-- Top bar -->
+    <div class="wolf-header-notice">
+        <div class="container notice-list">
+            <div class="notice-item">Hệ thống cửa hàng</div>
+            <div class="notice-item">Hỗ trợ khách hàng</div>
+        </div>
+    </div>
+
+    <div class="wolf-main-header">
+        <div class="container wolf-main-header-grid">
+            <!-- Left -->
+            <div class="wolf-header-left">
+                <ul class="header-nav-secondary header-nav-secondary-left">
+                    <li class="wolf-hide-mobile">
+                        <a th:href="@{/he-thong-cua-hang}" title="Hệ thống cửa hàng">
+                            <svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M13.41,6.59a2,2,0,1,1-2.77,2.87l-.05-.05a2,2,0,0,1,2.82-2.82Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5"/>
+                                <path d="M15.49,13.24A16,16,0,0,0,12,17.7a16.4,16.4,0,0,0-3.49-4.46C6.76,11.43,5.68,9.94,5.67,8A6.23,6.23,0,0,1,12,1.72,6.23,6.23,0,0,1,18.33,8C18.32,9.94,17.24,11.42,15.49,13.24Z" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                            </svg>
+                            <span>Hệ thống cửa hàng</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Center - Logo -->
+            <div class="wolf-header-center">
+                <a th:href="@{/}" class="logo-wrapper" title="SUNILIES">
+                    <img th:src="@{/image/logo.png}" alt="SUNILIES" width="160" height="60">
+                </a>
+            </div>
+
+            <!-- Right -->
+            <div class="wolf-header-right">
+                <ul class="header-nav-secondary header-nav-secondary-right">
+                    <!-- Search -->
+                    <li class="wolf-search wolf-hide-mobile">
+                        <a href="javascript:;" class="wofl-search-link" title="Tìm kiếm">
+                            <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+                                <g transform="translate(3,3)" stroke="currentColor" stroke-width="1.5" fill="none" fill-rule="evenodd">
+                                    <circle cx="7.82" cy="7.82" r="7.82"></circle>
+                                    <line x1="13.97" y1="13.97" x2="18.44" y2="18.44" stroke-linecap="square"></line>
+                                </g>
+                            </svg>
+                        </a>
+                    </li>
+                    <!-- Wishlist -->
+                    <li class="wolf-wishlist wolf-hide-mobile">
+                        <a th:href="@{/wishlist}" title="Danh sách yêu thích">
+                            <svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+                                <path fill="currentColor" d="M8.86 4.38a2.78 2.78 0 013.72-.3c1.4 1.2 1.2 3.11.19 4.13L7.98 13.1c-.05.06-.1.06-.19 0L3.01 8.2a2.8 2.8 0 01.19-4.1c1.06-.9 2.7-.76 3.74.28l.96.98.96-.98z" fill-rule="evenodd"/>
+                            </svg>
+                            <span class="js-wishlist-count">0</span>
+                        </a>
+                    </li>
+                    <!-- Cart -->
+                    <li class="wolf-header-cart header-action_cart">
+                        <a class="a-hea" th:href="@{/cart}" title="Giỏ hàng">
+                            <span class="box-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="M15.32,9.5C15.32,7.94,15.32,6.54,15.32,5.32C15.32,3.49,13.83,2,12,2C10.17,2,8.68,3.49,8.68,5.32C8.68,6.54,8.68,7.94,8.68,9.5" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                                    <polygon stroke="currentColor" stroke-width="1.5" fill="none" points="5.36,7.71 18.64,7.71 19.75,21.27 4.25,21.27"/>
+                                </svg>
+                            </span>
+                            <span class="count_item count_item_pr" th:text="${cartCount != null ? cartCount : 0}">0</span>
+                        </a>
+                    </li>
+                    <!-- Account -->
+                    <li class="wolf-header-account">
+                        <a href="javascript:;" class="header-account" title="Tài khoản">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-person" viewBox="0 0 16 16">
+                                <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0Zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4Z"/>
+                            </svg>
+                        </a>
+                        <ul>
+                            <li th:if="${session.customer != null}" class="li-account">
+                                <a th:href="@{/account}">Tài khoản</a>
+                            </li>
+                            <li th:if="${session.customer != null}" class="li-account">
+                                <a th:href="@{/account/logout}">Đăng xuất</a>
+                            </li>
+                            <li th:if="${session.customer == null}" class="li-account">
+                                <a th:href="@{/account/login}">Đăng nhập</a>
+                            </li>
+                            <li th:if="${session.customer == null}" class="li-account">
+                                <a th:href="@{/account/register}">Đăng ký</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="wolf-main-search">
+            <div class="wolf-main-search-container container">
+                <button class="wolf-main-search-close" aria-label="Close">✕</button>
+                <form th:action="@{/search}" method="get" class="header-search-form search-bar" role="search">
+                    <input name="q" required class="input-group-field form-control"
+                           placeholder="Tìm sản phẩm..." autocomplete="off" type="text">
+                    <button type="submit" class="wolf-btn-search btn" aria-label="Tìm kiếm">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                        </svg>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="site-nav">
+            <div class="container">
+                <ul class="nav-menu">
+                    <li><a th:href="@{/}">Trang chủ</a></li>
+                    <li><a th:href="@{/collections}">Sản phẩm</a></li>
+                    <li><a th:href="@{/blogs}">Tin tức</a></li>
+                    <li><a th:href="@{/contact}">Liên hệ</a></li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+</header>
+</body>
+</html>
