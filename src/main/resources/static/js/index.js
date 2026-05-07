@@ -283,52 +283,22 @@ document.addEventListener('DOMContentLoaded', function () {
             this.reset();
         });
     });
-
     /* =============================================
-       10. HEADER TRANSPARENT → SOLID ON SCROLL
-    ============================================= */
-    const headerEl = document.querySelector('header.header');
+   10. NAV TRANSPARENT → SOLID ON SCROLL
+============================================= */
+    const siteNav = document.querySelector('.site-nav');
 
-    if (headerEl) {
-        // Lưu chiều cao header để tính placeholder
-        const setHeaderHeight = () => {
-            document.documentElement.style.setProperty(
-                '--header-h', headerEl.offsetHeight + 'px'
-            );
-        };
-        setHeaderHeight();
-        window.addEventListener('resize', setHeaderHeight);
-
-        // Ngưỡng scroll (px) trước khi header chuyển solid
-        // = chiều cao của section_slider hoặc một giá trị cố định
-        const getThreshold = () => {
-            const slider = document.querySelector('.section_slider');
-            return slider ? slider.offsetHeight * 0.15 : 80;
-        };
+    if (siteNav) {
+        const slider = document.querySelector('.section_slider');
 
         const onScroll = () => {
-            const scrolled = window.scrollY > getThreshold();
-            headerEl.classList.toggle('header--scrolled', scrolled);
-            document.body.classList.toggle('header-fixed', scrolled);
+            const threshold = slider ? slider.offsetHeight * 0.8 : 400;
+            siteNav.classList.toggle('nav--scrolled', window.scrollY > threshold);
         };
 
         window.addEventListener('scroll', onScroll, { passive: true });
-        onScroll(); // run once on load
+        onScroll();
     }
-
-
-    (async function initCartCount() {
-        try {
-            const res  = await fetch('/api/cart');
-            if (!res.ok) throw new Error();
-            const data = await res.json();
-            updateCartBadge(data.items.reduce((s, i) => s + i.qty, 0));
-        } catch {
-            const localCart = JSON.parse(localStorage.getItem('sunCart') || '[]');
-            updateCartBadge(localCart.reduce((s, i) => s + i.qty, 0));
-        }
-    })();
-
     /* =============================================
        HELPER: format tiền Việt
     ============================================= */

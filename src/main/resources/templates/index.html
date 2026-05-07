@@ -39,7 +39,7 @@
         <li><a th:href="@{/contact}">Liên hệ</a></li>
     </ul>
 </div>
-
+<div style="position: relative;">
 <!-- =========================================================
      SECTION 1: HERO SLIDER
      Dữ liệu: List<SliderItem> sliders từ HomeController
@@ -52,7 +52,7 @@
             <!-- Demo tĩnh dưới đây sẽ được thay bằng vòng lặp Thymeleaf -->
 
             <div class="swiper-slide">
-                <img th:src="@{/image/slider/slide-1.jpg}"
+                <img th:src="@{image/image-parallax-1.jpg}"
                      src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1920&q=80"
                      alt="Slider 1" />
                 <div class="slide-overlay"></div>
@@ -64,7 +64,7 @@
             </div>
 
             <div class="swiper-slide">
-                <img th:src="@{/image/slider/slide-2.jpg}"
+                <img th:src="@{../static/image/img_cus_2.jpg}"
                      src="https://images.unsplash.com/photo-1586105251261-72a756497a11?w=1920&q=80"
                      alt="Slider 2" />
                 <div class="slide-overlay"></div>
@@ -523,7 +523,7 @@
     </svg>
 </button>
 
-
+</div>
 <!-- =========================================================
      SCRIPTS – index.js (tất cả JS tách ra file riêng)
 ========================================================= -->

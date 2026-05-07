@@ -105,36 +105,6 @@ header.header.header--scrolled .wolf-main-header {
     border-bottom-color: var(--borderColor);
 }
 
-/* ── Màu chữ / icon trắng khi header transparent ── */
-header.header:not(.header--scrolled) .wolf-header-left .header-nav-secondary li a,
-header.header:not(.header--scrolled) .wolf-header-right .header-nav-secondary li a,
-header.header:not(.header--scrolled) .wolf-header-right .header-nav-secondary li a svg,
-header.header:not(.header--scrolled) .wolf-header-right .header-nav-secondary li a *,
-header.header:not(.header--scrolled) .header-icon-btn,
-header.header:not(.header--scrolled) .header-icon-btn svg {
-    color: #fff;
-    stroke: #fff;
-}
-header.header:not(.header--scrolled) .site-nav .nav-menu li a {
-    color: rgba(255,255,255,.92);
-}
-header.header:not(.header--scrolled) .site-nav .nav-menu li a::after {
-    background: #fff;
-}
-header.header:not(.header--scrolled) .site-nav .nav-menu li a:hover {
-    color: #fff;
-}
-header.header:not(.header--scrolled) .wolf-notice-text,
-header.header:not(.header--scrolled) .logo-wrapper img,
-header.header:not(.header--scrolled) .count_item,
-header.header:not(.header--scrolled) .js-wishlist-count {
-    filter: brightness(0) invert(1);  /* logo trắng */
-}
-
-/* Topbar khi trong suốt: background tối hơn 1 chút để đọc được */
-header.header:not(.header--scrolled) .wolf-header-notice {
-    background: rgba(0,0,0,.25);
-}
 
 .wolf-main-header-grid {
     display: flex;
@@ -252,25 +222,51 @@ header.header:not(.header--scrolled) .wolf-header-notice {
 .wolf-btn-search:hover { background: var(--darkColor); }
 
 /* Site navigation */
-.site-nav { border-top: 1px solid var(--borderColor); }
+.site-nav {
+    position: absolute;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    background: rgba(0, 0, 0, 0.20);
+    border-top: 1px solid rgba(255,255,255,.2);
+    transition: background 0.3s ease, border-color 0.3s ease;
+}
+.site-nav.nav--scrolled {
+    position: sticky;
+    top: 0;
+    background: #fff;
+    border-top: 1px solid var(--borderColor);
+    box-shadow: 0 2px 10px rgba(0,0,0,.08);
+    z-index: 1000;
+}
+
+.site-nav.nav--scrolled .nav-menu li a {
+    color: #1a1a1a;
+}
+.site-nav.nav--scrolled .nav-menu li a::after {
+    background: var(--mainColor);
+}
 .site-nav .nav-menu {
     display: flex; list-style: none;
     justify-content: center; margin: 0;
 }
 .site-nav .nav-menu li a {
-    display: block; padding: 14px 18px;
-    font-size: 13px; font-weight: 700;
-    text-transform: uppercase; letter-spacing: 0.05em;
-    color: #1a1a1a; position: relative;
+    display: block;
+    padding: 14px 18px;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: rgba(255,255,255,.92);
+    position: relative;
     transition: color var(--transition);
 }
 .site-nav .nav-menu li a::after {
-    content: ''; position: absolute;
-    bottom: 10px; left: 18px; right: 18px; height: 2px;
-    background: var(--mainColor);
-    transform: scaleX(0); transition: transform var(--transition);
+    background: #fff;
 }
-.site-nav .nav-menu li a:hover { color: var(--mainColor); }
+.site-nav .nav-menu li a:hover {
+    color: #fff;
+}
 .site-nav .nav-menu li a:hover::after { transform: scaleX(1); }
 
 /* Mobile menu (hamburger drawer) */
