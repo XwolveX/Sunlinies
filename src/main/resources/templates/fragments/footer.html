@@ -1,84 +1,237 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
-<footer class="footer" th:fragment="footer" style="background: #1a1a1a; color: #fff; padding-top: 60px;">
-    <div class="policy-footer" style="padding-bottom: 50px; border-bottom: 1px solid #333; margin-bottom: 50px;">
+<footer th:fragment="footer" style="
+    background: #faf7f2;
+    color: #3d2e1c;
+    font-family: 'Lato', sans-serif;
+    border-top: 1px solid #e8e4de;
+">
+
+    <!-- ── POLICY BAR ── -->
+    <div style="background: #faf7f2; padding: 36px 0; border-bottom: 1px solid #e8e4de;">
         <div class="container">
-            <div class="row text-center">
-                <div class="col-6 col-md-3">
-                    <img th:src="@{/image/payment_1.svg}" width="30" height="30" alt="Safe" style="filter: invert(1); margin: 0 auto 10px;">
-                    <p style="font-size: 13px; text-transform: uppercase; letter-spacing: 1px;">Thanh toán an toàn</p>
+            <div class="row text-center justify-content-center" style="row-gap: 24px;">
+
+                <div class="col-6 col-md-3" style="display:flex;flex-direction:column;align-items:center;">
+                    <div style="width:44px;height:44px;border:1.5px solid #c8986a;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c8986a" stroke-width="1.5">
+                            <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                        </svg>
+                    </div>
+                    <p style="font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#3d2e1c;margin-bottom:4px;">Thanh toán an toàn</p>
+                    <p style="font-size:12px;color:#888;">Mã hóa SSL 256-bit</p>
                 </div>
-                <div class="col-6 col-md-3">
-                    <img th:src="@{/image/payment_2.svg}" width="30" height="30" alt="Fast" style="filter: invert(1); margin: 0 auto 10px;">
-                    <p style="font-size: 13px; text-transform: uppercase; letter-spacing: 1px;">Giao hàng nhanh</p>
+
+                <div class="col-6 col-md-3" style="display:flex;flex-direction:column;align-items:center;">
+                    <div style="width:44px;height:44px;border:1.5px solid #c8986a;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c8986a" stroke-width="1.5">
+                            <path d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 3l4 4-4 4M8 3L4 7l4 4"/>
+                        </svg>
+                    </div>
+                    <p style="font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#3d2e1c;margin-bottom:4px;">Giao hàng nhanh</p>
+                    <p style="font-size:12px;color:#888;">Toàn quốc 2–5 ngày</p>
                 </div>
-                <div class="col-6 col-md-3">
-                    <img th:src="@{/image/payment_3.svg}" width="30" height="30" alt="Easy" style="filter: invert(1); margin: 0 auto 10px;">
-                    <p style="font-size: 13px; text-transform: uppercase; letter-spacing: 1px;">Đổi trả dễ dàng</p>
+
+                <div class="col-6 col-md-3" style="display:flex;flex-direction:column;align-items:center;">
+                    <div style="width:44px;height:44px;border:1.5px solid #c8986a;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c8986a" stroke-width="1.5">
+                            <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                        </svg>
+                    </div>
+                    <p style="font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#3d2e1c;margin-bottom:4px;">Đổi trả dễ dàng</p>
+                    <p style="font-size:12px;color:#888;">Trong vòng 30 ngày</p>
                 </div>
-                <div class="col-6 col-md-3">
-                    <img th:src="@{/image/payment_4.svg}" width="30" height="30" alt="Support" style="filter: invert(1); margin: 0 auto 10px;">
-                    <p style="font-size: 13px; text-transform: uppercase; letter-spacing: 1px;">Hỗ trợ 24/7</p>
+
+                <div class="col-6 col-md-3" style="display:flex;flex-direction:column;align-items:center;">
+                    <div style="width:44px;height:44px;border:1.5px solid #c8986a;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c8986a" stroke-width="1.5">
+                            <path d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"/>
+                        </svg>
+                    </div>
+                    <p style="font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#3d2e1c;margin-bottom:4px;">Hỗ trợ 24/7</p>
+                    <p style="font-size:12px;color:#888;">Luôn sẵn sàng cho bạn</p>
                 </div>
+
             </div>
         </div>
     </div>
 
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-4 col-md-12 mb-5">
-                <div class="logo-footer mb-4">
-                    <img th:src="@{/image/logo_footer.png}" alt="SUNILIES" width="160">
+    <!-- ── MAIN FOOTER ── -->
+    <div style="padding: 64px 0 48px;">
+        <div class="container">
+            <div class="row" style="row-gap: 40px;">
+
+                <!-- Brand col -->
+                <div class="col-lg-4 col-md-12">
+                    <div style="margin-bottom: 20px;">
+                        <img th:src="@{/image/logo.png}" alt="SUNILIES" width="140"
+                             style="filter: brightness(0) saturate(100%) invert(22%) sepia(18%) saturate(800%) hue-rotate(10deg) brightness(90%) contrast(90%);">
+                    </div>
+                    <p style="font-size:14px;line-height:1.9;color:#7a6a57;max-width:300px;margin-bottom:24px;">
+                        Mỗi sản phẩm là một câu chuyện được đan dệt từ
+                        đôi bàn tay nghệ nhân Việt Nam — 100% cói mây tự nhiên,
+                        bền vững và độc bản.
+                    </p>
+
+                    <!-- Social -->
+                    <div style="display:flex;gap:10px;">
+                        <a href="#" style="
+                            width:38px;height:38px;border:1.5px solid #e0d4c3;border-radius:50%;
+                            display:flex;align-items:center;justify-content:center;
+                            color:#c8986a;transition:all .3s ease;
+                        "
+                           onmouseover="this.style.background='#c8986a';this.style.borderColor='#c8986a';this.style.color='#fff'"
+                           onmouseout="this.style.background='transparent';this.style.borderColor='#e0d4c3';this.style.color='#c8986a'">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M22.5 12.06C22.5 6.26 17.8 1.56 12 1.56C6.2 1.56 1.5 6.26 1.5 12.06C1.5 17.3 5.34 21.65 10.36 22.44V15.1H7.69V12.06H10.36V9.75C10.36 7.12 11.93 5.66 14.33 5.66C15.47 5.66 16.68 5.87 16.68 5.87V8.45H15.35C14.05 8.45 13.64 9.26 13.64 10.09V12.06H16.55L16.09 15.1H13.64V22.44C18.66 21.65 22.5 17.31 22.5 12.06Z"/>
+                            </svg>
+                        </a>
+                        <a href="#" style="
+                            width:38px;height:38px;border:1.5px solid #e0d4c3;border-radius:50%;
+                            display:flex;align-items:center;justify-content:center;
+                            color:#c8986a;transition:all .3s ease;
+                        "
+                           onmouseover="this.style.background='#c8986a';this.style.borderColor='#c8986a';this.style.color='#fff'"
+                           onmouseout="this.style.background='transparent';this.style.borderColor='#e0d4c3';this.style.color='#c8986a'">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                                <rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
+                            </svg>
+                        </a>
+                        <a href="#" style="
+                            width:38px;height:38px;border:1.5px solid #e0d4c3;border-radius:50%;
+                            display:flex;align-items:center;justify-content:center;
+                            color:#c8986a;transition:all .3s ease;
+                        "
+                           onmouseover="this.style.background='#c8986a';this.style.borderColor='#c8986a';this.style.color='#fff'"
+                           onmouseout="this.style.background='transparent';this.style.borderColor='#e0d4c3';this.style.color='#c8986a'">
+                            <!-- TikTok -->
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.75a4.85 4.85 0 01-1.01-.06z"/>
+                            </svg>
+                        </a>
+                    </div>
                 </div>
-                <p style="color: #aaa; line-height: 1.8; font-size: 14px;">
-                    SUNILIES - sống thật với con người trong bạn.
-                </p>
-                <div class="social-footer mt-4 d-flex gap-3">
-                    <a href="#" style="color: #fff; margin-right: 15px;">
-                        <svg width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M22.5 12.06C22.5 6.26 17.8 1.56 12 1.56C6.2 1.56 1.5 6.26 1.5 12.06C1.5 17.3 5.34 21.65 10.36 22.44V15.1H7.69V12.06H10.36V9.75C10.36 7.12 11.93 5.66 14.33 5.66C15.47 5.66 16.68 5.87 16.68 5.87V8.45H15.35C14.05 8.45 13.64 9.26 13.64 10.09V12.06H16.55L16.09 15.1H13.64V22.44C18.66 21.65 22.5 17.31 22.5 12.06Z"/></svg>
-                    </a>
-                    <a href="#" style="color: #fff;">
-                        <svg width="24" height="24" viewBox="0 0 512 512"><path fill="currentColor" d="M256 49.5c67.3 0 75.2.3 101.8 1.5 24.6 1.1 37.9 5.2 46.8 8.7 11.8 4.6 20.2 10 29 18.8s14.3 17.2 18.8 29c3.4 8.9 7.6 22.2 8.7 46.8 1.2 26.6 1.5 34.5 1.5 101.8s-.3 75.2-1.5 101.8c-1.1 24.6-5.2 37.9-8.7 46.8-4.6 11.8-10 20.2-18.8 29s-17.2 14.3-29 18.8c-8.9 3.4-22.2 7.6-46.8 8.7-26.6 1.2-34.5 1.5-101.8 1.5s-75.2-.3-101.8-1.5c-24.6-1.1-37.9-5.2-46.8-8.7-11.8-4.6-20.2-10-29-18.8s-14.3-17.2-18.8-29c-3.4-8.9-7.6-22.2-8.7-46.8-1.2-26.6-1.5-34.5-1.5-101.8s.3-75.2 1.5-101.8c1.1-24.6 5.2-37.9 8.7-46.8 4.6-11.8 10-20.2 18.8-29s17.2-14.3 29-18.8c8.9-3.4 22.2-7.6 46.8-8.7 26.6-1.3 34.5-1.5 101.8-1.5zm0 213.4c-46.4 0-84-37.6-84-84s37.6-84 84-84 84 37.6 84 84-37.6 84-84 84z"/><circle fill="currentColor" cx="390.5" cy="121.5" r="30.2"/></svg>
-                    </a>
+
+                <!-- Links col 1 -->
+                <div class="col-lg-2 col-md-4 col-6">
+                    <h5 style="font-size:13px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#3d2e1c;margin-bottom:22px;">
+                        Về chúng tôi
+                    </h5>
+                    <ul style="list-style:none;padding:0;">
+                        <li style="margin-bottom:12px;">
+                            <a th:href="@{/pages/gioi-thieu}"
+                               style="font-size:14px;color:#7a6a57;transition:color .2s ease;"
+                               onmouseover="this.style.color='#c8986a'"
+                               onmouseout="this.style.color='#7a6a57'">Giới thiệu</a>
+                        </li>
+                        <li style="margin-bottom:12px;">
+                            <a th:href="@{/pages/chinh-sach-bao-mat}"
+                               style="font-size:14px;color:#7a6a57;transition:color .2s ease;"
+                               onmouseover="this.style.color='#c8986a'"
+                               onmouseout="this.style.color='#7a6a57'">Bảo mật</a>
+                        </li>
+                        <li>
+                            <a th:href="@{/pages/dieu-khoan-dich-vu}"
+                               style="font-size:14px;color:#7a6a57;transition:color .2s ease;"
+                               onmouseover="this.style.color='#c8986a'"
+                               onmouseout="this.style.color='#7a6a57'">Điều khoản</a>
+                        </li>
+                    </ul>
                 </div>
-            </div>
 
-            <div class="col-lg-2 col-md-4 col-6 mb-4">
-                <h5 style="font-size: 16px; font-weight: 700; margin-bottom: 20px;">Về chúng tôi</h5>
-                <ul style="list-style: none; padding: 0; font-size: 14px;">
-                    <li class="mb-2"><a th:href="@{/pages/gioi-thieu}" style="color: #aaa;">Giới thiệu</a></li>
-                    <li class="mb-2"><a th:href="@{/pages/chinh-sach-bao-mat}" style="color: #aaa;">Bảo mật</a></li>
-                    <li><a th:href="@{/pages/dieu-khoan-dich-vu}" style="color: #aaa;">Điều khoản</a></li>
-                </ul>
-            </div>
+                <!-- Links col 2 -->
+                <div class="col-lg-2 col-md-4 col-6">
+                    <h5 style="font-size:13px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#3d2e1c;margin-bottom:22px;">
+                        Hỗ trợ
+                    </h5>
+                    <ul style="list-style:none;padding:0;">
+                        <li style="margin-bottom:12px;">
+                            <a th:href="@{/pages/chinh-sach-van-chuyen}"
+                               style="font-size:14px;color:#7a6a57;transition:color .2s ease;"
+                               onmouseover="this.style.color='#c8986a'"
+                               onmouseout="this.style.color='#7a6a57'">Vận chuyển</a>
+                        </li>
+                        <li style="margin-bottom:12px;">
+                            <a th:href="@{/pages/chinh-sach-doi-tra}"
+                               style="font-size:14px;color:#7a6a57;transition:color .2s ease;"
+                               onmouseover="this.style.color='#c8986a'"
+                               onmouseout="this.style.color='#7a6a57'">Đổi trả</a>
+                        </li>
+                        <li style="margin-bottom:12px;">
+                            <a th:href="@{/contact}"
+                               style="font-size:14px;color:#7a6a57;transition:color .2s ease;"
+                               onmouseover="this.style.color='#c8986a'"
+                               onmouseout="this.style.color='#7a6a57'">Liên hệ</a>
+                        </li>
+                        <li>
+                            <a th:href="@{/pages/faq}"
+                               style="font-size:14px;color:#7a6a57;transition:color .2s ease;"
+                               onmouseover="this.style.color='#c8986a'"
+                               onmouseout="this.style.color='#7a6a57'">FAQ</a>
+                        </li>
+                    </ul>
+                </div>
 
-            <div class="col-lg-2 col-md-4 col-6 mb-4">
-                <h5 style="font-size: 16px; font-weight: 700; margin-bottom: 20px;">Hỗ trợ</h5>
-                <ul style="list-style: none; padding: 0; font-size: 14px;">
-                    <li class="mb-2"><a th:href="@{/pages/chinh-sach-van-chuyen}" style="color: #aaa;">Vận chuyển</a></li>
-                    <li class="mb-2"><a th:href="@{/pages/chinh-sach-doi-tra}" style="color: #aaa;">Đổi trả</a></li>
-                    <li><a th:href="@{/contact}" style="color: #aaa;">Liên hệ</a></li>
-                </ul>
-            </div>
+                <!-- Newsletter col -->
+                <div class="col-lg-4 col-md-4 col-12">
+                    <h5 style="font-size:13px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#3d2e1c;margin-bottom:22px;">
+                        Nhận ưu đãi
+                    </h5>
+                    <p style="font-size:14px;color:#7a6a57;line-height:1.7;margin-bottom:18px;">
+                        Đăng ký để nhận thông tin sản phẩm mới và ưu đãi độc quyền sớm nhất.
+                    </p>
+                    <form th:action="@{/newsletter}" method="post"
+                          style="display:flex;border:1.5px solid #e0d4c3;border-radius:6px;overflow:hidden;background:#fff;">
+                        <input type="email" placeholder="Email của bạn..." required
+                               style="flex:1;padding:12px 16px;border:none;outline:none;font-size:13px;font-family:'Lato',sans-serif;background:transparent;color:#3d2e1c;">
+                        <button type="submit" style="
+                            padding:12px 20px;
+                            background:#c8986a;
+                            border:none;cursor:pointer;
+                            font-size:12px;font-weight:700;
+                            letter-spacing:1px;text-transform:uppercase;
+                            color:#fff;white-space:nowrap;
+                            transition:background .2s ease;
+                        "
+                                onmouseover="this.style.background='#3d2e1c'"
+                                onmouseout="this.style.background='#c8986a'">
+                            Đăng ký
+                        </button>
+                    </form>
 
-            <div class="col-lg-4 col-md-4 col-12 mb-4">
-                <h5 style="font-size: 16px; font-weight: 700; margin-bottom: 20px;">Newsletter</h5>
-                <p style="color: #aaa; font-size: 13px; margin-bottom: 15px;">Đăng ký để nhận ưu đãi sớm nhất.</p>
-                <form th:action="@{/newsletter}" method="post" style="display: flex; gap: 5px;">
-                    <input type="email" placeholder="Email của bạn" required
-                           style="background: #222; border: 1px solid #444; color: #fff; padding: 10px; flex: 1; border-radius: 4px;">
-                    <button type="submit" style="background: #c8986a; border: none; color: #fff; padding: 10px 20px; border-radius: 4px; font-weight: 600;">Gửi</button>
-                </form>
+                    <!-- Payment badges -->
+                    <div style="display:flex;gap:8px;margin-top:20px;flex-wrap:wrap;">
+                        <span style="padding:5px 12px;border:1px solid #e0d4c3;border-radius:4px;font-size:11px;font-weight:700;color:#7a6a57;letter-spacing:1px;">VISA</span>
+                        <span style="padding:5px 12px;border:1px solid #e0d4c3;border-radius:4px;font-size:11px;font-weight:700;color:#7a6a57;letter-spacing:1px;">MASTERCARD</span>
+                        <span style="padding:5px 12px;border:1px solid #e0d4c3;border-radius:4px;font-size:11px;font-weight:700;color:#7a6a57;letter-spacing:1px;">MOMO</span>
+                        <span style="padding:5px 12px;border:1px solid #e0d4c3;border-radius:4px;font-size:11px;font-weight:700;color:#7a6a57;letter-spacing:1px;">COD</span>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
 
-    <div style="background: #111; padding: 20px 0; margin-top: 50px;">
-        <div class="container text-center">
-            <span style="font-size: 12px; color: #666;">© 2026 Bản quyền thuộc về <b>SUNILIES</b>. Thiết kế bởi Lam Nguyen.</span>
+    <!-- ── BOTTOM BAR ── -->
+    <div style="border-top:1px solid #e8e4de;padding:20px 0;">
+        <div class="container" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+            <span style="font-size:12px;color:#aaa;">
+                © 2026 Bản quyền thuộc về <strong style="color:#c8986a;">SUNILIES</strong>. Thiết kế bởi Lam Nguyen.
+            </span>
+            <div style="display:flex;gap:20px;">
+                <a th:href="@{/pages/chinh-sach-bao-mat}"
+                   style="font-size:12px;color:#aaa;"
+                   onmouseover="this.style.color='#c8986a'"
+                   onmouseout="this.style.color='#aaa'">Chính sách bảo mật</a>
+                <a th:href="@{/pages/dieu-khoan-dich-vu}"
+                   style="font-size:12px;color:#aaa;"
+                   onmouseover="this.style.color='#c8986a'"
+                   onmouseout="this.style.color='#aaa'">Điều khoản</a>
+            </div>
         </div>
     </div>
+
 </footer>
 </body>
 </html>

@@ -313,7 +313,7 @@ header.header.header--scrolled .wolf-main-header {
 /* -----------------------------------------------
    5. SECTION: HERO SLIDER
 ----------------------------------------------- */
-.section_slider { margin-bottom: 25px; position: relative; }
+.section_slider { margin-bottom: 0; position: relative; }
 
 .section_slider .swiper-slide {
     background: #ebebeb;
@@ -340,10 +340,13 @@ header.header.header--scrolled .wolf-main-header {
     text-transform: uppercase; color: rgba(255,255,255,.85); margin-bottom: 12px;
 }
 .slide-content .slide-title {
-    font-family: var(--fontDisplay);
+    font-family: 'Playfair Display', serif;
+    font-weight: 400;
     font-size: clamp(32px, 5vw, 72px);
-    font-weight: 700; color: #fff;
-    line-height: 1.1; margin-bottom: 20px;
+    color: #fff;
+    line-height: 1.2;
+    margin-bottom: 20px;
+    letter-spacing: 1px;
 }
 .slide-content .btn-slide {
     display: inline-block; padding: 14px 36px;
@@ -373,7 +376,7 @@ header.header.header--scrolled .wolf-main-header {
 /* -----------------------------------------------
    6. SECTION: DANH MỤC GALLERY
 ----------------------------------------------- */
-.section_services { margin: 70px 0 50px; }
+.section_services { margin: 10px 0 50px; }
 
 .section_services .title-gallery { text-align: center; margin-bottom: 50px; }
 .section_services .title-gallery h2 {
@@ -549,7 +552,7 @@ header.header.header--scrolled .wolf-main-header {
 /* -----------------------------------------------
    9. SECTION: PRODUCT SLIDER (Có thể bạn thích)
 ----------------------------------------------- */
-.section-product-slider { background: var(--bgLight); padding: 70px 0 50px; }
+.section-product-slider { background: #faf7f2;); padding: 70px 0 50px; }
 
 .product-slider-nav {
     display: flex; align-items: center;
@@ -743,4 +746,227 @@ header.header.header--scrolled .wolf-main-header {
 
 @media (max-width: 480px) {
     .gallery-grid { grid-template-columns: 1fr 1fr; }
+}
+/* -----------------------------------------------
+   SECTION: CÂU CHUYỆN THƯƠNG HIỆU
+----------------------------------------------- */
+.section-story {
+    background: #faf7f2;
+    padding: 80px 40px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+.section-story::before,
+.section-story::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    width: 280px;
+    height: 100%;
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.section-story::before {
+    left: 0;
+    background-image: url('/image/left_tree.png');
+    opacity: 0.50;
+}
+
+.section-story::after {
+    right: 0;
+    background-image: url('/image/right_tree.png');
+    opacity: 0.50;
+}
+.story-bg-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: var(--fontDisplay);
+    font-size: 120px;
+    font-weight: 400;
+    color: rgba(200,152,106,0.06);
+    white-space: nowrap;
+    pointer-events: none;
+    user-select: none;
+    z-index: 0;
+}
+
+.story-content { position: relative; z-index: 1; }
+
+.story-eyebrow {
+    font-size: 11px;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: var(--mainColor);
+    margin-bottom: 20px;
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.story-headline {
+    font-family: var(--fontDisplay);
+    font-size: clamp(28px, 4vw, 52px);
+    font-weight: 400;
+    line-height: 1.2;
+    color: #1a1a1a;
+    margin-bottom: 12px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.9s ease 0.15s, transform 0.9s ease 0.15s;
+}
+
+.story-headline em {
+    font-style: italic;
+    color: var(--mainColor);
+}
+
+.story-divider {
+    width: 0;
+    height: 1px;
+    background: var(--mainColor);
+    margin: 28px auto;
+    transition: width 1.2s ease 0.3s;
+}
+
+.story-body {
+    max-width: 560px;
+    margin: 0 auto 48px;
+    font-size: 16px;
+    font-weight: 300;
+    line-height: 1.9;
+    color: #555;
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.9s ease 0.5s, transform 0.9s ease 0.5s;
+}
+
+.story-body .highlight {
+    font-weight: 400;
+    color: var(--darkColor);
+}
+
+.story-stats {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    margin-top: 48px;
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.9s ease 0.7s, transform 0.9s ease 0.7s;
+}
+
+.stat-item {
+    padding: 0 40px;
+    border-right: 1px solid #e0d8ce;
+}
+.stat-item:last-child { border-right: none; }
+
+.stat-num {
+    font-family: var(--fontDisplay);
+    font-size: 36px;
+    font-weight: 400;
+    color: var(--darkColor);
+    line-height: 1;
+    margin-bottom: 6px;
+}
+
+.stat-label {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #999;
+}
+
+.story-tags {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 40px;
+    flex-wrap: wrap;
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity 0.9s ease 0.9s, transform 0.9s ease 0.9s;
+}
+
+.story-tags .tag {
+    padding: 8px 20px;
+    border: 1px solid var(--mainColor);
+    border-radius: 100px;
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--mainColor);
+    background: transparent;
+}
+
+/* Trạng thái sau khi scroll tới – JS thêm class .visible */
+.section-story.visible .story-eyebrow,
+.section-story.visible .story-headline,
+.section-story.visible .story-body,
+.section-story.visible .story-stats,
+.section-story.visible .story-tags {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.section-story.visible .story-divider {
+    width: 60px;
+}
+
+@media (max-width: 640px) {
+    .story-stats { flex-direction: column; gap: 24px; }
+    .stat-item { border-right: none; border-bottom: 1px solid #e0d8ce; padding: 0 0 24px; }
+    .stat-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .story-bg-text { font-size: 60px; }
+}
+/* -----------------------------------------------
+   MARQUEE BANNER
+----------------------------------------------- */
+.marquee-banner {
+    background: transparent;
+    color: var(--darkColor);
+    padding: 10px 0;
+    overflow: hidden;
+    white-space: nowrap;
+}
+.marquee-track {
+    display: inline-flex;
+    align-items: center;
+    gap: 32px;
+    animation: marquee-scroll 25s linear infinite;
+}
+
+.marquee-track span {
+    font-size: 40px;
+    font-family: 'Cormorant', serif;
+    font-weight: 500;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    flex-shrink: 0;
+    color: var(--darkColor);
+}
+
+.marquee-dot {
+    color: var(--mainColor);
+    font-size: 10px !important;
+    letter-spacing: 0 !important;
+}
+
+.marquee-banner:hover .marquee-track {
+    animation-play-state: paused;
+}
+
+@keyframes marquee-scroll {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+}
+html {
+    scroll-behavior: smooth;
 }

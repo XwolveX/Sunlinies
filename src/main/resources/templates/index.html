@@ -52,12 +52,12 @@
             <!-- Demo tĩnh dưới đây sẽ được thay bằng vòng lặp Thymeleaf -->
 
             <div class="swiper-slide">
-                <img th:src="@{image/image-parallax-1.jpg}"
+                <img th:src="@{image/slider_1.jpg}"
                      src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1920&q=80"
                      alt="Slider 1" />
                 <div class="slide-overlay"></div>
                 <div class="slide-content">
-                    <span class="slide-sub">Bộ sưu tập hè 2025</span>
+                    <span class="slide-sub">SUMMER COLLECTION 2025</span>
                     <h2 class="slide-title">Tự do<br/>dưới nắng</h2>
                     <a th:href="@{/collections/san-pham-moi}" class="btn-slide">Khám phá ngay</a>
                 </div>
@@ -94,7 +94,70 @@
     </div>
 </section>
 
+<!--    &lt;!&ndash; MARQUEE BANNER &ndash;&gt;-->
+<!--    <div class="marquee-banner">-->
+<!--        <div class="marquee-track">-->
+<!--            <span>ĐAN THỦ CÔNG BỞI NGHỆ NHÂN VIỆT</span>-->
+<!--            <span class="marquee-dot">✦</span>-->
+<!--            <span>100% TỪ CHẤT LIỆU CÓI MÂY</span>-->
+<!--            <span class="marquee-dot">✦</span>-->
+<!--            <span>BỀN VỮNG & THÂN THIỆN MÔI TRƯỜNG</span>-->
+<!--            <span class="marquee-dot">✦</span>-->
+<!--            <span>ĐAN THỦ CÔNG BỞI NGHỆ NHÂN VIỆT</span>-->
+<!--            <span class="marquee-dot">✦</span>-->
+<!--            <span>100% TỪ CHẤT LIỆU CÓI MÂY</span>-->
+<!--            <span class="marquee-dot">✦</span>-->
+<!--            <span>BỀN VỮNG & THÂN THIỆN MÔI TRƯỜNG</span>-->
+<!--            <span class="marquee-dot">✦</span>-->
+<!--        </div>-->
+<!--    </div>-->
 
+    <!-- =========================================================
+                SECTION: CÂU CHUYỆN THƯƠNG HIỆU
+           ========================================================= -->
+    <section class="section-story" id="storySection">
+        <div class="story-bg-text">CÓI MÂY</div>
+        <div class="story-content">
+            <p class="story-eyebrow">Sunilies</p>
+
+            <h2 class="story-headline">
+                Không chỉ là một phụ kiện<br/>
+                đó là <em>bàn tay Việt Nam</em>
+            </h2>
+
+            <div class="story-divider"></div>
+
+            <p class="story-body">
+                Mỗi sản phẩm được dệt từ <span class="highlight">100% cói mây tự nhiên</span>,
+                qua đôi bàn tay của các nghệ nhân làng nghề Việt Nam.
+                Không có hai sản phẩm nào giống nhau hoàn toàn, bởi mỗi đường đan
+                là một nét cá tính, một câu chuyện riêng được gửi gắm
+                từ người tạo ra đến người sở hữu.
+            </p>
+
+            <div class="story-stats">
+                <div class="stat-item">
+                    <div class="stat-num">100%</div>
+                    <div class="stat-label">Thủ công</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-num">Cói mây</div>
+                    <div class="stat-label">Chất liệu tự nhiên</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-num">Việt Nam</div>
+                    <div class="stat-label">Nghệ nhân làng nghề</div>
+                </div>
+            </div>
+
+            <div class="story-tags">
+                <span class="tag">Thân thiện môi trường</span>
+                <span class="tag">Bền vững</span>
+                <span class="tag">Thuần Việt</span>
+                <span class="tag">Độc bản</span>
+            </div>
+        </div>
+    </section>
 <!-- =========================================================
      SECTION 2: DANH MỤC GALLERY
      Dữ liệu: List<Category> featuredCategories từ HomeController
@@ -102,8 +165,8 @@
 <section class="section_services">
     <div class="container">
         <div class="title-gallery">
-            <h2>Danh mục</h2>
-            <p>Phong cách của bạn</p>
+            <h2>________________</h2>
+            <p>Bạn đang tìm gì?</p>
         </div>
         <div class="gallery-grid">
 
@@ -117,42 +180,47 @@
               </a>
             -->
 
-            <a th:href="@{/collections/bikini}" class="gallery-item">
-                <img src="https://images.unsplash.com/photo-1570639732792-fba0cf2f0498?w=600&q=80" alt="Bikini" />
+            <a th:href="@{/collections/bag}" class="gallery-item">
+                <img src="/image/popup_bag.JPG" alt="Bag" />
                 <div class="gallery-overlay"></div>
                 <div class="gallery-title">
                     <p>New arrival</p>
-                    <p>Bikini</p>
+                    <p>Túi</p>
                     <span class="gallery-button">Xem thêm</span>
                 </div>
             </a>
 
-            <a th:href="@{/collections/ao-tam}" class="gallery-item">
-                <img src="https://images.unsplash.com/photo-1544441893-675973e31985?w=600&q=80" alt="Áo tắm" />
+            <a th:href="@{/collections/Hat}" class="gallery-item">
+                <img src="/image/popup_hat.jpg" alt="Hat" />
                 <div class="gallery-overlay"></div>
                 <div class="gallery-title">
                     <p>Trending</p>
-                    <p>Áo tắm</p>
+                    <p>Nón</p>
                     <span class="gallery-button">Xem thêm</span>
                 </div>
             </a>
 
-            <a th:href="@{/collections/do-di-bien}" class="gallery-item">
-                <img src="https://images.unsplash.com/photo-1519046904884-53103b34b206?w=600&q=80" alt="Đồ đi biển" />
+            <a th:href="@{/collections/Dang-Ha}" class="gallery-item">
+                <img src="/image/popup_collection_dangha.jpg" alt="Dáng hạ" />
                 <div class="gallery-overlay"></div>
                 <div class="gallery-title">
-                    <p>Bestseller</p>
-                    <p>Đồ đi biển</p>
+                    <p>Collection</p>
+                    <p>Dáng Hạ</p>
                     <span class="gallery-button">Xem thêm</span>
                 </div>
             </a>
 
-            <a th:href="@{/collections/phu-kien}" class="gallery-item">
-                <img src="https://images.unsplash.com/photo-1547949003-9792a18a2601?w=600&q=80" alt="Phụ kiện" />
+
+
+
+            
+
+            <a th:href="@{/collections/Vi-May}" class="gallery-item">
+                <img src="/image/popup_collection_vimay.JPG" alt="Vị Mây" />
                 <div class="gallery-overlay"></div>
                 <div class="gallery-title">
-                    <p>Essential</p>
-                    <p>Phụ kiện</p>
+                    <p>Collection</p>
+                    <p>Vị Mây</p>
                     <span class="gallery-button">Xem thêm</span>
                 </div>
             </a>
@@ -170,7 +238,7 @@
     <div class="container">
         <h3 class="majortitle">
             <a th:href="@{/collections/san-pham-ban-chay}"
-               th:text="${hotProductTitle} ?: 'Sản phẩm bán chạy'">Sản phẩm bán chạy</a>
+               th:text="${hotProductTitle} ?: 'Sản phẩm bán chạy'">Best Seller</a>
         </h3>
 
         <div class="products-grid" id="hotProductGrid">
@@ -211,7 +279,7 @@
             <div class="item_product_main animate-up" data-product-id="1">
                 <div class="product-thumbnail">
                     <span class="badge-sale">-30%</span>
-                    <img src="https://images.unsplash.com/photo-1561619906-5f2e27e55432?w=400&q=80" alt="Sản phẩm 1" />
+                    <img src="/image/bag_charm.jpeg" alt="Bag Charm" />
                     <div class="product-actions">
                         <button class="btn-quickview" data-product-id="1">Xem nhanh</button>
                         <button class="btn-wishlist">
@@ -222,18 +290,17 @@
                     </div>
                 </div>
                 <div class="product-info">
-                    <div class="product-name"><a href="#">Bikini hai mảnh họa tiết nhiệt đới</a></div>
+                    <div class="product-name"><a href="#">Bag charm</a></div>
                     <div class="price-box">
                         <span class="price sale-price">350.000đ</span>
                         <span class="old-price">500.000đ</span>
                     </div>
                 </div>
             </div>
-
             <div class="item_product_main animate-up" data-product-id="2">
                 <div class="product-thumbnail">
                     <span class="badge-new">Mới</span>
-                    <img src="https://images.unsplash.com/photo-1531353826977-0941b4779a1c?w=400&q=80" alt="Sản phẩm 2" />
+                    <img src="/image/LumerHat.JPG" alt="LumerHat" />
                     <div class="product-actions">
                         <button class="btn-quickview" data-product-id="2">Xem nhanh</button>
                         <button class="btn-wishlist">
@@ -244,14 +311,14 @@
                     </div>
                 </div>
                 <div class="product-info">
-                    <div class="product-name"><a href="#">Áo tắm liền mảnh cổ chữ V</a></div>
+                    <div class="product-name"><a href="#">Lumer Hat</a></div>
                     <div class="price-box"><span class="price">420.000đ</span></div>
                 </div>
             </div>
 
             <div class="item_product_main animate-up" data-product-id="3">
                 <div class="product-thumbnail">
-                    <img src="https://images.unsplash.com/photo-1596704017254-9b5e2a025acf?w=400&q=80" alt="Sản phẩm 3" />
+                    <img src="/image/SandyBag.jpg" alt="Sản phẩm 3" />
                     <div class="product-actions">
                         <button class="btn-quickview" data-product-id="3">Xem nhanh</button>
                         <button class="btn-wishlist">
@@ -262,7 +329,7 @@
                     </div>
                 </div>
                 <div class="product-info">
-                    <div class="product-name"><a href="#">Set đồ đi biển 3 món cao cấp</a></div>
+                    <div class="product-name"><a href="#">Sandy Bag</a></div>
                     <div class="price-box"><span class="price">650.000đ</span></div>
                 </div>
             </div>
@@ -270,7 +337,7 @@
             <div class="item_product_main animate-up" data-product-id="4">
                 <div class="product-thumbnail">
                     <span class="badge-sale">-20%</span>
-                    <img src="https://images.unsplash.com/photo-1593032534560-f2c26fde9b0d?w=400&q=80" alt="Sản phẩm 4" />
+                    <img src="/image/SoleilBag.PNG" alt="Sản phẩm 4" />
                     <div class="product-actions">
                         <button class="btn-quickview" data-product-id="4">Xem nhanh</button>
                         <button class="btn-wishlist">
@@ -281,7 +348,7 @@
                     </div>
                 </div>
                 <div class="product-info">
-                    <div class="product-name"><a href="#">Bikini thể thao năng động</a></div>
+                    <div class="product-name"><a href="#">Soleil Bag</a></div>
                     <div class="price-box">
                         <span class="price sale-price">280.000đ</span>
                         <span class="old-price">350.000đ</span>
@@ -298,51 +365,51 @@
 </section>
 
 
-<!-- =========================================================
-     SECTION 4: 3 BANNER PARALLAX
-     Dữ liệu: bannerMain, bannerLeft, bannerRight từ HomeController
-========================================================= -->
-<section class="section-index-three-banner">
-    <div class="container">
+<!--&lt;!&ndash; =========================================================-->
+<!--     SECTION 4: 3 BANNER PARALLAX-->
+<!--     Dữ liệu: banner Main, bannerLeft, bannerRight từ HomeController-->
+<!--========================================================= &ndash;&gt;-->
+<!--<section class="section-index-three-banner">-->
+<!--    <div class="container">-->
 
-        <!-- Banner lớn -->
-        <div class="image-parallax-items">
-            <div class="image-parallax-item"
-                 style="background-image:url('https://images.unsplash.com/photo-1473116763249-2faaef81ccda?w=1500&q=80')"
-                 th:style="'background-image:url(' + ${bannerMain?.image ?: 'https://images.unsplash.com/photo-1473116763249-2faaef81ccda?w=1500&q=80'} + ')'">
-                <div class="image-parallax-item-content">
-                    <p class="sub-title" th:text="${bannerMain?.subTitle} ?: 'Giới hạn thời gian'">Giới hạn thời gian</p>
-                    <h3 th:text="${bannerMain?.title} ?: 'Ưu đãi hè lên đến 50%'">Ưu đãi hè<br/>lên đến 50%</h3>
-                    <p th:text="${bannerMain?.description} ?: 'Khám phá ngay bộ sưu tập mới nhất với mức giá không thể bỏ qua.'">
-                        Khám phá ngay bộ sưu tập mới nhất với mức giá không thể bỏ qua.
-                    </p>
-                    <a th:href="${bannerMain?.link} ?: '/collections/khuyen-mai'" class="btn-banner">Mua ngay</a>
-                </div>
-            </div>
-        </div>
+<!--        &lt;!&ndash; Banner lớn &ndash;&gt;-->
+<!--        <div class="image-parallax-items">-->
+<!--            <div class="image-parallax-item"-->
+<!--                 style="background-image:url('https://images.unsplash.com/photo-1473116763249-2faaef81ccda?w=1500&q=80')"-->
+<!--                 th:style="'background-image:url(' + ${bannerMain?.image ?: 'https://images.unsplash.com/photo-1473116763249-2faaef81ccda?w=1500&q=80'} + ')'">-->
+<!--                <div class="image-parallax-item-content">-->
+<!--                    <p class="sub-title" th:text="${bannerMain?.subTitle} ?: 'Giới hạn thời gian'">Giới hạn thời gian</p>-->
+<!--                    <h3 th:text="${bannerMain?.title} ?: 'Ưu đãi hè lên đến 50%'">Ưu đãi hè<br/>lên đến 50%</h3>-->
+<!--                    <p th:text="${bannerMain?.description} ?: 'Khám phá ngay bộ sưu tập mới nhất với mức giá không thể bỏ qua.'">-->
+<!--                        Khám phá ngay bộ sưu tập mới nhất với mức giá không thể bỏ qua.-->
+<!--                    </p>-->
+<!--                    <a th:href="${bannerMain?.link} ?: '/collections/khuyen-mai'" class="btn-banner">Mua ngay</a>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
 
-        <!-- 2 banner nhỏ -->
-        <div class="image-parallax-items image-parallax-two">
-            <div class="image-parallax-item"
-                 style="background-image:url('https://images.unsplash.com/photo-1544441893-675973e31985?w=800&q=80'); min-height:220px; padding:40px;">
-                <div class="image-parallax-item-content">
-                    <p class="sub-title">New in</p>
-                    <h3 style="font-size:28px;">Bộ sưu tập<br/>mới nhất</h3>
-                    <a th:href="@{/collections/san-pham-moi}" class="btn-banner btn-banner-sm">Khám phá</a>
-                </div>
-            </div>
-            <div class="image-parallax-item"
-                 style="background-image:url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80'); min-height:220px; padding:40px;">
-                <div class="image-parallax-item-content">
-                    <p class="sub-title">Bestseller</p>
-                    <h3 style="font-size:28px;">Sản phẩm<br/>nổi bật</h3>
-                    <a th:href="@{/collections}" class="btn-banner btn-banner-sm">Xem ngay</a>
-                </div>
-            </div>
-        </div>
+<!--        &lt;!&ndash; 2 banner nhỏ &ndash;&gt;-->
+<!--        <div class="image-parallax-items image-parallax-two">-->
+<!--            <div class="image-parallax-item"-->
+<!--                 style="background-image:url('https://images.unsplash.com/photo-1544441893-675973e31985?w=800&q=80'); min-height:220px; padding:40px;">-->
+<!--                <div class="image-parallax-item-content">-->
+<!--                    <p class="sub-title">New in</p>-->
+<!--                    <h3 style="font-size:28px;">Bộ sưu tập<br/>mới nhất</h3>-->
+<!--                    <a th:href="@{/collections/san-pham-moi}" class="btn-banner btn-banner-sm">Khám phá</a>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--            <div class="image-parallax-item"-->
+<!--                 style="background-image:url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80'); min-height:220px; padding:40px;">-->
+<!--                <div class="image-parallax-item-content">-->
+<!--                    <p class="sub-title">Bestseller</p>-->
+<!--                    <h3 style="font-size:28px;">Sản phẩm<br/>nổi bật</h3>-->
+<!--                    <a th:href="@{/collections}" class="btn-banner btn-banner-sm">Xem ngay</a>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
 
-    </div>
-</section>
+<!--    </div>-->
+<!--</section>-->
 
 
 <!-- =========================================================
@@ -372,15 +439,45 @@
                     <div class="swiper-slide">
                         <div class="item_product_main">
                             <div class="product-thumbnail">
-                                <img src="https://images.unsplash.com/photo-1547949003-9792a18a2601?w=400&q=80" alt="SP 1" />
+                                <img src="/image/trending.JPG" alt="SP 1" />
                                 <div class="product-actions">
                                     <button class="btn-quickview" data-product-id="10">Xem nhanh</button>
                                     <button class="btn-wishlist"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg></button>
                                 </div>
                             </div>
                             <div class="product-info">
-                                <div class="product-name"><a href="#">Mũ rơm đi biển phong cách</a></div>
-                                <div class="price-box"><span class="price">185.000đ</span></div>
+                                <div class="product-name"><a href="#">Dáng Hạ Collection</a></div>
+                                <div class="price-box"><span class="price">700.000đ</span></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="swiper-slide">
+                        <div class="item_product_main">
+                            <div class="product-thumbnail">
+                                <img src="/image/trending.JPG" alt="SP 1" />
+                                <div class="product-actions">
+                                    <button class="btn-quickview" data-product-id="10">Xem nhanh</button>
+                                    <button class="btn-wishlist"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg></button>
+                                </div>
+                            </div>
+                            <div class="product-info">
+                                <div class="product-name"><a href="#">Dáng Hạ Collection</a></div>
+                                <div class="price-box"><span class="price">700.000đ</span></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="swiper-slide">
+                        <div class="item_product_main">
+                            <div class="product-thumbnail">
+                                <img src="/image/trending.JPG" alt="SP 1" />
+                                <div class="product-actions">
+                                    <button class="btn-quickview" data-product-id="10">Xem nhanh</button>
+                                    <button class="btn-wishlist"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg></button>
+                                </div>
+                            </div>
+                            <div class="product-info">
+                                <div class="product-name"><a href="#">Dáng Hạ Collection</a></div>
+                                <div class="price-box"><span class="price">700.000đ</span></div>
                             </div>
                         </div>
                     </div>
@@ -388,16 +485,15 @@
                     <div class="swiper-slide">
                         <div class="item_product_main">
                             <div class="product-thumbnail">
-                                <span class="badge-new">Mới</span>
-                                <img src="https://images.unsplash.com/photo-1570639732792-fba0cf2f0498?w=400&q=80" alt="SP 2" />
+                                <img src="/image/trending.JPG" alt="SP 1" />
                                 <div class="product-actions">
-                                    <button class="btn-quickview" data-product-id="11">Xem nhanh</button>
+                                    <button class="btn-quickview" data-product-id="10">Xem nhanh</button>
                                     <button class="btn-wishlist"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg></button>
                                 </div>
                             </div>
                             <div class="product-info">
-                                <div class="product-name"><a href="#">Bikini ren hoa cao cấp</a></div>
-                                <div class="price-box"><span class="price">480.000đ</span></div>
+                                <div class="product-name"><a href="#">Dáng Hạ Collection</a></div>
+                                <div class="price-box"><span class="price">700.000đ</span></div>
                             </div>
                         </div>
                     </div>
@@ -405,77 +501,22 @@
                     <div class="swiper-slide">
                         <div class="item_product_main">
                             <div class="product-thumbnail">
-                                <span class="badge-sale">-15%</span>
-                                <img src="https://images.unsplash.com/photo-1531353826977-0941b4779a1c?w=400&q=80" alt="SP 3" />
+                                <img src="/image/trending.JPG" alt="SP 1" />
                                 <div class="product-actions">
-                                    <button class="btn-quickview" data-product-id="12">Xem nhanh</button>
+                                    <button class="btn-quickview" data-product-id="10">Xem nhanh</button>
                                     <button class="btn-wishlist"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg></button>
                                 </div>
                             </div>
                             <div class="product-info">
-                                <div class="product-name"><a href="#">Áo tắm liền mảnh lưng trần</a></div>
-                                <div class="price-box"><span class="price sale-price">382.000đ</span><span class="old-price">450.000đ</span></div>
+                                <div class="product-name"><a href="#">Dáng Hạ Collection</a></div>
+                                <div class="price-box"><span class="price">700.000đ</span></div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="swiper-slide">
-                        <div class="item_product_main">
-                            <div class="product-thumbnail">
-                                <img src="https://images.unsplash.com/photo-1519046904884-53103b34b206?w=400&q=80" alt="SP 4" />
-                                <div class="product-actions">
-                                    <button class="btn-quickview" data-product-id="13">Xem nhanh</button>
-                                    <button class="btn-wishlist"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg></button>
-                                </div>
-                            </div>
-                            <div class="product-info">
-                                <div class="product-name"><a href="#">Váy đi biển nhẹ nhàng</a></div>
-                                <div class="price-box"><span class="price">320.000đ</span></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="swiper-slide">
-                        <div class="item_product_main">
-                            <div class="product-thumbnail">
-                                <img src="https://images.unsplash.com/photo-1593032534560-f2c26fde9b0d?w=400&q=80" alt="SP 5" />
-                                <div class="product-actions">
-                                    <button class="btn-quickview" data-product-id="14">Xem nhanh</button>
-                                    <button class="btn-wishlist"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg></button>
-                                </div>
-                            </div>
-                            <div class="product-info">
-                                <div class="product-name"><a href="#">Kính mắt thời trang đi biển</a></div>
-                                <div class="price-box"><span class="price">150.000đ</span></div>
-                            </div>
-                        </div>
-                    </div>
 
                 </div><!-- /.swiper-wrapper -->
             </div><!-- /.swiper -->
-        </div>
-    </div>
-</section>
-
-
-<!-- =========================================================
-     SECTION 6: THƯƠNG HIỆU
-     Dữ liệu: List<Brand> brands từ HomeController
-========================================================= -->
-<section class="section-brands">
-    <div class="container">
-        <div class="brands-grid">
-            <!--
-              <div th:each="brand : ${brands}" class="brand-item">
-                  <img th:src="${brand.image}" th:alt="${brand.name}" />
-              </div>
-            -->
-            <div class="brand-item"><div class="brand-box">BRAND 1</div></div>
-            <div class="brand-item"><div class="brand-box">BRAND 2</div></div>
-            <div class="brand-item"><div class="brand-box">BRAND 3</div></div>
-            <div class="brand-item"><div class="brand-box">BRAND 4</div></div>
-            <div class="brand-item"><div class="brand-box">BRAND 5</div></div>
-            <div class="brand-item"><div class="brand-box">BRAND 6</div></div>
         </div>
     </div>
 </section>

@@ -305,5 +305,45 @@ document.addEventListener('DOMContentLoaded', function () {
     function formatMoney(amount) {
         return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
     }
+    /* =============================================
+   11. STORY SECTION – SCROLL SNAP + ANIMATION
+============================================= */
+    const storySection = document.getElementById('storySection');
 
+    if (storySection) {
+        let snapped = false;
+
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (snapped) return;
+
+                const rect = storySection.getBoundingClientRect();
+                const windowH = window.innerHeight;
+
+                // Khi cạnh dưới màn hình chạm tới giữa section
+                const sectionMid = rect.top + rect.height / 2;
+
+                if (sectionMid <= windowH && !snapped) {
+                    snapped = true;
+                    observer.disconnect();
+
+                    // 1. Kéo section về giữa màn hình
+                    storySection.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center'
+                    });
+
+                    // 2. Sau khi scroll xong (~700ms) mới chạy animation
+                    setTimeout(() => {
+                        storySection.classList.add('visible');
+                    }, 700);
+                }
+            });
+        }, {
+            // Kích hoạt liên tục khi section đi vào viewport
+            threshold: Array.from({ length: 20 }, (_, i) => i / 20)
+        });
+
+        observer.observe(storySection);
+    }
 }); // end DOMContentLoaded
