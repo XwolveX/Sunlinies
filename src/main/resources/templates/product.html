@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{layout/base :: head(${product.name})}"></head>
+
+<body>
+
+<link rel="stylesheet" th:href="@{/css/product.css}">
+
+<div th:replace="~{fragments/header :: header}"></div>
+<div class="mobile-menu-overlay" id="mobileOverlay"></div>
+<div class="mobile-menu" id="mobileMenu">
+  <div class="mobile-menu-head">
+    <span class="logo-text">SUNILIES</span>
+    <button class="mobile-menu-close" id="mobileMenuClose">×</button>
+  </div>
+  <ul>
+    <li><a th:href="@{/}">Trang chủ</a></li>
+    <li><a th:href="@{/collections}">Sản phẩm</a></li>
+    <li><a th:href="@{/collections/san-pham-moi}">Sản phẩm mới</a></li>
+    <li><a th:href="@{/contact}">Liên hệ</a></li>
+  </ul>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     BREADCRUMB
+     ════════════════════════════════════════════════════════ -->
+<div class="pd-breadcrumb">
+  <div class="container">
+    <div class="pd-breadcrumb__inner">
+      <a th:href="@{/}">Trang chủ</a>
+      <span class="pd-breadcrumb__sep">›</span>
+      <a th:href="@{/collections}">Sản phẩm</a>
+      <span class="pd-breadcrumb__sep" th:if="${product.category != null}">›</span>
+      <a th:if="${product.category != null}"
+         th:href="@{/collections/{c}(c=${product.category})}"
+         th:text="${product.category}">Danh mục</a>
+      <span class="pd-breadcrumb__sep">›</span>
+      <span class="pd-breadcrumb__current" th:text="${product.name}">Tên sản phẩm</span>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     PRODUCT DETAIL
+     ════════════════════════════════════════════════════════ -->
+<section class="pd-section">
+  <div class="container">
+    <div class="pd-grid">
+
+      <!-- ══ CỘT TRÁI: GALLERY ══════════════════════ -->
+      <div class="pd-gallery">
+
+        <div class="pd-gallery__main" id="pdGalleryMain">
+                    <span th:if="${product.onSale}" class="badge-sale"
+                          th:text="'-' + ${product.discountPercent} + '%'"
+                          style="position:absolute;top:14px;left:14px;z-index:2;
+                                 font-size:12px;font-weight:700;padding:5px 12px;
+                                 border-radius:4px;background:#e74c3c;color:#fff;letter-spacing:.5px;">-30%</span>
+          <span th:if="${product.isNew() and !product.onSale}"
+                style="position:absolute;top:14px;left:14px;z-index:2;
+                                 font-size:12px;font-weight:700;padding:5px 12px;
+                                 border-radius:4px;background:#3d2e1c;color:#faf2e6;letter-spacing:.5px;">Mới</span>
+
+          <img id="pdMainImg"
+               th:src="${product.featuredImage}"
+               th:alt="${product.name}" />
+
+          <div class="pd-gallery__zoom-hint">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/><path d="M11 8v6M8 11h6"/>
+            </svg>
+            Phóng to
+          </div>
+        </div>
+
+        <div class="pd-gallery__thumbs"
+             th:if="${product.images != null and !product.images.isEmpty()}">
+          <div class="pd-gallery__thumb"
+               th:each="img, idx : ${product.images}"
+               th:classappend="${idx.index == 0} ? ' is-active' : ''"
+               th:data-src="${img}">
+            <img th:src="${img}" th:alt="${product.name}" loading="lazy"/>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ══ CỘT PHẢI: INFO ═════════════════════════ -->
+      <div class="pd-info">
+
+        <div class="pd-info__category"
+             th:if="${product.category != null}"
+             th:text="${product.category}">Phụ kiện</div>
+
+        <h1 class="pd-info__title" th:text="${product.name}">Tên sản phẩm</h1>
+
+        <!-- Rating -->
+        <div class="pd-info__rating">
+          <div class="pd-stars">
+            <svg class="pd-star" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+            <svg class="pd-star" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+            <svg class="pd-star" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+            <svg class="pd-star" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+            <svg class="pd-star" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+          </div>
+          <span class="pd-rating__count">5.0 · 24 đánh giá</span>
+        </div>
+
+        <!-- Giá -->
+        <div class="pd-info__price">
+                    <span th:if="${product.onSale}" class="pd-price--sale"
+                          th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT') + 'đ'}">0đ</span>
+          <span th:unless="${product.onSale}" class="pd-price--regular"
+                th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT') + 'đ'}">0đ</span>
+          <span th:if="${product.comparePrice != null}" class="pd-price--compare"
+                th:text="${#numbers.formatDecimal(product.comparePrice, 0, 'COMMA', 0, 'POINT') + 'đ'}"></span>
+          <span th:if="${product.onSale}" class="pd-price__save-pill"
+                th:text="'Tiết kiệm ' + ${product.discountPercent} + '%'"></span>
+        </div>
+
+        <!-- Badges -->
+        <div class="pd-info__badges">
+          <span th:if="${product.onSale}" class="pd-badge pd-badge--sale">🏷 Đang giảm giá</span>
+          <span th:if="${product.isNew()}" class="pd-badge pd-badge--new">✨ Hàng mới về</span>
+          <span th:if="${product.isHot()}" class="pd-badge pd-badge--hot">🔥 Bán chạy</span>
+        </div>
+
+        <!-- Mô tả ngắn -->
+        <p class="pd-info__desc" th:text="${product.description}">Mô tả sản phẩm...</p>
+
+        <!-- Size -->
+        <div class="pd-variant-group"
+             th:if="${product.sizes != null and !product.sizes.isEmpty()}">
+          <div class="pd-variant-label">
+            Kích thước
+            <span class="pd-variant-label__selected" id="pdSelectedSize">— Chọn size</span>
+            <span class="pd-size-guide" onclick="alert('Hướng dẫn chọn size sẽ cập nhật sau!')">
+                            Hướng dẫn size →
+                        </span>
+          </div>
+          <div class="pd-options">
+            <button class="pd-option-btn pd-size-btn"
+                    th:each="size : ${product.sizes}"
+                    th:text="${size}"
+                    th:data-value="${size}">M</button>
+          </div>
+        </div>
+
+        <!-- Color -->
+        <div class="pd-variant-group"
+             th:if="${product.colors != null and !product.colors.isEmpty()}">
+          <div class="pd-variant-label">
+            Màu sắc
+            <span class="pd-variant-label__selected" id="pdSelectedColor">— Chọn màu</span>
+          </div>
+          <div class="pd-options">
+            <button class="pd-option-btn pd-color-btn"
+                    th:each="color : ${product.colors}"
+                    th:text="${color}"
+                    th:data-value="${color}">Nâu</button>
+          </div>
+        </div>
+
+        <!-- Qty -->
+        <div class="pd-qty-row">
+          <span class="pd-qty-label">Số lượng</span>
+          <div class="pd-qty-control">
+            <button class="pd-qty-btn" id="pdQtyMinus" type="button">−</button>
+            <input class="pd-qty-input" id="pdQtyInput" type="number"
+                   value="1" min="1" th:max="${product.stock}"/>
+            <button class="pd-qty-btn" id="pdQtyPlus" type="button">+</button>
+          </div>
+        </div>
+
+        <!-- Stock -->
+        <div class="pd-stock">
+          <div th:if="${product.stock > 10}"  class="pd-stock__dot pd-stock__dot--in"></div>
+          <div th:if="${product.stock > 0 and product.stock <= 10}" class="pd-stock__dot pd-stock__dot--low"></div>
+          <div th:if="${product.stock <= 0}" class="pd-stock__dot pd-stock__dot--out"></div>
+          <span th:if="${product.stock > 10}">Còn hàng — Sẵn sàng giao ngay</span>
+          <span th:if="${product.stock > 0 and product.stock <= 10}"
+                th:text="'Chỉ còn ' + ${product.stock} + ' sản phẩm — Đặt hàng ngay!'"></span>
+          <span th:if="${product.stock == 0}">Tạm hết hàng</span>
+        </div>
+
+        <!-- Actions -->
+        <div class="pd-actions">
+          <button class="pd-btn-cart" id="pdBtnCart" type="button"
+                  th:data-id="${product.id}"
+                  th:data-handle="${product.handle}"
+                  th:data-name="${product.name}"
+                  th:data-image="${product.featuredImage}"
+                  th:data-price="${product.price}"
+                  th:data-compare="${product.comparePrice}">
+                        <span id="pdBtnCartText">
+                            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"
+                                 viewBox="0 0 24 24" style="display:inline;vertical-align:-2px;margin-right:7px;">
+                                <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+                                <line x1="3" y1="6" x2="21" y2="6"/>
+                                <path d="M16 10a4 4 0 01-8 0"/>
+                            </svg>
+                            Thêm vào giỏ
+                        </span>
+          </button>
+          <button class="pd-btn-buy" type="button" id="pdBtnBuy"
+                  th:data-id="${product.id}"
+                  th:data-handle="${product.handle}"
+                  th:data-name="${product.name}"
+                  th:data-image="${product.featuredImage}"
+                  th:data-price="${product.price}"
+                  th:data-compare="${product.comparePrice}">
+            Mua ngay
+          </button>
+          <button class="pd-btn-wish" id="pdBtnWish" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Trust badges -->
+        <div class="pd-trust">
+          <div class="pd-trust__item">
+            <div class="pd-trust__icon">🚚</div>
+            <div class="pd-trust__text"><strong>Freeship</strong>Đơn hàng từ 500K</div>
+          </div>
+          <div class="pd-trust__item">
+            <div class="pd-trust__icon">🔄</div>
+            <div class="pd-trust__text"><strong>Đổi trả 7 ngày</strong>Miễn phí đổi trả</div>
+          </div>
+          <div class="pd-trust__item">
+            <div class="pd-trust__icon">✅</div>
+            <div class="pd-trust__text"><strong>Chính hãng 100%</strong>Cam kết từ SUNILIES</div>
+          </div>
+          <div class="pd-trust__item">
+            <div class="pd-trust__icon">🎁</div>
+            <div class="pd-trust__text"><strong>Gói quà miễn phí</strong>Kèm thiệp theo yêu cầu</div>
+          </div>
+        </div>
+
+        <!-- Meta -->
+        <div class="pd-meta">
+          <p th:if="${product.category != null}">
+            <strong>Danh mục:</strong>
+            <a th:href="@{/collections/{c}(c=${product.category})}"
+               th:text="${product.category}">—</a>
+          </p>
+          <p th:if="${product.collection != null}">
+            <strong>Bộ sưu tập:</strong>
+            <a th:href="@{/collections/{c}(c=${product.collection})}"
+               th:text="${product.collection}">—</a>
+          </p>
+        </div>
+
+        <!-- Share -->
+        <div class="pd-share">
+          <span>Chia sẻ</span>
+          <div class="pd-share__btn" title="Facebook"
+               onclick="window.open('https://facebook.com/sharer/sharer.php?u='+encodeURIComponent(location.href))">
+            <svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/>
+            </svg>
+          </div>
+          <div class="pd-share__btn" title="Copy link" onclick="copyProductLink()">
+            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/>
+              <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/>
+            </svg>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════
+     TABS
+     ════════════════════════════════════════════════════════ -->
+<section class="pd-tabs-section">
+  <div class="container">
+    <div class="pd-tabs__nav">
+      <button class="pd-tab-btn is-active" data-tab="desc">Mô tả sản phẩm</button>
+      <button class="pd-tab-btn" data-tab="care">Chất liệu &amp; Bảo quản</button>
+      <button class="pd-tab-btn" data-tab="ship">Vận chuyển &amp; Đổi trả</button>
+    </div>
+
+    <div class="pd-tab-panel is-active" id="pdTab-desc">
+      <div class="pd-tab-content">
+        <div th:if="${product.fullDescription != null}" th:utext="${product.fullDescription}"></div>
+        <div th:unless="${product.fullDescription != null}">
+          <h4>Về sản phẩm này</h4>
+          <p th:text="${product.description}">Mô tả sản phẩm...</p>
+          <p>Mỗi sản phẩm SUNILIES được làm thủ công bởi các nghệ nhân làng nghề Việt Nam,
+            sử dụng cói mây tự nhiên 100%. Không có hai sản phẩm nào giống nhau hoàn toàn.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="pd-tab-panel" id="pdTab-care">
+      <div class="pd-tab-content">
+        <h4>Chất liệu</h4>
+        <ul>
+          <li>Cói mây tự nhiên 100% từ làng nghề Việt Nam</li>
+          <li>Không chứa hóa chất độc hại, thân thiện môi trường</li>
+          <li>Khung và phụ kiện bằng kim loại chống gỉ</li>
+          <li>Dây đai da tổng hợp cao cấp hoặc da thật (tùy sản phẩm)</li>
+        </ul>
+        <h4 style="margin-top:24px;">Hướng dẫn bảo quản</h4>
+        <div class="pd-care-grid">
+          <div class="pd-care-item"><div class="pd-care-item__icon">🚫💧</div><div class="pd-care-item__text">Không ngâm nước, tránh ẩm ướt</div></div>
+          <div class="pd-care-item"><div class="pd-care-item__icon">☀️</div><div class="pd-care-item__text">Phơi nơi thoáng mát, tránh nắng trực tiếp</div></div>
+          <div class="pd-care-item"><div class="pd-care-item__icon">🧺</div><div class="pd-care-item__text">Lau nhẹ bằng khăn ẩm, không giặt máy</div></div>
+          <div class="pd-care-item"><div class="pd-care-item__icon">📦</div><div class="pd-care-item__text">Bảo quản trong túi vải khi không dùng</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pd-tab-panel" id="pdTab-ship">
+      <div class="pd-tab-content">
+        <h4>Chính sách vận chuyển</h4>
+        <ul>
+          <li>Miễn phí vận chuyển toàn quốc với đơn hàng từ 500.000đ</li>
+          <li>Giao hàng nhanh 2–3 ngày tại TP.HCM, Hà Nội</li>
+          <li>Giao hàng tiêu chuẩn 3–5 ngày tỉnh thành khác</li>
+        </ul>
+        <h4 style="margin-top:24px;">Chính sách đổi trả</h4>
+        <ul>
+          <li>Đổi trả trong vòng 7 ngày kể từ khi nhận hàng</li>
+          <li>Sản phẩm còn nguyên tem, chưa qua sử dụng</li>
+          <li>Lỗi do nhà sản xuất: đổi/trả miễn phí 100%</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════
+     RELATED PRODUCTS
+     ════════════════════════════════════════════════════════ -->
+<section class="pd-related"
+         th:if="${relatedProducts != null and !relatedProducts.isEmpty()}">
+  <div class="container">
+    <div class="pd-related__header">
+      <div class="pd-related__sub">Cùng danh mục</div>
+      <h2 class="pd-related__title">Sản phẩm liên quan</h2>
+    </div>
+    <div class="products-grid">
+      <div class="item_product_main animate-up"
+           th:each="rp : ${relatedProducts}">
+        <div class="product-thumbnail">
+                    <span th:if="${rp.onSale}" class="badge-sale"
+                          th:text="'-' + ${rp.discountPercent} + '%'">Sale</span>
+          <span th:if="${rp.isNew()}" class="badge-new">Mới</span>
+          <a th:href="@{/products/{h}(h=${rp.handle})}">
+            <img th:src="${rp.featuredImage}" th:alt="${rp.name}" loading="lazy"/>
+          </a>
+          <div class="product-actions">
+            <a class="btn-quickview" style="display:flex;align-items:center;justify-content:center;"
+               th:href="@{/products/{h}(h=${rp.handle})}">Xem chi tiết</a>
+          </div>
+        </div>
+        <div class="product-info">
+          <div class="product-name">
+            <a th:href="@{/products/{h}(h=${rp.handle})}" th:text="${rp.name}">Tên SP</a>
+          </div>
+          <div class="price-box">
+                        <span class="price" th:classappend="${rp.onSale} ? ' sale-price' : ''"
+                              th:text="${#numbers.formatDecimal(rp.price, 0, 'COMMA', 0, 'POINT') + 'đ'}">0đ</span>
+            <span th:if="${rp.comparePrice != null}" class="old-price"
+                  th:text="${#numbers.formatDecimal(rp.comparePrice, 0, 'COMMA', 0, 'POINT') + 'đ'}"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Toast -->
+<div class="pd-toast" id="pdToast"></div>
+
+<!-- Lightbox -->
+<div class="pd-lightbox" id="pdLightbox">
+  <button class="pd-lightbox__close" id="pdLightboxClose">×</button>
+  <img class="pd-lightbox__img" id="pdLightboxImg" src="" alt=""/>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<!-- Cart Drawer -->
+<div class="cart-overlay" id="cartOverlay"></div>
+<div class="cart-drawer" id="cartDrawer">
+  <div class="cart-drawer-head">
+    <h3>Giỏ hàng (<span id="cartItemCount">0</span>)</h3>
+    <button class="cart-close" id="btnCartClose">×</button>
+  </div>
+  <div class="cart-items" id="cartItemsList">
+    <div class="cart-empty">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
+              d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+      </svg>
+      <p>Giỏ hàng của bạn đang trống</p>
+    </div>
+  </div>
+  <div class="cart-footer" id="cartFooter" style="display:none;">
+    <div class="cart-total-row">
+      <span>Tổng tiền</span><span id="cartTotal">0đ</span>
+    </div>
+    <a th:href="@{/cart}" class="btn-checkout">Tiến hành thanh toán</a>
+  </div>
+</div>
+<button class="back-to-top" id="backToTop" aria-label="Lên đầu trang">
+  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none"
+       viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/>
+  </svg>
+</button>
+
+<script th:src="@{/js/index.js}"></script>
+<script th:src="@{/js/product.js}"></script>
+
+<script>
+  (function () {
+    function getSelectedSize() {
+      var el = document.getElementById('pdSelectedSize');
+      var v  = el ? el.textContent.trim() : '';
+      return v === '— Chọn size' ? null : v;
+    }
+    function getSelectedColor() {
+      var el = document.getElementById('pdSelectedColor');
+      var v  = el ? el.textContent.trim() : '';
+      return v === '— Chọn màu' ? null : v;
+    }
+    function getQty() {
+      return parseInt(document.getElementById('pdQtyInput') && document.getElementById('pdQtyInput').value) || 1;
+    }
+    function buildPayload(btn) {
+      return {
+        productId:    btn.getAttribute('data-id'),
+        handle:       btn.getAttribute('data-handle'),
+        name:         btn.getAttribute('data-name'),
+        image:        btn.getAttribute('data-image'),
+        price:        parseFloat(btn.getAttribute('data-price')),
+        comparePrice: (btn.getAttribute('data-compare') && btn.getAttribute('data-compare') !== 'null')
+                ? parseFloat(btn.getAttribute('data-compare')) : null,
+        size:  getSelectedSize(),
+        color: getSelectedColor(),
+        qty:   getQty()
+      };
+    }
+
+    /* ── ADD TO CART ── */
+    var btnCart = document.getElementById('pdBtnCart');
+    if (btnCart) {
+      btnCart.addEventListener('click', async function () {
+        var payload = buildPayload(this);
+        var textEl  = document.getElementById('pdBtnCartText');
+        btnCart.disabled = true;
+        if (textEl) textEl.innerHTML = '<span style="opacity:.6">Đang thêm...</span>';
+
+        try {
+          var res = await fetch('/api/cart/add', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          if (!res.ok) throw new Error();
+          var data = await res.json();
+
+          /* Cập nhật badge giỏ hàng */
+          document.querySelectorAll('.count_item, #cartCount').forEach(function(b) {
+            b.textContent = data.totalQty;
+          });
+
+          /* Render lại drawer nếu có */
+          if (typeof renderCart === 'function') renderCart(data.items, data.totalPrice);
+
+          /* Success UI */
+          if (textEl) textEl.innerHTML = '✓ Đã thêm vào giỏ';
+          btnCart.style.background = '#27ae60';
+          setTimeout(function () {
+            if (textEl) textEl.innerHTML = '<svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="display:inline;vertical-align:-2px;margin-right:7px;"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg> Thêm vào giỏ';
+            btnCart.style.background = '';
+            btnCart.disabled = false;
+          }, 2500);
+
+          /* Mở cart drawer */
+          if (typeof openCart === 'function') openCart();
+
+        } catch(e) {
+          /* Fallback localStorage */
+          var lc = JSON.parse(localStorage.getItem('sunCart') || '[]');
+          var key = payload.productId + '_' + (payload.size||'') + '_' + (payload.color||'');
+          var ex  = lc.find(function(i){ return i.key === key; });
+          if (ex) { ex.qty += payload.qty; } else { payload.key = key; lc.push(payload); }
+          localStorage.setItem('sunCart', JSON.stringify(lc));
+          if (textEl) textEl.innerHTML = '✓ Đã thêm vào giỏ';
+          btnCart.style.background = '#27ae60';
+          setTimeout(function() {
+            if (textEl) textEl.innerHTML = 'Thêm vào giỏ';
+            btnCart.style.background = '';
+            btnCart.disabled = false;
+          }, 2500);
+        }
+      });
+    }
+
+    /* ── BUY NOW ── */
+    var btnBuy = document.getElementById('pdBtnBuy');
+    if (btnBuy) {
+      btnBuy.addEventListener('click', async function () {
+        var payload = buildPayload(this);
+        this.textContent = 'Đang xử lý...';
+        this.disabled = true;
+        try {
+          await fetch('/api/cart/add', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          window.location.href = '/cart';
+        } catch(e) {
+          this.textContent = 'Mua ngay';
+          this.disabled = false;
+        }
+      });
+    }
+  })();
+</script>
+
+</body>
+</html>

@@ -306,12 +306,27 @@ document.addEventListener('DOMContentLoaded', function () {
         return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
     }
     /* =============================================
-   11. STORY SECTION – SCROLL SNAP + ANIMATION
+   11. STORY SECTION – SCROLL SNAP + ANIMATION + PARALLAX
 ============================================= */
     const storySection = document.getElementById('storySection');
 
     if (storySection) {
         let snapped = false;
+        const treeLeft = document.getElementById('storyTreeLeft');
+        const treeRight = document.getElementById('storyTreeRight');
+
+        // Hiệu ứng Parallax khi di chuột
+        window.addEventListener('mousemove', (e) => {
+            const rect = storySection.getBoundingClientRect();
+            // Chỉ chạy hiệu ứng khi section nằm trong viewport
+            if (rect.top < window.innerHeight && rect.bottom > 0) {
+                const mouseX = e.clientX / window.innerWidth - 0.5;
+                const mouseY = e.clientY / window.innerHeight - 0.5;
+                
+                if (treeLeft) treeLeft.style.transform = `translate(${mouseX * -40}px, ${mouseY * -30}px)`;
+                if (treeRight) treeRight.style.transform = `translate(${mouseX * 40}px, ${mouseY * -30}px)`;
+            }
+        });
 
         const observer = new IntersectionObserver(entries => {
             entries.forEach(entry => {
