@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/base :: head('Đăng ký tài khoản')}"></head>
+<body>
+<style>
+    :root{--mainColor:#c8986a;--darkColor:#3d2e1c;--borderColor:#e8e4de;--bgLight:#faf2e6;--muted:#7a6a57;}
+    .auth-page{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bgLight);padding:40px 16px;}
+    .auth-card{background:#fff;border-radius:20px;box-shadow:0 8px 40px rgba(61,46,28,.12);width:100%;max-width:460px;overflow:hidden;}
+    .auth-card__header{background:var(--darkColor);padding:28px;text-align:center;}
+    .auth-logo{font-family:'Playfair Display',serif;font-size:26px;font-weight:400;color:var(--bgLight);letter-spacing:6px;}
+    .auth-logo__sub{font-size:10px;letter-spacing:3px;color:var(--mainColor);text-transform:uppercase;margin-top:4px;}
+    .auth-card__body{padding:32px 36px 24px;}
+    .auth-title{font-family:'Playfair Display',serif;font-size:22px;font-weight:400;color:var(--darkColor);margin-bottom:4px;}
+    .auth-sub{font-size:13px;color:var(--muted);margin-bottom:24px;}
+    .auth-alert{padding:12px 16px;border-radius:8px;font-size:13px;margin-bottom:18px;display:flex;align-items:flex-start;gap:10px;}
+    .auth-alert--error{background:#fff0ee;color:#c0392b;border:1px solid #fdb7b0;}
+    .auth-alert--success{background:#f0fdf4;color:#166534;border:1px solid #bbf7d0;}
+    .auth-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+    .auth-field{margin-bottom:16px;}
+    .auth-label{display:block;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--darkColor);margin-bottom:7px;}
+    .auth-input{width:100%;padding:11px 14px;border:1.5px solid var(--borderColor);border-radius:10px;font-size:13px;font-family:'Lato',sans-serif;color:var(--darkColor);outline:none;transition:border-color .2s;box-sizing:border-box;}
+    .auth-input:focus{border-color:var(--mainColor);}
+    .auth-input-wrap{position:relative;}
+    .auth-input-wrap .auth-input{padding-right:42px;}
+    .auth-eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#bbb;padding:0;}
+    .auth-hint{font-size:11px;color:#aaa;margin-top:5px;}
+    .auth-btn{width:100%;padding:14px;background:var(--darkColor);color:var(--bgLight);border:none;border-radius:10px;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Lato',sans-serif;transition:background .3s;}
+    .auth-btn:hover{background:var(--mainColor);}
+    .auth-btn:disabled{opacity:.6;cursor:not-allowed;}
+    .auth-terms{font-size:11px;color:#aaa;text-align:center;margin-top:14px;line-height:1.6;}
+    .auth-terms a{color:var(--mainColor);}
+    .auth-footer{text-align:center;font-size:13px;color:var(--muted);padding:18px 36px 24px;}
+    .auth-footer a{color:var(--mainColor);font-weight:600;}
+    .pw-strength{height:3px;border-radius:2px;margin-top:6px;background:#e8e4de;overflow:hidden;}
+    .pw-strength__fill{height:100%;width:0%;border-radius:2px;transition:width .3s,background .3s;}
+    @media(max-width:480px){.auth-row{grid-template-columns:1fr;}}
+</style>
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+<main class="auth-page">
+    <div class="auth-card">
+        <div class="auth-card__header">
+            <div class="auth-logo">SUNILIES</div>
+            <div class="auth-logo__sub">Tạo tài khoản mới</div>
+        </div>
+        <div class="auth-card__body">
+            <h1 class="auth-title">Đăng ký</h1>
+            <p class="auth-sub">Tham gia cộng đồng SUNILIES ngay hôm nay</p>
+
+            <div th:if="${error}" class="auth-alert auth-alert--error">
+                <span>⚠️</span><span th:text="${error}">Lỗi</span>
+            </div>
+
+            <form th:action="@{/register}" method="post" id="registerForm">
+
+                <div class="auth-row">
+                    <div class="auth-field">
+                        <label class="auth-label">Họ và tên *</label>
+                        <input class="auth-input" type="text" name="fullName"
+                               th:value="${fullName}" placeholder="Nguyễn Văn A" required />
+                    </div>
+                    <div class="auth-field">
+                        <label class="auth-label">Số điện thoại</label>
+                        <input class="auth-input" type="tel" name="phone"
+                               placeholder="0901234567"
+                               pattern="[0-9]{10,11}" />
+                        <div class="auth-hint">Xác minh 1 lần duy nhất</div>
+                    </div>
+                </div>
+
+                <div class="auth-field">
+                    <label class="auth-label">Email *</label>
+                    <input class="auth-input" type="email" name="email"
+                           th:value="${email}" placeholder="your@email.com" required />
+                    <div class="auth-hint">OTP xác minh sẽ gửi về email này</div>
+                </div>
+
+                <div class="auth-field">
+                    <label class="auth-label">Mật khẩu *</label>
+                    <div class="auth-input-wrap">
+                        <input class="auth-input" type="password" name="password"
+                               id="regPwd" placeholder="Tối thiểu 6 ký tự"
+                               minlength="6" required
+                               oninput="checkPwStrength(this.value)" />
+                        <button type="button" class="auth-eye" onclick="togglePwd('regPwd',this)">
+                            <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="pw-strength"><div class="pw-strength__fill" id="pwFill"></div></div>
+                </div>
+
+                <div class="auth-field">
+                    <label class="auth-label">Xác nhận mật khẩu *</label>
+                    <div class="auth-input-wrap">
+                        <input class="auth-input" type="password" name="confirmPassword"
+                               id="regPwd2" placeholder="Nhập lại mật khẩu" required />
+                        <button type="button" class="auth-eye" onclick="togglePwd('regPwd2',this)">
+                            <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" class="auth-btn" id="regBtn">
+                    Tạo tài khoản & Nhận OTP
+                </button>
+
+                <p class="auth-terms">
+                    Bằng cách đăng ký, bạn đồng ý với
+                    <a href="#">Điều khoản dịch vụ</a> và
+                    <a href="#">Chính sách bảo mật</a> của SUNILIES.
+                </p>
+            </form>
+        </div>
+
+        <div class="auth-footer">
+            Đã có tài khoản? <a th:href="@{/login}">Đăng nhập ngay</a>
+        </div>
+    </div>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+<script>
+    function togglePwd(id, btn) {
+        var input = document.getElementById(id);
+        input.type = input.type === 'password' ? 'text' : 'password';
+        btn.style.color = input.type === 'text' ? '#c8986a' : '#bbb';
+    }
+    function checkPwStrength(val) {
+        var fill = document.getElementById('pwFill');
+        var pct = 0, color = '#e74c3c';
+        if (val.length >= 6) { pct = 40; color = '#e67e22'; }
+        if (val.length >= 8 && /[A-Z]/.test(val)) { pct = 70; color = '#f39c12'; }
+        if (val.length >= 8 && /[A-Z]/.test(val) && /[0-9]/.test(val)) { pct = 100; color = '#27ae60'; }
+        fill.style.width = pct + '%';
+        fill.style.background = color;
+    }
+    document.getElementById('registerForm').addEventListener('submit', function(e) {
+        var p1 = document.getElementById('regPwd').value;
+        var p2 = document.getElementById('regPwd2').value;
+        if (p1 !== p2) {
+            e.preventDefault();
+            alert('Mật khẩu xác nhận không khớp!');
+            return;
+        }
+        document.getElementById('regBtn').disabled = true;
+        document.getElementById('regBtn').textContent = 'Đang gửi OTP...';
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{layout/base :: head('Tất cả sản phẩm')}"></head>
+
+<body>
+<link rel="stylesheet" th:href="@{/css/collection.css}">
+
+<div th:replace="~{fragments/header :: header}"></div>
+<div class="mobile-menu-overlay" id="mobileOverlay"></div>
+<div class="mobile-menu" id="mobileMenu">
+    <div class="mobile-menu-head">
+        <span class="logo-text">SUNILIES</span>
+        <button class="mobile-menu-close" id="mobileMenuClose">×</button>
+    </div>
+    <ul>
+        <li><a th:href="@{/}">Trang chủ</a></li>
+        <li><a th:href="@{/collections}">Sản phẩm</a></li>
+        <li><a th:href="@{/collections/san-pham-moi}">Sản phẩm mới</a></li>
+        <li><a th:href="@{/contact}">Liên hệ</a></li>
+    </ul>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     HERO BANNER
+     ════════════════════════════════════════════════════════ -->
+<div class="cl-hero">
+    <div class="cl-hero__eyebrow">SUNILIES - Handmade &amp; Artisan</div>
+    <h1 class="cl-hero__title"
+        th:text="${handle != null} ? 'Bộ sưu tập ' + ${handle} : 'Tất cả sản phẩm'">
+        Tất cả sản phẩm
+    </h1>
+    <p class="cl-hero__desc">
+        Mỗi sản phẩm là một câu chuyện - được đan dệt từ đôi bàn tay nghệ nhân Việt Nam.
+    </p>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     BREADCRUMB
+     ════════════════════════════════════════════════════════ -->
+<div class="cl-breadcrumb">
+    <div class="container">
+        <div class="cl-breadcrumb__inner">
+            <a th:href="@{/}">Trang chủ</a>
+            <span class="cl-breadcrumb__sep">›</span>
+            <span class="cl-breadcrumb__current"
+                  th:text="${handle != null} ? ${handle} : 'Tất cả sản phẩm'">Sản phẩm</span>
+        </div>
+    </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     TOOLBAR – FILTER CHIPS + SORT
+     ════════════════════════════════════════════════════════ -->
+<div class="cl-toolbar">
+    <div class="container">
+        <div class="cl-toolbar__inner">
+
+            <!-- Left: count + filter chips -->
+            <div class="cl-toolbar__left">
+                <!-- Mobile filter btn -->
+                <button class="cl-btn-filter-mobile" id="clBtnFilterOpen">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <line x1="4" y1="6" x2="20" y2="6"/>
+                        <line x1="8" y1="12" x2="16" y2="12"/>
+                        <line x1="10" y1="18" x2="14" y2="18"/>
+                    </svg>
+                    Bộ lọc
+                </button>
+
+                <span class="cl-count">
+                    Hiển thị <strong id="clVisibleCount">0</strong> sản phẩm
+                </span>
+
+                <!-- Category chips -->
+                <div class="cl-filter-chips" id="clCategoryChips">
+                    <button class="cl-chip is-active" data-filter="all">Tất cả</button>
+                    <button class="cl-chip" data-filter="bag">Túi</button>
+                    <button class="cl-chip" data-filter="hat">Nón</button>
+                    <button class="cl-chip" data-filter="accessory">Phụ kiện</button>
+                    <button class="cl-chip" data-filter="ao">Áo</button>
+                    <button class="cl-chip" data-filter="vay">Váy</button>
+                    <button class="cl-chip" data-filter="sale" style="color:#c0392b;border-color:#fdb7b0;">
+                        🏷 Sale
+                    </button>
+                    <button class="cl-chip" data-filter="new">✨ Mới</button>
+                </div>
+            </div>
+
+            <!-- Right: sort + view toggle -->
+            <div class="cl-toolbar__right">
+                <div class="cl-sort">
+                    <label for="clSortSelect">Sắp xếp:</label>
+                    <select id="clSortSelect">
+                        <option value="default">Mặc định</option>
+                        <option value="price-asc">Giá tăng dần</option>
+                        <option value="price-desc">Giá giảm dần</option>
+                        <option value="name-asc">Tên A–Z</option>
+                        <option value="newest">Mới nhất</option>
+                    </select>
+                </div>
+
+                <div class="cl-view-toggle">
+                    <button class="cl-view-btn" id="clView3" title="3 cột">
+                        <svg fill="currentColor" viewBox="0 0 16 16">
+                            <rect x="1" y="1" width="4" height="14" rx="1"/>
+                            <rect x="6" y="1" width="4" height="14" rx="1"/>
+                            <rect x="11" y="1" width="4" height="14" rx="1"/>
+                        </svg>
+                    </button>
+                    <button class="cl-view-btn is-active" id="clView4" title="4 cột">
+                        <svg fill="currentColor" viewBox="0 0 16 16">
+                            <rect x="1" y="1" width="3" height="14" rx="1"/>
+                            <rect x="5" y="1" width="3" height="14" rx="1"/>
+                            <rect x="9" y="1" width="3" height="14" rx="1"/>
+                            <rect x="13" y="1" width="3" height="14" rx="1"/>
+                        </svg>
+                    </button>
+                    <button class="cl-view-btn" id="clView2" title="2 cột">
+                        <svg fill="currentColor" viewBox="0 0 16 16">
+                            <rect x="1" y="1" width="6" height="14" rx="1"/>
+                            <rect x="9" y="1" width="6" height="14" rx="1"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     MAIN CONTENT
+     ════════════════════════════════════════════════════════ -->
+<main class="cl-main">
+    <div class="container">
+        <div class="cl-layout">
+
+            <!-- ══ SIDEBAR (desktop) ══════════════════════ -->
+            <aside class="cl-sidebar" id="clSidebar">
+
+                <!-- Danh mục -->
+                <div class="cl-sidebar__section">
+                    <div class="cl-sidebar__title">
+                        Danh mục
+                        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </div>
+                    <div class="cl-sidebar__body">
+                        <ul class="cl-filter-list" id="clSidebarCategory">
+                            <li class="cl-filter-item is-checked" data-category="all">
+                                <div class="cl-filter-item__box"></div>
+                                <span>Tất cả</span>
+                                <span class="cl-filter-item__count" id="countAll">0</span>
+                            </li>
+                            <li class="cl-filter-item" data-category="bag">
+                                <div class="cl-filter-item__box"></div>
+                                <span>Túi</span>
+                                <span class="cl-filter-item__count" id="countBag">0</span>
+                            </li>
+                            <li class="cl-filter-item" data-category="hat">
+                                <div class="cl-filter-item__box"></div>
+                                <span>Nón</span>
+                                <span class="cl-filter-item__count" id="countHat">0</span>
+                            </li>
+                            <li class="cl-filter-item" data-category="accessory">
+                                <div class="cl-filter-item__box"></div>
+                                <span>Phụ kiện</span>
+                                <span class="cl-filter-item__count" id="countAccessory">0</span>
+                            </li>
+                            <li class="cl-filter-item" data-category="ao">
+                                <div class="cl-filter-item__box"></div>
+                                <span>Áo</span>
+                                <span class="cl-filter-item__count" id="countAo">0</span>
+                            </li>
+                            <li class="cl-filter-item" data-category="vay">
+                                <div class="cl-filter-item__box"></div>
+                                <span>Váy</span>
+                                <span class="cl-filter-item__count" id="countVay">0</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Khoảng giá -->
+                <div class="cl-sidebar__section">
+                    <div class="cl-sidebar__title">
+                        Khoảng giá
+                        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </div>
+                    <div class="cl-sidebar__body">
+                        <div class="cl-price-range">
+                            <div class="cl-price-range__row">
+                                <span class="cl-price-range__label">Từ</span>
+                                <input type="number" id="clPriceMin" placeholder="100,000" min="0" step="50000"/>
+                            </div>
+                            <div class="cl-price-range__row">
+                                <span class="cl-price-range__label">Đến</span>
+                                <input type="number" id="clPriceMax" placeholder="2,000,000" step="50000"/>
+                            </div>
+                        </div>
+                        <button class="cl-btn-apply" id="clBtnApplyPrice">Áp dụng</button>
+                    </div>
+                </div>
+
+                <!-- Trạng thái -->
+                <div class="cl-sidebar__section">
+                    <div class="cl-sidebar__title">
+                        Trạng thái
+                        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </div>
+                    <div class="cl-sidebar__body">
+                        <ul class="cl-filter-list">
+                            <li class="cl-filter-item" data-status="sale">
+                                <div class="cl-filter-item__box"></div>
+                                <span>Đang giảm giá</span>
+                            </li>
+                            <li class="cl-filter-item" data-status="new">
+                                <div class="cl-filter-item__box"></div>
+                                <span>Hàng mới về</span>
+                            </li>
+                            <li class="cl-filter-item" data-status="hot">
+                                <div class="cl-filter-item__box"></div>
+                                <span>Bán chạy</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+            </aside>
+
+            <!-- ══ PRODUCT GRID ═══════════════════════════ -->
+            <div>
+                <div class="cl-grid" id="clGrid">
+
+                    <!-- ─── THYMELEAF RENDER ─── -->
+                    <div class="cl-card"
+                         th:each="product : ${products}"
+                         th:data-category="${product.category}"
+                         th:data-price="${product.price}"
+                         th:data-sale="${product.onSale}"
+                         th:data-new="${product.isNew()}"
+                         th:data-hot="${product.isHot()}"
+                         th:data-name="${product.name}">
+
+                        <!-- Thumbnail -->
+                        <div class="cl-card__thumb">
+                            <!-- Badges -->
+                            <div class="cl-card__badges">
+                                <span th:if="${product.onSale}" class="cl-badge cl-badge--sale"
+                                      th:text="'-' + ${product.discountPercent} + '%'">-30%</span>
+                                <span th:if="${product.isNew()}" class="cl-badge cl-badge--new">Mới</span>
+                                <span th:if="${product.isHot() and !product.isNew()}" class="cl-badge cl-badge--hot">🔥</span>
+                            </div>
+
+                            <!-- Ảnh chính -->
+                            <img th:src="${product.featuredImage}"
+                                 th:alt="${product.name}"
+                                 loading="lazy"/>
+
+                            <!-- Ảnh hover (ảnh thứ 2 nếu có) -->
+                            <img th:if="${product.images != null and product.images.size() > 1}"
+                                 th:src="${product.images[1]}"
+                                 th:alt="${product.name}"
+                                 class="img-hover"
+                                 loading="lazy"/>
+
+                            <!-- Actions -->
+                            <div class="cl-card__actions">
+                                <a class="cl-card__btn-view"
+                                   th:href="@{/products/{h}(h=${product.handle})}">
+                                    Xem chi tiết
+                                </a>
+                                <button class="cl-card__btn-wish" type="button"
+                                        aria-label="Yêu thích"
+                                        onclick="toggleWish(this)">
+                                    <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                                        <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Info -->
+                        <div class="cl-card__info">
+                            <div class="cl-card__name">
+                                <a th:href="@{/products/{h}(h=${product.handle})}"
+                                   th:text="${product.name}">Tên sản phẩm</a>
+                            </div>
+                            <div class="cl-card__price">
+                                <span class="cl-card__price--main" th:classappend="${product.onSale} ? ' sale' : ''"
+                                      th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT') + 'đ'}">0đ</span>
+                                <span th:if="${product.comparePrice != null}"
+                                      class="cl-card__price--compare"
+                                      th:text="${#numbers.formatDecimal(product.comparePrice, 0, 'COMMA', 0, 'POINT') + 'đ'}"></span>
+                                <span th:if="${product.onSale}" class="cl-card__price--save"
+                                      th:text="'-' + ${product.discountPercent} + '%'"></span>
+                            </div>
+                        </div>
+
+                    </div>
+                    <!-- ─── END THYMELEAF ─── -->
+
+                    <!-- Empty state (hiển thị khi không có sản phẩm) -->
+                    <div class="cl-empty" id="clEmpty" style="display:none;">
+                        <div class="cl-empty__icon">🔍</div>
+                        <div class="cl-empty__title">Không tìm thấy sản phẩm</div>
+                        <div class="cl-empty__desc">Thử thay đổi bộ lọc hoặc tìm kiếm với từ khoá khác.</div>
+                    </div>
+
+                </div><!-- /#clGrid -->
+
+                <!-- Pagination -->
+                <div class="cl-pagination" id="clPagination"></div>
+
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- ════════════════════════════════════════════════════════
+     MOBILE FILTER DRAWER
+     ════════════════════════════════════════════════════════ -->
+<div class="cl-filter-overlay" id="clFilterOverlay"></div>
+<div class="cl-filter-drawer" id="clFilterDrawer">
+    <div class="cl-filter-drawer__head">
+        <span class="cl-filter-drawer__title">Bộ lọc</span>
+        <button class="cl-filter-drawer__close" id="clBtnFilterClose">×</button>
+    </div>
+
+    <!-- Danh mục mobile -->
+    <div class="cl-sidebar__section">
+        <div class="cl-sidebar__title">Danh mục</div>
+        <div class="cl-sidebar__body">
+            <ul class="cl-filter-list">
+                <li class="cl-filter-item is-checked" data-category-m="all"><div class="cl-filter-item__box"></div><span>Tất cả</span></li>
+                <li class="cl-filter-item" data-category-m="bag"><div class="cl-filter-item__box"></div><span>Túi</span></li>
+                <li class="cl-filter-item" data-category-m="hat"><div class="cl-filter-item__box"></div><span>Nón</span></li>
+                <li class="cl-filter-item" data-category-m="accessory"><div class="cl-filter-item__box"></div><span>Phụ kiện</span></li>
+                <li class="cl-filter-item" data-category-m="ao"><div class="cl-filter-item__box"></div><span>Áo</span></li>
+                <li class="cl-filter-item" data-category-m="vay"><div class="cl-filter-item__box"></div><span>Váy</span></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Trạng thái mobile -->
+    <div class="cl-sidebar__section" style="margin-top:24px;">
+        <div class="cl-sidebar__title">Trạng thái</div>
+        <div class="cl-sidebar__body">
+            <ul class="cl-filter-list">
+                <li class="cl-filter-item" data-status-m="sale"><div class="cl-filter-item__box"></div><span>Đang giảm giá</span></li>
+                <li class="cl-filter-item" data-status-m="new"><div class="cl-filter-item__box"></div><span>Hàng mới về</span></li>
+                <li class="cl-filter-item" data-status-m="hot"><div class="cl-filter-item__box"></div><span>Bán chạy</span></li>
+            </ul>
+        </div>
+    </div>
+
+    <button class="cl-btn-apply" style="margin-top:24px;" onclick="document.getElementById('clFilterDrawer').classList.remove('is-open');document.getElementById('clFilterOverlay').classList.remove('is-open');">
+        Xem kết quả
+    </button>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<!-- Cart Drawer -->
+<div class="cart-overlay" id="cartOverlay"></div>
+<div class="cart-drawer" id="cartDrawer">
+    <div class="cart-drawer-head">
+        <h3>Giỏ hàng (<span id="cartItemCount">0</span>)</h3>
+        <button class="cart-close" id="btnCartClose">×</button>
+    </div>
+    <div class="cart-items" id="cartItemsList">
+        <div class="cart-empty">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+            </svg>
+            <p>Giỏ hàng của bạn đang trống</p>
+        </div>
+    </div>
+    <div class="cart-footer" id="cartFooter" style="display:none;">
+        <div class="cart-total-row"><span>Tổng tiền</span><span id="cartTotal">0đ</span></div>
+        <a th:href="@{/cart}" class="btn-checkout">Tiến hành thanh toán</a>
+    </div>
+</div>
+<button class="back-to-top" id="backToTop">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/>
+    </svg>
+</button>
+
+<script th:src="@{/js/index.js}"></script>
+<script th:src="@{/js/collection.js}"></script>
+</body>
+</html>
