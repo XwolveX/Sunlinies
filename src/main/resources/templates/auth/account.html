@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/base :: head('Tài khoản của tôi')}"></head>
+<body>
+<style>
+    :root{--mainColor:#c8986a;--darkColor:#3d2e1c;--borderColor:#e8e4de;--bgLight:#faf2e6;--muted:#7a6a57;--fontDisplay:'Playfair Display',serif;}
+
+    /* ── LAYOUT ─── */
+    .acc-page{padding:48px 0 80px;min-height:70vh;background:#faf7f2;}
+    .acc-grid{display:grid;grid-template-columns:260px 1fr;gap:32px;align-items:start;}
+
+    /* ── SIDEBAR ─── */
+    .acc-sidebar{background:#fff;border-radius:16px;overflow:hidden;border:1px solid var(--borderColor);position:sticky;top:100px;}
+    .acc-profile{background:var(--darkColor);padding:28px 24px;text-align:center;}
+    .acc-avatar{width:72px;height:72px;border-radius:50%;background:var(--mainColor);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:#fff;margin:0 auto 14px;font-family:var(--fontDisplay);}
+    .acc-name{font-family:var(--fontDisplay);font-size:17px;color:var(--bgLight);margin-bottom:4px;}
+    .acc-email{font-size:12px;color:rgba(250,242,230,.6);word-break:break-all;}
+    .acc-badges{display:flex;justify-content:center;gap:8px;margin-top:12px;flex-wrap:wrap;}
+    .acc-badge{font-size:10px;padding:3px 10px;border-radius:50px;font-weight:700;letter-spacing:.5px;}
+    .acc-badge--verified{background:rgba(39,174,96,.2);color:#27ae60;border:1px solid rgba(39,174,96,.3);}
+    .acc-badge--unverified{background:rgba(231,76,60,.2);color:#e74c3c;border:1px solid rgba(231,76,60,.3);}
+
+    .acc-nav{padding:12px 0;}
+    .acc-nav__item{display:flex;align-items:center;gap:12px;padding:13px 20px;font-size:14px;color:var(--muted);cursor:pointer;transition:all .2s;border-left:3px solid transparent;text-decoration:none;}
+    .acc-nav__item:hover{background:var(--bgLight);color:var(--darkColor);}
+    .acc-nav__item.is-active{background:var(--bgLight);color:var(--darkColor);border-left-color:var(--mainColor);font-weight:600;}
+    .acc-nav__item svg{width:18px;height:18px;flex-shrink:0;}
+    .acc-nav__sep{height:1px;background:var(--borderColor);margin:6px 0;}
+
+    /* ── MAIN CONTENT ─── */
+    .acc-main{}
+    .acc-card{background:#fff;border-radius:16px;border:1px solid var(--borderColor);overflow:hidden;margin-bottom:20px;}
+    .acc-card__header{padding:20px 28px;border-bottom:1px solid var(--borderColor);display:flex;align-items:center;justify-content:space-between;}
+    .acc-card__title{font-family:var(--fontDisplay);font-size:18px;font-weight:400;color:var(--darkColor);}
+    .acc-card__body{padding:28px;}
+
+    /* Flash alerts */
+    .acc-alert{padding:14px 18px;border-radius:10px;font-size:13px;margin-bottom:20px;display:flex;align-items:center;gap:10px;}
+    .acc-alert--success{background:#f0fdf4;color:#166534;border:1px solid #bbf7d0;}
+    .acc-alert--warn{background:#fffbeb;color:#92400e;border:1px solid #fde68a;}
+
+    /* Info grid */
+    .acc-info-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+    .acc-info-item{}
+    .acc-info-label{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+    .acc-info-value{font-size:15px;color:var(--darkColor);font-weight:500;}
+    .acc-info-value.muted{color:#bbb;font-style:italic;font-weight:400;}
+
+    /* Verify badges inline */
+    .verify-status{display:inline-flex;align-items:center;gap:6px;font-size:12px;padding:3px 10px;border-radius:50px;font-weight:600;}
+    .verify-status--ok{background:#f0fdf4;color:#27ae60;}
+    .verify-status--no{background:#fff0ee;color:#e74c3c;}
+
+    /* Edit form */
+    .acc-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+    .acc-field{display:flex;flex-direction:column;gap:7px;}
+    .acc-field.full{grid-column:1/-1;}
+    .acc-label{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--darkColor);}
+    .acc-input{padding:11px 14px;border:1.5px solid var(--borderColor);border-radius:8px;font-size:14px;font-family:'Lato',sans-serif;color:var(--darkColor);outline:none;transition:border-color .2s;}
+    .acc-input:focus{border-color:var(--mainColor);}
+    .acc-btn{padding:12px 28px;background:var(--darkColor);color:var(--bgLight);border:none;border-radius:8px;font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;font-family:'Lato',sans-serif;transition:background .3s;}
+    .acc-btn:hover{background:var(--mainColor);}
+    .acc-btn--outline{background:transparent;border:1.5px solid var(--borderColor);color:var(--muted);}
+    .acc-btn--outline:hover{border-color:var(--mainColor);color:var(--mainColor);background:transparent;}
+    .acc-btn--danger{background:#e74c3c;}
+    .acc-btn--danger:hover{background:#c0392b;}
+
+    /* Orders empty */
+    .acc-empty{text-align:center;padding:48px 20px;color:var(--muted);}
+    .acc-empty__icon{font-size:44px;margin-bottom:14px;}
+    .acc-empty__title{font-family:var(--fontDisplay);font-size:20px;color:var(--darkColor);margin-bottom:8px;}
+    .acc-empty__desc{font-size:14px;line-height:1.7;}
+
+    /* Phone verify banner */
+    .acc-verify-banner{background:linear-gradient(135deg,#fffbeb,#fef3c7);border:1px solid #fde68a;border-radius:12px;padding:18px 22px;display:flex;align-items:center;gap:16px;margin-bottom:20px;}
+    .acc-verify-banner__icon{font-size:28px;flex-shrink:0;}
+    .acc-verify-banner__text h4{font-size:14px;font-weight:700;color:#92400e;margin-bottom:4px;}
+    .acc-verify-banner__text p{font-size:13px;color:#a16207;line-height:1.5;}
+    .acc-verify-banner__btn{margin-left:auto;padding:10px 20px;background:#f59e0b;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;text-decoration:none;font-family:'Lato',sans-serif;}
+    .acc-verify-banner__btn:hover{background:#d97706;color:#fff;}
+
+    @media(max-width:900px){.acc-grid{grid-template-columns:1fr;}.acc-sidebar{position:static;}}
+    @media(max-width:600px){.acc-info-grid,.acc-form-grid{grid-template-columns:1fr;}.acc-field.full{grid-column:1;}}
+</style>
+
+<div th:replace="~{fragments/header :: header}"></div>
+<div class="mobile-menu-overlay" id="mobileOverlay"></div>
+<div class="mobile-menu" id="mobileMenu">
+    <div class="mobile-menu-head">
+        <span class="logo-text">SUNILIES</span>
+        <button class="mobile-menu-close" id="mobileMenuClose">×</button>
+    </div>
+    <ul>
+        <li><a th:href="@{/}">Trang chủ</a></li>
+        <li><a th:href="@{/collections}">Sản phẩm</a></li>
+        <li><a th:href="@{/contact}">Liên hệ</a></li>
+    </ul>
+</div>
+
+<main class="acc-page">
+    <div class="container">
+
+        <!-- Flash messages -->
+        <div th:if="${success}" class="acc-alert acc-alert--success">
+            <span>✅</span><span th:text="${success}">OK</span>
+        </div>
+
+        <!-- Phone verify banner (nếu chưa verify SĐT) -->
+        <div class="acc-verify-banner"
+             th:if="${user.phone != null and !user.phoneVerified}">
+            <div class="acc-verify-banner__icon">📱</div>
+            <div class="acc-verify-banner__text">
+                <h4>Xác minh số điện thoại của bạn</h4>
+                <p>Bảo vệ tài khoản tốt hơn và nhận thông báo đơn hàng qua SMS.</p>
+            </div>
+            <a th:href="@{/verify-phone}" class="acc-verify-banner__btn">Xác minh ngay →</a>
+        </div>
+
+        <div class="acc-grid">
+
+            <!-- ══ SIDEBAR ══ -->
+            <aside class="acc-sidebar">
+                <div class="acc-profile">
+                    <!-- Avatar chữ cái đầu -->
+                    <div class="acc-avatar"
+                         th:text="${user.fullName != null and !user.fullName.isEmpty()} ? ${user.fullName.substring(0,1).toUpperCase()} : 'U'">U</div>
+                    <div class="acc-name" th:text="${user.fullName}">Tên người dùng</div>
+                    <div class="acc-email" th:text="${user.email}">email@example.com</div>
+                    <div class="acc-badges">
+                        <span class="acc-badge acc-badge--verified">✓ Email</span>
+                        <span th:if="${user.phoneVerified}" class="acc-badge acc-badge--verified">✓ SĐT</span>
+                        <span th:unless="${user.phoneVerified}" class="acc-badge acc-badge--unverified">✗ SĐT</span>
+                    </div>
+                </div>
+
+                <nav class="acc-nav">
+                    <a href="#info" class="acc-nav__item is-active" onclick="switchTab('info',this)">
+                        <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                            <path d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/>
+                        </svg>
+                        Thông tin cá nhân
+                    </a>
+                    <a href="#orders" class="acc-nav__item" onclick="switchTab('orders',this)">
+                        <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                            <path d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007z"/>
+                        </svg>
+                        Đơn hàng của tôi
+                    </a>
+                    <a href="#password" class="acc-nav__item" onclick="switchTab('password',this)">
+                        <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                            <path d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/>
+                        </svg>
+                        Đổi mật khẩu
+                    </a>
+                    <div class="acc-nav__sep"></div>
+                    <a th:href="@{/logout}" class="acc-nav__item" style="color:#e74c3c;">
+                        <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                            <path d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"/>
+                        </svg>
+                        Đăng xuất
+                    </a>
+                </nav>
+            </aside>
+
+            <!-- ══ MAIN ══ -->
+            <div>
+
+                <!-- TAB 1: THÔNG TIN CÁ NHÂN -->
+                <div id="tab-info">
+                    <div class="acc-card">
+                        <div class="acc-card__header">
+                            <span class="acc-card__title">Thông tin cá nhân</span>
+                            <button class="acc-btn acc-btn--outline" onclick="toggleEdit()" id="btnEdit">
+                                ✏️ Chỉnh sửa
+                            </button>
+                        </div>
+                        <div class="acc-card__body">
+
+                            <!-- VIEW MODE -->
+                            <div id="viewMode">
+                                <div class="acc-info-grid">
+                                    <div class="acc-info-item">
+                                        <div class="acc-info-label">Họ và tên</div>
+                                        <div class="acc-info-value" th:text="${user.fullName}">—</div>
+                                    </div>
+                                    <div class="acc-info-item">
+                                        <div class="acc-info-label">Email</div>
+                                        <div style="display:flex;align-items:center;gap:10px;">
+                                            <div class="acc-info-value" th:text="${user.email}">—</div>
+                                            <span class="verify-status verify-status--ok">✓ Đã xác minh</span>
+                                        </div>
+                                    </div>
+                                    <div class="acc-info-item">
+                                        <div class="acc-info-label">Số điện thoại</div>
+                                        <div style="display:flex;align-items:center;gap:10px;">
+                                            <div class="acc-info-value"
+                                                 th:text="${user.phone != null} ? ${user.phone} : '—'"
+                                                 th:classappend="${user.phone == null} ? ' muted' : ''">—</div>
+                                            <span th:if="${user.phoneVerified}" class="verify-status verify-status--ok">✓ Đã xác minh</span>
+                                            <span th:if="${user.phone != null and !user.phoneVerified}"
+                                                  class="verify-status verify-status--no">✗ Chưa xác minh</span>
+                                        </div>
+                                    </div>
+                                    <div class="acc-info-item">
+                                        <div class="acc-info-label">Ngày tham gia</div>
+                                        <div class="acc-info-value"
+                                             th:text="${user.createdAt != null} ? ${#dates.format(user.createdAt, 'dd/MM/yyyy')} : '—'">—</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- EDIT MODE -->
+                            <div id="editMode" style="display:none;">
+                                <form th:action="@{/account/update}" method="post">
+                                    <div class="acc-form-grid">
+                                        <div class="acc-field full">
+                                            <label class="acc-label">Họ và tên</label>
+                                            <input class="acc-input" type="text" name="fullName"
+                                                   th:value="${user.fullName}" required />
+                                        </div>
+                                        <div class="acc-field full">
+                                            <label class="acc-label">Số điện thoại</label>
+                                            <input class="acc-input" type="tel" name="phone"
+                                                   th:value="${user.phone}"
+                                                   placeholder="0901234567" />
+                                        </div>
+                                        <div class="acc-field full" style="display:flex;gap:10px;margin-top:8px;">
+                                            <button type="submit" class="acc-btn">💾 Lưu thay đổi</button>
+                                            <button type="button" class="acc-btn acc-btn--outline" onclick="toggleEdit()">Huỷ</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- Bảo mật -->
+                    <div class="acc-card">
+                        <div class="acc-card__header">
+                            <span class="acc-card__title">Bảo mật tài khoản</span>
+                        </div>
+                        <div class="acc-card__body">
+                            <div class="acc-info-grid">
+                                <div class="acc-info-item">
+                                    <div class="acc-info-label">Email</div>
+                                    <div style="display:flex;align-items:center;gap:8px;">
+                                        <span class="verify-status verify-status--ok">✓ Đã xác minh</span>
+                                    </div>
+                                </div>
+                                <div class="acc-info-item">
+                                    <div class="acc-info-label">Số điện thoại</div>
+                                    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                                        <span th:if="${user.phoneVerified}" class="verify-status verify-status--ok">✓ Đã xác minh</span>
+                                        <span th:unless="${user.phoneVerified}" class="verify-status verify-status--no">✗ Chưa xác minh</span>
+                                        <a th:unless="${user.phoneVerified}"
+                                           th:href="@{/verify-phone}"
+                                           style="font-size:12px;color:var(--mainColor);text-decoration:underline;">
+                                            Xác minh ngay
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="acc-info-item">
+                                    <div class="acc-info-label">Đăng nhập lần cuối</div>
+                                    <div class="acc-info-value"
+                                         th:text="${user.lastLogin != null} ? ${#dates.format(user.lastLogin, 'dd/MM/yyyy HH:mm')} : '—'">—</div>
+                                </div>
+                                <div class="acc-info-item">
+                                    <div class="acc-info-label">Vai trò</div>
+                                    <div class="acc-info-value" th:text="${user.role}">USER</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 2: ĐƠN HÀNG -->
+                <div id="tab-orders" style="display:none;">
+                    <div class="acc-card">
+                        <div class="acc-card__header">
+                            <span class="acc-card__title">Đơn hàng của tôi</span>
+                        </div>
+                        <div class="acc-card__body">
+                            <div class="acc-empty">
+                                <div class="acc-empty__icon">📦</div>
+                                <div class="acc-empty__title">Chưa có đơn hàng nào</div>
+                                <div class="acc-empty__desc">
+                                    Bắt đầu mua sắm và đơn hàng của bạn sẽ xuất hiện tại đây.
+                                </div>
+                                <a th:href="@{/collections}"
+                                   style="display:inline-block;margin-top:20px;padding:12px 32px;background:var(--darkColor);color:var(--bgLight);border-radius:8px;font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;">
+                                    Mua sắm ngay
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 3: ĐỔI MẬT KHẨU -->
+                <div id="tab-password" style="display:none;">
+                    <div class="acc-card">
+                        <div class="acc-card__header">
+                            <span class="acc-card__title">Đổi mật khẩu</span>
+                        </div>
+                        <div class="acc-card__body">
+                            <form th:action="@{/account/change-password}" method="post" id="pwForm">
+                                <div style="max-width:420px;display:flex;flex-direction:column;gap:16px;">
+                                    <div class="acc-field">
+                                        <label class="acc-label">Mật khẩu hiện tại</label>
+                                        <input class="acc-input" type="password" name="currentPassword"
+                                               placeholder="••••••••" required />
+                                    </div>
+                                    <div class="acc-field">
+                                        <label class="acc-label">Mật khẩu mới</label>
+                                        <input class="acc-input" type="password" name="newPassword"
+                                               id="newPwd" placeholder="Tối thiểu 6 ký tự"
+                                               minlength="6" required />
+                                    </div>
+                                    <div class="acc-field">
+                                        <label class="acc-label">Xác nhận mật khẩu mới</label>
+                                        <input class="acc-input" type="password" name="confirmPassword"
+                                               id="confirmPwd" placeholder="Nhập lại mật khẩu mới" required />
+                                    </div>
+                                    <button type="submit" class="acc-btn" style="align-self:flex-start;margin-top:8px;">
+                                        🔐 Cập nhật mật khẩu
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+<div class="cart-overlay" id="cartOverlay"></div>
+<div class="cart-drawer" id="cartDrawer">
+    <div class="cart-drawer-head">
+        <h3>Giỏ hàng (<span id="cartItemCount">0</span>)</h3>
+        <button class="cart-close" id="btnCartClose">×</button>
+    </div>
+    <div class="cart-items" id="cartItemsList">
+        <div class="cart-empty">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+            </svg>
+            <p>Giỏ hàng của bạn đang trống</p>
+        </div>
+    </div>
+    <div class="cart-footer" id="cartFooter" style="display:none;">
+        <div class="cart-total-row"><span>Tổng tiền</span><span id="cartTotal">0đ</span></div>
+        <a th:href="@{/cart}" class="btn-checkout">Xem giỏ hàng</a>
+    </div>
+</div>
+<button class="back-to-top" id="backToTop">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/>
+    </svg>
+</button>
+
+<script th:src="@{/js/index.js}"></script>
+<script>
+    // ── Tab switching ──────────────────────────────────
+    function switchTab(tab, el) {
+        document.querySelectorAll('[id^="tab-"]').forEach(function(t) { t.style.display = 'none'; });
+        document.getElementById('tab-' + tab).style.display = 'block';
+        document.querySelectorAll('.acc-nav__item').forEach(function(n) { n.classList.remove('is-active'); });
+        if (el) el.classList.add('is-active');
+    }
+
+    // ── Edit toggle ────────────────────────────────────
+    function toggleEdit() {
+        var view = document.getElementById('viewMode');
+        var edit = document.getElementById('editMode');
+        var btn  = document.getElementById('btnEdit');
+        if (edit.style.display === 'none') {
+            view.style.display = 'none';
+            edit.style.display = 'block';
+            btn.textContent = '✕ Huỷ';
+        } else {
+            view.style.display = 'block';
+            edit.style.display = 'none';
+            btn.innerHTML = '✏️ Chỉnh sửa';
+        }
+    }
+
+    // ── Password confirm ───────────────────────────────
+    document.getElementById('pwForm') && document.getElementById('pwForm').addEventListener('submit', function(e) {
+        var p1 = document.getElementById('newPwd').value;
+        var p2 = document.getElementById('confirmPwd').value;
+        if (p1 !== p2) {
+            e.preventDefault();
+            alert('Mật khẩu xác nhận không khớp!');
+        }
+    });
+
+    // ── Init tab từ hash ────────────────────────────────
+    var hash = window.location.hash.replace('#', '');
+    if (hash && document.getElementById('tab-' + hash)) {
+        var navEl = document.querySelector('[href="#' + hash + '"]');
+        switchTab(hash, navEl);
+    }
+</script>
+</body>
+</html>

@@ -13,6 +13,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class AuthController {
 
     @Autowired private AuthService authService;
+    @Autowired private dinhlam2901.sunilies.repository.UserRepository userRepository;
 
     // ── Trang đăng nhập ──────────────────────────────────
     @GetMapping("/login")
@@ -176,5 +177,57 @@ public class AuthController {
     private String maskPhone(String phone) {
         if (phone == null || phone.length() < 6) return phone;
         return phone.substring(0, 3) + "****" + phone.substring(phone.length() - 3);
+    }
+
+    // ── Cập nhật thông tin cá nhân ────────────────────────
+    @PostMapping("/account/update")
+    public String updateProfile(@RequestParam String fullName,
+                                @RequestParam(required = false) String phone,
+                                HttpSession session,
+                                RedirectAttributes ra) throws Exception {
+        if (!authService.isLoggedIn(session)) return "redirect:/login";
+        User user = authService.getCurrentUser(session);
+        if (user == null) return "redirect:/login";
+
+        user.setFullName(fullName.trim());
+        if (phone != null && !phone.isBlank()) user.setPhone(phone.trim());
+        userRepository.update(user);
+
+        ra.addFlashAttribute("success", "Cập nhật thông tin thành công!");
+        return "redirect:/account";
+    }
+
+    // ── Đổi mật khẩu ──────────────────────────────────────
+    @PostMapping("/account/change-password")
+    public String changePassword(@RequestParam String currentPassword,
+                                 @RequestParam String newPassword,
+                                 @RequestParam String confirmPassword,
+                                 HttpSession session,
+                                 RedirectAttributes ra) throws Exception {
+        if (!authService.isLoggedIn(session)) return "redirect:/login";
+        User user = authService.getCurrentUser(session);
+        if (user == null) return "redirect:/login";
+
+        org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder encoder
+                = new org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder();
+
+        if (!encoder.matches(currentPassword, user.getPasswordHash())) {
+            ra.addFlashAttribute("error", "Mật khẩu hiện tại không đúng.");
+            return "redirect:/account#password";
+        }
+        if (!newPassword.equals(confirmPassword)) {
+            ra.addFlashAttribute("error", "Mật khẩu mới không khớp.");
+            return "redirect:/account#password";
+        }
+        if (newPassword.length() < 6) {
+            ra.addFlashAttribute("error", "Mật khẩu tối thiểu 6 ký tự.");
+            return "redirect:/account#password";
+        }
+
+        user.setPasswordHash(encoder.encode(newPassword));
+        userRepository.update(user);
+
+        ra.addFlashAttribute("success", "Đổi mật khẩu thành công!");
+        return "redirect:/account";
     }
 }

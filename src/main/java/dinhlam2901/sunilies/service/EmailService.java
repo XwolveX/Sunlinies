@@ -7,6 +7,8 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import jakarta.mail.internet.MimeMessage;
+import jakarta.mail.Message;
+import jakarta.mail.internet.InternetAddress;
 
 @Service
 public class EmailService {
@@ -25,17 +27,24 @@ public class EmailService {
             MimeMessage msg = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(msg, true, "UTF-8");
 
-            helper.setFrom(fromEmail, "SUNILIES");
+            helper.setFrom(new InternetAddress(fromEmail, "SUNILIES - Xac minh tai khoan"));
             helper.setTo(toEmail);
-            helper.setSubject("Xác minh tài khoản SUNILIES — Mã OTP của bạn");
-            helper.setText(buildOtpEmail(fullName, otp, "xác minh tài khoản", 10), true);
+            helper.setReplyTo(fromEmail);
+            helper.setSubject("[SUNILIES] Ma OTP xac minh tai khoan: " + otp);
+            helper.setText(buildOtpEmail(fullName, otp, "xac minh tai khoan", 10), true);
+
+            // Headers chống spam
+            msg.addHeader("X-Mailer", "SUNILIES-Mailer");
+            msg.addHeader("X-Priority", "1");
+            msg.addHeader("Importance", "High");
+            msg.addHeader("Precedence", "bulk");
 
             mailSender.send(msg);
             System.out.println("✅ OTP email sent to: " + toEmail);
 
         } catch (Exception e) {
             System.err.println("❌ Failed to send email to " + toEmail + ": " + e.getMessage());
-            throw new RuntimeException("Không thể gửi email xác minh: " + e.getMessage());
+            throw new RuntimeException("Khong the gui email xac minh: " + e.getMessage());
         }
     }
 
@@ -47,10 +56,14 @@ public class EmailService {
             MimeMessage msg = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(msg, true, "UTF-8");
 
-            helper.setFrom(fromEmail, "SUNILIES");
+            helper.setFrom(new InternetAddress(fromEmail, "SUNILIES - Mat khau"));
             helper.setTo(toEmail);
-            helper.setSubject("Đặt lại mật khẩu SUNILIES — Mã OTP của bạn");
-            helper.setText(buildOtpEmail(fullName, otp, "đặt lại mật khẩu", 10), true);
+            helper.setReplyTo(fromEmail);
+            helper.setSubject("[SUNILIES] Ma OTP dat lai mat khau: " + otp);
+            helper.setText(buildOtpEmail(fullName, otp, "dat lai mat khau", 10), true);
+
+            msg.addHeader("X-Mailer", "SUNILIES-Mailer");
+            msg.addHeader("X-Priority", "1");
 
             mailSender.send(msg);
         } catch (Exception e) {

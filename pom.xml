@@ -20,6 +20,7 @@
     </properties>
 
     <dependencies>
+
         <!-- Spring Boot Mail (JavaMail) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

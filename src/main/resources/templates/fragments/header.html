@@ -70,17 +70,18 @@
                             </svg>
                         </a>
                         <ul>
-                            <li th:if="${session.customer != null}" class="li-account">
+                            <!-- Trong wolf-header-account ul -->
+                            <li th:if="${session.SUNILIES_USER != null}">
                                 <a th:href="@{/account}">Tài khoản</a>
                             </li>
-                            <li th:if="${session.customer != null}" class="li-account">
-                                <a th:href="@{/account/logout}">Đăng xuất</a>
+                            <li th:if="${session.SUNILIES_USER != null}">
+                                <a th:href="@{/logout}">Đăng xuất</a>
                             </li>
-                            <li th:if="${session.customer == null}" class="li-account">
-                                <a th:href="@{/account/login}">Đăng nhập</a>
+                            <li th:if="${session.SUNILIES_USER == null}">
+                                <a th:href="@{/login}">Đăng nhập</a>
                             </li>
-                            <li th:if="${session.customer == null}" class="li-account">
-                                <a th:href="@{/account/register}">Đăng ký</a>
+                            <li th:if="${session.SUNILIES_USER == null}">
+                                <a th:href="@{/register}">Đăng ký</a>
                             </li>
                         </ul>
                     </li>
