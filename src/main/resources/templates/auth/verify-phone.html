@@ -27,8 +27,7 @@
     .auth-btn:disabled{opacity:.6;cursor:not-allowed;}
     .auth-skip{text-align:center;margin-top:14px;font-size:13px;}
     .auth-skip a{color:var(--muted);text-decoration:underline;}
-    .dev-otp{background:#fff8e1;border:1px dashed #f39c12;border-radius:8px;padding:12px;text-align:center;margin-bottom:16px;font-size:12px;color:#e67e22;}
-    .dev-otp strong{font-size:20px;letter-spacing:6px;color:#e67e22;display:block;margin-top:4px;}
+
 </style>
 
 <div th:replace="~{fragments/header :: header}"></div>
@@ -53,12 +52,7 @@
                 <strong th:text="${phone != null} ? ${phone} : 'số điện thoại của bạn'">09****567</strong>
             </p>
 
-            <!-- Dev mode: hiển thị OTP -->
-            <div th:if="${devOtp}" class="dev-otp">
-                🛠 Dev mode — OTP của bạn:
-                <strong th:text="${devOtp}">000000</strong>
-                <div style="margin-top:4px;font-size:11px;color:#aaa;">(Xoá block này khi production)</div>
-            </div>
+
 
             <div th:if="${error}" class="auth-alert auth-alert--error" th:text="${error}">Lỗi</div>
 

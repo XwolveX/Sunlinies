@@ -15,6 +15,7 @@ public class AuthService {
 
     @Autowired private UserRepository userRepository;
     @Autowired private EmailService emailService;
+    @Autowired private SmsService smsService;
 
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
     private static final String SESSION_USER = "SUNILIES_USER";
@@ -133,10 +134,11 @@ public class AuthService {
         user.setPhoneOtpExpiry(expireAfter(5));  // 5 phút
         userRepository.update(user);
 
-        // ⚠️ Demo: in ra console. Production: gửi SMS qua Twilio/ESMS
-        System.out.println("📱 Phone OTP for " + user.getPhone() + ": " + otp);
+        // Gửi OTP qua SpeedSMS
+        smsService.sendOtp(user.getPhone(), otp);
+        System.out.println("📱 SMS OTP sent to: " + user.getPhone());
 
-        return otp; // trả về để hiển thị trong dev mode
+        return otp;
     }
 
     public User verifyPhoneOtp(String userId, String inputOtp) throws Exception {
