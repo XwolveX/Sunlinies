@@ -1,6 +1,8 @@
 package dinhlam2901.sunilies.controller;
 
+import dinhlam2901.sunilies.model.Order;
 import dinhlam2901.sunilies.model.User;
+import dinhlam2901.sunilies.repository.OrderRepository;
 import dinhlam2901.sunilies.service.AuthService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,10 +11,13 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.List;
+
 @Controller
 public class AuthController {
 
-    @Autowired private AuthService authService;
+    @Autowired private AuthService       authService;
+    @Autowired private OrderRepository   orderRepository;
     @Autowired private dinhlam2901.sunilies.repository.UserRepository userRepository;
 
     // ── Trang đăng nhập ──────────────────────────────────
@@ -61,7 +66,6 @@ public class AuthController {
                                  @RequestParam String fullName,
                                  @RequestParam(required = false) String phone,
                                  RedirectAttributes ra) {
-        // Validate
         if (!password.equals(confirmPassword)) {
             ra.addFlashAttribute("error", "Mật khẩu xác nhận không khớp.");
             ra.addFlashAttribute("email", email);
@@ -74,12 +78,10 @@ public class AuthController {
             ra.addFlashAttribute("fullName", fullName);
             return "redirect:/register";
         }
-
         try {
             authService.register(email, password, fullName, phone);
             ra.addFlashAttribute("email", email);
-            ra.addFlashAttribute("success",
-                    "Đăng ký thành công! Vui lòng kiểm tra email và nhập mã OTP.");
+            ra.addFlashAttribute("success", "Đăng ký thành công! Vui lòng kiểm tra email và nhập mã OTP.");
             return "redirect:/verify-email";
         } catch (Exception e) {
             ra.addFlashAttribute("error", e.getMessage());
@@ -102,19 +104,12 @@ public class AuthController {
                                     RedirectAttributes ra) {
         try {
             User user = authService.verifyEmailOtp(email, otp);
-
-            // Đăng nhập luôn sau khi verify thành công
             session.setAttribute("SUNILIES_USER", user.getId());
-
             ra.addFlashAttribute("success", "Xác minh email thành công! Chào mừng bạn đến SUNILIES 🎉");
-
-            // Nếu chưa có SĐT thì bỏ qua, nếu có thì redirect verify phone
-            if (user.getPhone() != null && !user.getPhone().isBlank()
-                    && !user.isPhoneVerified()) {
+            if (user.getPhone() != null && !user.getPhone().isBlank() && !user.isPhoneVerified()) {
                 return "redirect:/verify-phone";
             }
             return "redirect:/account";
-
         } catch (Exception e) {
             ra.addFlashAttribute("error", e.getMessage());
             ra.addFlashAttribute("email", email);
@@ -130,12 +125,9 @@ public class AuthController {
         if (user == null) return "redirect:/login";
         if (user.isPhoneVerified()) return "redirect:/account";
 
-        // Tự động gửi OTP khi vào trang
         String devOtp = authService.generatePhoneOtp(user.getId());
         model.addAttribute("phone", maskPhone(user.getPhone()));
         model.addAttribute("userId", user.getId());
-
-        // Dev mode: hiển thị OTP (xoá khi production)
         model.addAttribute("devOtp", devOtp);
         return "auth/verify-phone";
     }
@@ -169,7 +161,18 @@ public class AuthController {
         if (!authService.isLoggedIn(session)) return "redirect:/login";
         User user = authService.getCurrentUser(session);
         if (user == null) return "redirect:/login";
+
         model.addAttribute("user", user);
+
+        // Load đơn hàng của user
+        try {
+            List<Order> orders = orderRepository.findByUserId(user.getId());
+            model.addAttribute("orders", orders);
+        } catch (Exception e) {
+            System.err.println("❌ Load orders lỗi: " + e.getMessage());
+            model.addAttribute("orders", List.of());
+        }
+
         return "auth/account";
     }
 

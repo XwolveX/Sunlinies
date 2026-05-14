@@ -5,11 +5,9 @@
 <style>
     :root{--mainColor:#c8986a;--darkColor:#3d2e1c;--borderColor:#e8e4de;--bgLight:#faf2e6;--muted:#7a6a57;--fontDisplay:'Playfair Display',serif;}
 
-    /* ── LAYOUT ─── */
     .acc-page{padding:48px 0 80px;min-height:70vh;background:#faf7f2;}
     .acc-grid{display:grid;grid-template-columns:260px 1fr;gap:32px;align-items:start;}
 
-    /* ── SIDEBAR ─── */
     .acc-sidebar{background:#fff;border-radius:16px;overflow:hidden;border:1px solid var(--borderColor);position:sticky;top:100px;}
     .acc-profile{background:var(--darkColor);padding:28px 24px;text-align:center;}
     .acc-avatar{width:72px;height:72px;border-radius:50%;background:var(--mainColor);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:#fff;margin:0 auto 14px;font-family:var(--fontDisplay);}
@@ -27,31 +25,23 @@
     .acc-nav__item svg{width:18px;height:18px;flex-shrink:0;}
     .acc-nav__sep{height:1px;background:var(--borderColor);margin:6px 0;}
 
-    /* ── MAIN CONTENT ─── */
-    .acc-main{}
     .acc-card{background:#fff;border-radius:16px;border:1px solid var(--borderColor);overflow:hidden;margin-bottom:20px;}
     .acc-card__header{padding:20px 28px;border-bottom:1px solid var(--borderColor);display:flex;align-items:center;justify-content:space-between;}
     .acc-card__title{font-family:var(--fontDisplay);font-size:18px;font-weight:400;color:var(--darkColor);}
     .acc-card__body{padding:28px;}
 
-    /* Flash alerts */
     .acc-alert{padding:14px 18px;border-radius:10px;font-size:13px;margin-bottom:20px;display:flex;align-items:center;gap:10px;}
     .acc-alert--success{background:#f0fdf4;color:#166534;border:1px solid #bbf7d0;}
-    .acc-alert--warn{background:#fffbeb;color:#92400e;border:1px solid #fde68a;}
 
-    /* Info grid */
     .acc-info-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
-    .acc-info-item{}
     .acc-info-label{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
     .acc-info-value{font-size:15px;color:var(--darkColor);font-weight:500;}
     .acc-info-value.muted{color:#bbb;font-style:italic;font-weight:400;}
 
-    /* Verify badges inline */
     .verify-status{display:inline-flex;align-items:center;gap:6px;font-size:12px;padding:3px 10px;border-radius:50px;font-weight:600;}
     .verify-status--ok{background:#f0fdf4;color:#27ae60;}
     .verify-status--no{background:#fff0ee;color:#e74c3c;}
 
-    /* Edit form */
     .acc-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
     .acc-field{display:flex;flex-direction:column;gap:7px;}
     .acc-field.full{grid-column:1/-1;}
@@ -62,22 +52,39 @@
     .acc-btn:hover{background:var(--mainColor);}
     .acc-btn--outline{background:transparent;border:1.5px solid var(--borderColor);color:var(--muted);}
     .acc-btn--outline:hover{border-color:var(--mainColor);color:var(--mainColor);background:transparent;}
-    .acc-btn--danger{background:#e74c3c;}
-    .acc-btn--danger:hover{background:#c0392b;}
 
-    /* Orders empty */
     .acc-empty{text-align:center;padding:48px 20px;color:var(--muted);}
     .acc-empty__icon{font-size:44px;margin-bottom:14px;}
     .acc-empty__title{font-family:var(--fontDisplay);font-size:20px;color:var(--darkColor);margin-bottom:8px;}
     .acc-empty__desc{font-size:14px;line-height:1.7;}
 
-    /* Phone verify banner */
     .acc-verify-banner{background:linear-gradient(135deg,#fffbeb,#fef3c7);border:1px solid #fde68a;border-radius:12px;padding:18px 22px;display:flex;align-items:center;gap:16px;margin-bottom:20px;}
     .acc-verify-banner__icon{font-size:28px;flex-shrink:0;}
     .acc-verify-banner__text h4{font-size:14px;font-weight:700;color:#92400e;margin-bottom:4px;}
     .acc-verify-banner__text p{font-size:13px;color:#a16207;line-height:1.5;}
     .acc-verify-banner__btn{margin-left:auto;padding:10px 20px;background:#f59e0b;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;text-decoration:none;font-family:'Lato',sans-serif;}
     .acc-verify-banner__btn:hover{background:#d97706;color:#fff;}
+
+    /* Order cards */
+    .order-card{border:1px solid var(--borderColor);border-radius:12px;margin-bottom:16px;overflow:hidden;}
+    .order-card__head{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;background:var(--bgLight);border-bottom:1px solid var(--borderColor);flex-wrap:wrap;gap:8px;}
+    .order-id{font-size:13px;font-weight:700;color:var(--darkColor);}
+    .order-date{font-size:12px;color:var(--muted);margin-top:2px;}
+    .order-status{display:inline-block;padding:5px 14px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;}
+    .status-PENDING  {background:#fff3cd;color:#856404;}
+    .status-PAID     {background:#d1e7dd;color:#0a3622;}
+    .status-FAILED   {background:#f8d7da;color:#58151c;}
+    .status-CANCELLED{background:#e2e3e5;color:#41464b;}
+    .order-card__body{padding:16px 20px;}
+    .order-item-row{display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--borderColor);}
+    .order-item-row:last-child{border-bottom:none;}
+    .order-item-img{width:50px;height:62px;object-fit:cover;border-radius:6px;background:var(--bgLight);flex-shrink:0;}
+    .order-item-name{flex:1;font-size:13px;color:var(--darkColor);font-weight:500;}
+    .order-item-name small{color:var(--muted);display:block;margin-top:2px;font-weight:400;}
+    .order-item-price{font-size:13px;font-weight:700;color:var(--mainColor);white-space:nowrap;}
+    .order-card__foot{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;border-top:1px solid var(--borderColor);flex-wrap:wrap;gap:8px;}
+    .order-method{font-size:12px;color:var(--muted);}
+    .order-total-amount{font-family:var(--fontDisplay);font-size:17px;color:var(--mainColor);margin-left:8px;}
 
     @media(max-width:900px){.acc-grid{grid-template-columns:1fr;}.acc-sidebar{position:static;}}
     @media(max-width:600px){.acc-info-grid,.acc-form-grid{grid-template-columns:1fr;}.acc-field.full{grid-column:1;}}
@@ -100,36 +107,32 @@
 <main class="acc-page">
     <div class="container">
 
-        <!-- Flash messages -->
         <div th:if="${success}" class="acc-alert acc-alert--success">
-            <span>✅</span><span th:text="${success}">OK</span>
+            <span>&#10003;</span><span th:text="${success}">OK</span>
         </div>
 
-        <!-- Phone verify banner (nếu chưa verify SĐT) -->
-        <div class="acc-verify-banner"
-             th:if="${user.phone != null and !user.phoneVerified}">
-            <div class="acc-verify-banner__icon">📱</div>
+        <div class="acc-verify-banner" th:if="${user.phone != null and !user.phoneVerified}">
+            <div class="acc-verify-banner__icon">&#128242;</div>
             <div class="acc-verify-banner__text">
                 <h4>Xác minh số điện thoại của bạn</h4>
                 <p>Bảo vệ tài khoản tốt hơn và nhận thông báo đơn hàng qua SMS.</p>
             </div>
-            <a th:href="@{/verify-phone}" class="acc-verify-banner__btn">Xác minh ngay →</a>
+            <a th:href="@{/verify-phone}" class="acc-verify-banner__btn">Xác minh ngay &rarr;</a>
         </div>
 
         <div class="acc-grid">
 
-            <!-- ══ SIDEBAR ══ -->
+            <!-- SIDEBAR -->
             <aside class="acc-sidebar">
                 <div class="acc-profile">
-                    <!-- Avatar chữ cái đầu -->
                     <div class="acc-avatar"
                          th:text="${user.fullName != null and !user.fullName.isEmpty()} ? ${user.fullName.substring(0,1).toUpperCase()} : 'U'">U</div>
                     <div class="acc-name" th:text="${user.fullName}">Tên người dùng</div>
                     <div class="acc-email" th:text="${user.email}">email@example.com</div>
                     <div class="acc-badges">
-                        <span class="acc-badge acc-badge--verified">✓ Email</span>
-                        <span th:if="${user.phoneVerified}" class="acc-badge acc-badge--verified">✓ SĐT</span>
-                        <span th:unless="${user.phoneVerified}" class="acc-badge acc-badge--unverified">✗ SĐT</span>
+                        <span class="acc-badge acc-badge--verified">&#10003; Email</span>
+                        <span th:if="${user.phoneVerified}" class="acc-badge acc-badge--verified">&#10003; SĐT</span>
+                        <span th:unless="${user.phoneVerified}" class="acc-badge acc-badge--unverified">&#10007; SĐT</span>
                     </div>
                 </div>
 
@@ -145,6 +148,9 @@
                             <path d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007z"/>
                         </svg>
                         Đơn hàng của tôi
+                        <span th:if="${orders != null and !orders.isEmpty()}"
+                              style="margin-left:auto;background:var(--mainColor);color:#fff;border-radius:50px;font-size:10px;font-weight:700;padding:2px 8px;"
+                              th:text="${orders.size()}">0</span>
                     </a>
                     <a href="#password" class="acc-nav__item" onclick="switchTab('password',this)">
                         <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
@@ -162,7 +168,7 @@
                 </nav>
             </aside>
 
-            <!-- ══ MAIN ══ -->
+            <!-- MAIN -->
             <div>
 
                 <!-- TAB 1: THÔNG TIN CÁ NHÂN -->
@@ -170,13 +176,9 @@
                     <div class="acc-card">
                         <div class="acc-card__header">
                             <span class="acc-card__title">Thông tin cá nhân</span>
-                            <button class="acc-btn acc-btn--outline" onclick="toggleEdit()" id="btnEdit">
-                                ✏️ Chỉnh sửa
-                            </button>
+                            <button class="acc-btn acc-btn--outline" onclick="toggleEdit()" id="btnEdit">&#9998; Chỉnh sửa</button>
                         </div>
                         <div class="acc-card__body">
-
-                            <!-- VIEW MODE -->
                             <div id="viewMode">
                                 <div class="acc-info-grid">
                                     <div class="acc-info-item">
@@ -187,7 +189,7 @@
                                         <div class="acc-info-label">Email</div>
                                         <div style="display:flex;align-items:center;gap:10px;">
                                             <div class="acc-info-value" th:text="${user.email}">—</div>
-                                            <span class="verify-status verify-status--ok">✓ Đã xác minh</span>
+                                            <span class="verify-status verify-status--ok">&#10003; Đã xác minh</span>
                                         </div>
                                     </div>
                                     <div class="acc-info-item">
@@ -196,9 +198,8 @@
                                             <div class="acc-info-value"
                                                  th:text="${user.phone != null} ? ${user.phone} : '—'"
                                                  th:classappend="${user.phone == null} ? ' muted' : ''">—</div>
-                                            <span th:if="${user.phoneVerified}" class="verify-status verify-status--ok">✓ Đã xác minh</span>
-                                            <span th:if="${user.phone != null and !user.phoneVerified}"
-                                                  class="verify-status verify-status--no">✗ Chưa xác minh</span>
+                                            <span th:if="${user.phoneVerified}" class="verify-status verify-status--ok">&#10003; Đã xác minh</span>
+                                            <span th:if="${user.phone != null and !user.phoneVerified}" class="verify-status verify-status--no">&#10007; Chưa xác minh</span>
                                         </div>
                                     </div>
                                     <div class="acc-info-item">
@@ -208,34 +209,27 @@
                                     </div>
                                 </div>
                             </div>
-
-                            <!-- EDIT MODE -->
                             <div id="editMode" style="display:none;">
                                 <form th:action="@{/account/update}" method="post">
                                     <div class="acc-form-grid">
                                         <div class="acc-field full">
                                             <label class="acc-label">Họ và tên</label>
-                                            <input class="acc-input" type="text" name="fullName"
-                                                   th:value="${user.fullName}" required />
+                                            <input class="acc-input" type="text" name="fullName" th:value="${user.fullName}" required />
                                         </div>
                                         <div class="acc-field full">
                                             <label class="acc-label">Số điện thoại</label>
-                                            <input class="acc-input" type="tel" name="phone"
-                                                   th:value="${user.phone}"
-                                                   placeholder="0901234567" />
+                                            <input class="acc-input" type="tel" name="phone" th:value="${user.phone}" placeholder="0901234567" />
                                         </div>
                                         <div class="acc-field full" style="display:flex;gap:10px;margin-top:8px;">
-                                            <button type="submit" class="acc-btn">💾 Lưu thay đổi</button>
+                                            <button type="submit" class="acc-btn">Lưu thay đổi</button>
                                             <button type="button" class="acc-btn acc-btn--outline" onclick="toggleEdit()">Huỷ</button>
                                         </div>
                                     </div>
                                 </form>
                             </div>
-
                         </div>
                     </div>
 
-                    <!-- Bảo mật -->
                     <div class="acc-card">
                         <div class="acc-card__header">
                             <span class="acc-card__title">Bảo mật tài khoản</span>
@@ -244,20 +238,15 @@
                             <div class="acc-info-grid">
                                 <div class="acc-info-item">
                                     <div class="acc-info-label">Email</div>
-                                    <div style="display:flex;align-items:center;gap:8px;">
-                                        <span class="verify-status verify-status--ok">✓ Đã xác minh</span>
-                                    </div>
+                                    <span class="verify-status verify-status--ok">&#10003; Đã xác minh</span>
                                 </div>
                                 <div class="acc-info-item">
                                     <div class="acc-info-label">Số điện thoại</div>
                                     <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-                                        <span th:if="${user.phoneVerified}" class="verify-status verify-status--ok">✓ Đã xác minh</span>
-                                        <span th:unless="${user.phoneVerified}" class="verify-status verify-status--no">✗ Chưa xác minh</span>
-                                        <a th:unless="${user.phoneVerified}"
-                                           th:href="@{/verify-phone}"
-                                           style="font-size:12px;color:var(--mainColor);text-decoration:underline;">
-                                            Xác minh ngay
-                                        </a>
+                                        <span th:if="${user.phoneVerified}" class="verify-status verify-status--ok">&#10003; Đã xác minh</span>
+                                        <span th:unless="${user.phoneVerified}" class="verify-status verify-status--no">&#10007; Chưa xác minh</span>
+                                        <a th:unless="${user.phoneVerified}" th:href="@{/verify-phone}"
+                                           style="font-size:12px;color:var(--mainColor);text-decoration:underline;">Xác minh ngay</a>
                                     </div>
                                 </div>
                                 <div class="acc-info-item">
@@ -279,19 +268,78 @@
                     <div class="acc-card">
                         <div class="acc-card__header">
                             <span class="acc-card__title">Đơn hàng của tôi</span>
+                            <span th:if="${orders != null and !orders.isEmpty()}"
+                                  style="font-size:13px;color:var(--muted);"
+                                  th:text="${orders.size()} + ' đơn hàng'"></span>
                         </div>
-                        <div class="acc-card__body">
-                            <div class="acc-empty">
-                                <div class="acc-empty__icon">📦</div>
+                        <div class="acc-card__body" style="padding:20px;">
+
+                            <!-- Empty state -->
+                            <div th:if="${orders == null or orders.isEmpty()}" class="acc-empty">
+                                <div class="acc-empty__icon">&#128230;</div>
                                 <div class="acc-empty__title">Chưa có đơn hàng nào</div>
-                                <div class="acc-empty__desc">
-                                    Bắt đầu mua sắm và đơn hàng của bạn sẽ xuất hiện tại đây.
-                                </div>
+                                <div class="acc-empty__desc">Bắt đầu mua sắm và đơn hàng của bạn sẽ xuất hiện tại đây.</div>
                                 <a th:href="@{/collections}"
                                    style="display:inline-block;margin-top:20px;padding:12px 32px;background:var(--darkColor);color:var(--bgLight);border-radius:8px;font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;">
                                     Mua sắm ngay
                                 </a>
                             </div>
+
+                            <!-- Danh sách đơn hàng -->
+                            <div th:unless="${orders == null or orders.isEmpty()}">
+                                <div th:each="order : ${orders}" class="order-card">
+
+                                    <div class="order-card__head">
+                                        <div>
+                                            <div class="order-id" th:text="'#' + ${order.id}">ORD_XXX</div>
+                                            <!-- FIX dòng 299: dùng order.createdAtDate thay vì new java.util.Date() -->
+                                            <div class="order-date"
+                                                 th:text="${#dates.format(order.createdAtDate, 'dd/MM/yyyy HH:mm')}">
+                                            </div>
+                                        </div>
+                                        <!-- FIX dòng 305: bỏ emoji khỏi th:text, dùng text thuần -->
+                                        <span class="order-status"
+                                              th:classappend="'status-' + ${order.status}"
+                                              th:text="${order.status == 'PENDING'   ? 'Cho thanh toan' :
+                                                         order.status == 'PAID'      ? 'Da thanh toan'  :
+                                                         order.status == 'FAILED'    ? 'That bai'       :
+                                                         order.status == 'CANCELLED' ? 'Da huy'         : order.status}">
+                                        </span>
+                                    </div>
+
+                                    <div class="order-card__body">
+                                        <div th:each="item : ${order.items}" class="order-item-row">
+                                            <img class="order-item-img"
+                                                 th:src="${item.image}" th:alt="${item.name}"
+                                                 onerror="this.src='/image/placeholder.png'">
+                                            <div class="order-item-name">
+                                                <span th:text="${item.name}">Sản phẩm</span>
+                                                <small th:if="${item.size != null and !item.size.isEmpty()}"
+                                                       th:text="'Size: ' + ${item.size}"></small>
+                                                <small th:if="${item.color != null and !item.color.isEmpty()}"
+                                                       th:text="'Mau: ' + ${item.color}"></small>
+                                            </div>
+                                            <div class="order-item-price"
+                                                 th:text="'x' + ${item.qty} + '   ' + ${#numbers.formatInteger(item.price * item.qty, 3, 'COMMA')} + 'd'">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="order-card__foot">
+                                        <div class="order-method"
+                                             th:text="${order.paymentMethod == 'MOMO' ? 'Thanh toan MoMo' : 'COD'}">
+                                        </div>
+                                        <div>
+                                            <span style="font-size:13px;color:var(--darkColor);">Tổng cộng</span>
+                                            <span class="order-total-amount"
+                                                  th:text="${#numbers.formatInteger(order.totalAmount, 3, 'COMMA')} + 'd'">
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -307,23 +355,17 @@
                                 <div style="max-width:420px;display:flex;flex-direction:column;gap:16px;">
                                     <div class="acc-field">
                                         <label class="acc-label">Mật khẩu hiện tại</label>
-                                        <input class="acc-input" type="password" name="currentPassword"
-                                               placeholder="••••••••" required />
+                                        <input class="acc-input" type="password" name="currentPassword" placeholder="••••••••" required />
                                     </div>
                                     <div class="acc-field">
                                         <label class="acc-label">Mật khẩu mới</label>
-                                        <input class="acc-input" type="password" name="newPassword"
-                                               id="newPwd" placeholder="Tối thiểu 6 ký tự"
-                                               minlength="6" required />
+                                        <input class="acc-input" type="password" name="newPassword" id="newPwd" placeholder="Tối thiểu 6 ký tự" minlength="6" required />
                                     </div>
                                     <div class="acc-field">
                                         <label class="acc-label">Xác nhận mật khẩu mới</label>
-                                        <input class="acc-input" type="password" name="confirmPassword"
-                                               id="confirmPwd" placeholder="Nhập lại mật khẩu mới" required />
+                                        <input class="acc-input" type="password" name="confirmPassword" id="confirmPwd" placeholder="Nhập lại mật khẩu mới" required />
                                     </div>
-                                    <button type="submit" class="acc-btn" style="align-self:flex-start;margin-top:8px;">
-                                        🔐 Cập nhật mật khẩu
-                                    </button>
+                                    <button type="submit" class="acc-btn" style="align-self:flex-start;margin-top:8px;">Cập nhật mật khẩu</button>
                                 </div>
                             </form>
                         </div>
@@ -363,45 +405,30 @@
 
 <script th:src="@{/js/index.js}"></script>
 <script>
-    // ── Tab switching ──────────────────────────────────
     function switchTab(tab, el) {
         document.querySelectorAll('[id^="tab-"]').forEach(function(t) { t.style.display = 'none'; });
         document.getElementById('tab-' + tab).style.display = 'block';
         document.querySelectorAll('.acc-nav__item').forEach(function(n) { n.classList.remove('is-active'); });
         if (el) el.classList.add('is-active');
     }
-
-    // ── Edit toggle ────────────────────────────────────
     function toggleEdit() {
         var view = document.getElementById('viewMode');
         var edit = document.getElementById('editMode');
         var btn  = document.getElementById('btnEdit');
         if (edit.style.display === 'none') {
-            view.style.display = 'none';
-            edit.style.display = 'block';
-            btn.textContent = '✕ Huỷ';
+            view.style.display = 'none'; edit.style.display = 'block'; btn.textContent = 'Huy';
         } else {
-            view.style.display = 'block';
-            edit.style.display = 'none';
-            btn.innerHTML = '✏️ Chỉnh sửa';
+            view.style.display = 'block'; edit.style.display = 'none'; btn.innerHTML = '&#9998; Chinh sua';
         }
     }
-
-    // ── Password confirm ───────────────────────────────
     document.getElementById('pwForm') && document.getElementById('pwForm').addEventListener('submit', function(e) {
-        var p1 = document.getElementById('newPwd').value;
-        var p2 = document.getElementById('confirmPwd').value;
-        if (p1 !== p2) {
-            e.preventDefault();
-            alert('Mật khẩu xác nhận không khớp!');
+        if (document.getElementById('newPwd').value !== document.getElementById('confirmPwd').value) {
+            e.preventDefault(); alert('Mật khẩu xác nhận không khớp!');
         }
     });
-
-    // ── Init tab từ hash ────────────────────────────────
     var hash = window.location.hash.replace('#', '');
     if (hash && document.getElementById('tab-' + hash)) {
-        var navEl = document.querySelector('[href="#' + hash + '"]');
-        switchTab(hash, navEl);
+        switchTab(hash, document.querySelector('[href="#' + hash + '"]'));
     }
 </script>
 </body>

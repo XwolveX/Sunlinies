@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{layout/base :: head('Thanh toán')}"></head>
+
+<body>
+<style>
+    .checkout-wrap { max-width: 960px; margin: 40px auto; padding: 0 16px 80px; }
+    .checkout-wrap h2 { font-family: var(--fontDisplay); font-size: 26px; font-weight: 400;
+        margin-bottom: 28px; color: var(--darkColor); }
+
+    .section-card { background: #fff; border-radius: 12px; padding: 24px; margin-bottom: 20px;
+        border: 1px solid var(--borderColor); }
+    .section-card h3 { font-size: 12px; font-weight: 700; letter-spacing: 2px;
+        text-transform: uppercase; color: var(--muted, #7a6a57); margin-bottom: 18px; }
+
+    .form-group { margin-bottom: 14px; }
+    .form-group label { display: block; font-size: 12px; color: var(--muted, #888);
+        margin-bottom: 5px; letter-spacing: .5px; }
+    .form-group input, .form-group textarea {
+        width: 100%; padding: 11px 14px; border: 1.5px solid var(--borderColor);
+        border-radius: 8px; font-size: 14px; font-family: var(--fontBody);
+        color: var(--darkColor); background: #fff; outline: none; transition: border-color .2s; }
+    .form-group input:focus, .form-group textarea:focus { border-color: var(--mainColor); }
+    .form-group textarea { resize: vertical; min-height: 72px; }
+
+    .item-row { display: flex; align-items: center; gap: 12px; padding: 12px 0;
+        border-bottom: 1px solid var(--borderColor); }
+    .item-row:last-of-type { border-bottom: none; }
+    .item-img { width: 60px; height: 75px; object-fit: cover; border-radius: 6px;
+        background: var(--bgLight); flex-shrink: 0; }
+    .item-name { flex: 1; font-size: 13px; color: var(--darkColor); font-weight: 500; }
+    .item-name small { color: var(--muted, #999); display: block; margin-top: 2px; font-weight: 400; }
+    .item-price { font-size: 13px; font-weight: 700; white-space: nowrap; color: var(--mainColor); }
+    .total-row { display: flex; justify-content: space-between; padding: 14px 0 0;
+        font-size: 16px; font-weight: 700; color: var(--darkColor);
+        border-top: 1.5px solid var(--borderColor); margin-top: 8px; }
+    .total-row span:last-child { color: var(--mainColor); font-family: var(--fontDisplay); font-size: 18px; }
+
+    .pay-option { display: flex; align-items: center; gap: 14px; padding: 14px 16px;
+        border: 2px solid var(--borderColor); border-radius: 10px; cursor: pointer;
+        margin-bottom: 10px; transition: border-color .15s, background .15s; }
+    .pay-option input[type=radio] { width: 18px; height: 18px; accent-color: var(--mainColor); flex-shrink: 0; }
+    .pay-option:has(input:checked) { border-color: var(--mainColor); background: #fdf8f2; }
+    .pay-option img { width: 40px; height: 40px; object-fit: contain; border-radius: 6px; }
+    .pay-label { font-size: 14px; font-weight: 600; color: var(--darkColor); }
+    .pay-desc  { font-size: 12px; color: var(--muted, #999); margin-top: 2px; }
+
+    .btn-pay { width: 100%; padding: 15px; border: none; border-radius: 10px;
+        font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+        cursor: pointer; background: var(--darkColor); color: var(--bgLight);
+        font-family: var(--fontBody); transition: background .2s; margin-top: 8px; }
+    .btn-pay:hover:not(:disabled) { background: var(--mainColor); }
+    .btn-pay:disabled { background: #ccc; cursor: not-allowed; }
+    #payError { display: none; color: #c0392b; font-size: 13px; margin-top: 10px; text-align: center; }
+</style>
+
+<div th:replace="~{fragments/header :: header}"></div>
+<div class="mobile-menu-overlay" id="mobileOverlay"></div>
+<div class="mobile-menu" id="mobileMenu">
+    <div class="mobile-menu-head">
+        <span class="logo-text">SUNILIES</span>
+        <button class="mobile-menu-close" id="mobileMenuClose">×</button>
+    </div>
+    <ul>
+        <li><a th:href="@{/}">Trang chủ</a></li>
+        <li><a th:href="@{/collections}">Sản phẩm</a></li>
+        <li><a th:href="@{/collections/san-pham-moi}">Sản phẩm mới</a></li>
+        <li><a th:href="@{/contact}">Liên hệ</a></li>
+    </ul>
+</div>
+
+<main class="checkout-wrap">
+    <h2>Xác nhận đơn hàng</h2>
+    <div class="row">
+
+        <!-- Cột trái: form + payment -->
+        <div class="col-lg-7">
+            <div class="section-card">
+                <h3>Thông tin giao hàng</h3>
+                <div class="form-group">
+                    <label>Họ tên *</label>
+                    <input type="text" id="fullName" placeholder="Nguyễn Văn A" required>
+                </div>
+                <div class="form-group">
+                    <label>Số điện thoại *</label>
+                    <input type="tel" id="phone" placeholder="0901 234 567" required>
+                </div>
+                <div class="form-group">
+                    <label>Địa chỉ giao hàng *</label>
+                    <input type="text" id="address" placeholder="Số nhà, tên đường, quận, thành phố" required>
+                </div>
+                <div class="form-group">
+                    <label>Ghi chú (tuỳ chọn)</label>
+                    <textarea id="note" placeholder="Ghi chú cho người giao hàng..."></textarea>
+                </div>
+            </div>
+
+            <div class="section-card">
+                <h3>Phương thức thanh toán</h3>
+                <label class="pay-option">
+                    <input type="radio" name="payMethod" value="MOMO" checked>
+                    <img src="/image/momo-logo.png" alt="MoMo"
+                         onerror="this.src='https://upload.wikimedia.org/wikipedia/vi/f/fe/MoMo_Logo.png'">
+                    <div>
+                        <div class="pay-label">Ví MoMo</div>
+                        <div class="pay-desc">Thanh toán nhanh qua ứng dụng MoMo</div>
+                    </div>
+                </label>
+                <label class="pay-option">
+                    <input type="radio" name="payMethod" value="COD">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='8' fill='%23f5ede0'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='20'%3E%F0%9F%92%B5%3C/text%3E%3C/svg%3E" alt="COD">
+                    <div>
+                        <div class="pay-label">Thanh toán khi nhận hàng (COD)</div>
+                        <div class="pay-desc">Trả tiền mặt cho shipper khi nhận hàng</div>
+                    </div>
+                </label>
+            </div>
+
+            <p id="payError"></p>
+            <button class="btn-pay" id="btnPay" onclick="submitPayment()">Đặt hàng ngay →</button>
+        </div>
+
+        <!-- Cột phải: tóm tắt đơn hàng -->
+        <div class="col-lg-5" style="margin-top:0">
+            <div class="section-card">
+                <h3>Đơn hàng của bạn</h3>
+                <div th:each="item : ${cartItems}" class="item-row">
+                    <img class="item-img" th:src="${item.image}" th:alt="${item.name}"
+                         onerror="this.src='/image/placeholder.png'">
+                    <div class="item-name">
+                        <span th:text="${item.name}">Sản phẩm</span>
+                        <small th:if="${item.size != null and !item.size.isEmpty()}"
+                               th:text="'Size: ' + ${item.size}"></small>
+                        <small th:if="${item.color != null and !item.color.isEmpty()}"
+                               th:text="'Màu: ' + ${item.color}"></small>
+                        <small th:text="'x' + ${item.qty}"></small>
+                    </div>
+                    <div class="item-price"
+                         th:text="${#numbers.formatInteger(item.price * item.qty, 3, 'COMMA')} + '₫'">
+                    </div>
+                </div>
+                <div class="total-row">
+                    <span>Tổng cộng</span>
+                    <span th:text="${#numbers.formatInteger(totalPrice, 3, 'COMMA')} + '₫'"></span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<!-- Cart Drawer -->
+<div class="cart-overlay" id="cartOverlay"></div>
+<div class="cart-drawer" id="cartDrawer">
+    <div class="cart-drawer-head">
+        <h3>Giỏ hàng (<span id="cartItemCount">0</span>)</h3>
+        <button class="cart-close" id="btnCartClose">×</button>
+    </div>
+    <div class="cart-items" id="cartItemsList">
+        <div class="cart-empty">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
+                      d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+            </svg>
+            <p>Giỏ hàng của bạn đang trống</p>
+        </div>
+    </div>
+    <div class="cart-footer" id="cartFooter" style="display:none;">
+        <div class="cart-total-row"><span>Tổng tiền</span><span id="cartTotal">0đ</span></div>
+        <a th:href="@{/cart}" class="btn-checkout">Xem giỏ hàng</a>
+    </div>
+</div>
+
+<button class="back-to-top" id="backToTop">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none"
+         viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/>
+    </svg>
+</button>
+
+<script th:src="@{/js/index.js}"></script>
+<script>
+    async function submitPayment() {
+        const fullName = document.getElementById('fullName').value.trim();
+        const phone    = document.getElementById('phone').value.trim();
+        const address  = document.getElementById('address').value.trim();
+        const note     = document.getElementById('note').value.trim();
+        const method   = document.querySelector('input[name=payMethod]:checked').value;
+        const errEl    = document.getElementById('payError');
+        const btn      = document.getElementById('btnPay');
+
+        if (!fullName || !phone || !address) {
+            errEl.textContent = 'Vui lòng điền đầy đủ họ tên, số điện thoại và địa chỉ.';
+            errEl.style.display = 'block';
+            return;
+        }
+        errEl.style.display = 'none';
+
+        if (method === 'COD') {
+            alert('COD chưa được hỗ trợ, vui lòng chọn MoMo.');
+            return;
+        }
+
+        btn.disabled = true;
+        btn.textContent = 'Đang xử lý...';
+
+        try {
+            const res  = await fetch('/api/payment/momo', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ fullName, phone, address, note })
+            });
+            const data = await res.json();
+            if (data.payUrl) {
+                window.location.href = data.payUrl;
+            } else {
+                errEl.textContent = data.error || 'Không thể tạo thanh toán, vui lòng thử lại.';
+                errEl.style.display = 'block';
+                btn.disabled = false;
+                btn.textContent = 'Đặt hàng ngay →';
+            }
+        } catch (e) {
+            errEl.textContent = 'Lỗi kết nối, vui lòng thử lại.';
+            errEl.style.display = 'block';
+            btn.disabled = false;
+            btn.textContent = 'Đặt hàng ngay →';
+        }
+    }
+</script>
+</body>
+</html>

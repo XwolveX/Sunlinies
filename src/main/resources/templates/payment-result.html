@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{layout/base :: head('Kết quả thanh toán')}"></head>
+
+<body>
+<style>
+    .result-wrap { max-width: 520px; margin: 70px auto 100px; padding: 0 16px; text-align: center; }
+
+    .result-card { background: #fff; border-radius: 16px; padding: 40px 32px;
+        border: 1px solid var(--borderColor); }
+
+    .result-icon { font-size: 60px; margin-bottom: 18px; line-height: 1; }
+
+    .result-title { font-family: var(--fontDisplay); font-size: 26px; font-weight: 400;
+        margin-bottom: 8px; }
+    .result-title.success { color: #27ae60; }
+    .result-title.fail    { color: #c0392b; }
+
+    .result-sub { font-size: 14px; color: var(--muted, #888); margin-bottom: 24px;
+        line-height: 1.7; }
+
+    .info-row { display: flex; justify-content: space-between; font-size: 13px;
+        padding: 9px 0; border-bottom: 1px solid var(--borderColor); text-align: left; }
+    .info-row:last-of-type { border-bottom: none; }
+    .info-label { color: var(--muted, #999); }
+    .info-value { font-weight: 600; color: var(--darkColor); }
+
+    .result-actions { display: flex; gap: 10px; justify-content: center; margin-top: 28px; flex-wrap: wrap; }
+
+    .btn-home { display: inline-block; padding: 13px 28px;
+        background: var(--darkColor); color: var(--bgLight);
+        border-radius: 10px; text-decoration: none;
+        font-weight: 700; font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase;
+        transition: background .2s; }
+    .btn-home:hover { background: var(--mainColor); color: #fff; }
+
+    .btn-retry { display: inline-block; padding: 13px 28px;
+        background: transparent; color: var(--darkColor);
+        border: 2px solid var(--borderColor); border-radius: 10px;
+        text-decoration: none; font-weight: 700; font-size: 12px;
+        letter-spacing: 1.5px; text-transform: uppercase; transition: border-color .2s; }
+    .btn-retry:hover { border-color: var(--mainColor); color: var(--mainColor); }
+</style>
+
+<div th:replace="~{fragments/header :: header}"></div>
+<div class="mobile-menu-overlay" id="mobileOverlay"></div>
+<div class="mobile-menu" id="mobileMenu">
+    <div class="mobile-menu-head">
+        <span class="logo-text">SUNILIES</span>
+        <button class="mobile-menu-close" id="mobileMenuClose">×</button>
+    </div>
+    <ul>
+        <li><a th:href="@{/}">Trang chủ</a></li>
+        <li><a th:href="@{/collections}">Sản phẩm</a></li>
+        <li><a th:href="@{/collections/san-pham-moi}">Sản phẩm mới</a></li>
+        <li><a th:href="@{/contact}">Liên hệ</a></li>
+    </ul>
+</div>
+
+<main class="result-wrap">
+
+    <!-- ── THÀNH CÔNG ── -->
+    <div th:if="${success}" class="result-card">
+        <div class="result-icon">✅</div>
+        <div class="result-title success">Đặt hàng thành công!</div>
+        <p class="result-sub">
+            Cảm ơn bạn đã tin tưởng Sunilies.<br>
+            Chúng tôi sẽ xử lý đơn hàng và liên hệ với bạn sớm nhất.
+        </p>
+
+        <div class="info-row">
+            <span class="info-label">Mã đơn hàng</span>
+            <span class="info-value" th:text="${orderId}">—</span>
+        </div>
+        <div class="info-row" th:if="${transId != null and transId != 0}">
+            <span class="info-label">Mã giao dịch MoMo</span>
+            <span class="info-value" th:text="${transId}">—</span>
+        </div>
+
+        <div class="result-actions">
+            <a th:href="@{/}" class="btn-home">Tiếp tục mua sắm</a>
+        </div>
+    </div>
+
+    <!-- ── THẤT BẠI ── -->
+    <div th:unless="${success}" class="result-card">
+        <div class="result-icon">❌</div>
+        <div class="result-title fail">Thanh toán thất bại</div>
+        <p class="result-sub"
+           th:text="${message != null and !message.isEmpty()} ? ${message} : 'Giao dịch không thành công, vui lòng thử lại.'">
+        </p>
+
+        <div class="info-row" th:if="${orderId != null}">
+            <span class="info-label">Mã đơn hàng</span>
+            <span class="info-value" th:text="${orderId}">—</span>
+        </div>
+
+        <div class="result-actions">
+            <a th:href="@{/checkout}" class="btn-retry">Thử lại</a>
+            <a th:href="@{/cart}" class="btn-home">Về giỏ hàng</a>
+        </div>
+    </div>
+
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<!-- Cart Drawer -->
+<div class="cart-overlay" id="cartOverlay"></div>
+<div class="cart-drawer" id="cartDrawer">
+    <div class="cart-drawer-head">
+        <h3>Giỏ hàng (<span id="cartItemCount">0</span>)</h3>
+        <button class="cart-close" id="btnCartClose">×</button>
+    </div>
+    <div class="cart-items" id="cartItemsList">
+        <div class="cart-empty">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
+                      d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+            </svg>
+            <p>Giỏ hàng của bạn đang trống</p>
+        </div>
+    </div>
+    <div class="cart-footer" id="cartFooter" style="display:none;">
+        <div class="cart-total-row"><span>Tổng tiền</span><span id="cartTotal">0đ</span></div>
+        <a th:href="@{/cart}" class="btn-checkout">Xem giỏ hàng</a>
+    </div>
+</div>
+
+<button class="back-to-top" id="backToTop">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none"
+         viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/>
+    </svg>
+</button>
+
+<script th:src="@{/js/index.js}"></script>
+</body>
+</html>
