@@ -76,7 +76,7 @@ public class PaymentController {
             order.setUpdatedAt(System.currentTimeMillis());
 
             // Gắn userId nếu đã đăng nhập
-            Object userId = session.getAttribute("userId");
+            Object userId = session.getAttribute("SUNILIES_USER");
             if (userId != null) order.setUserId(userId.toString());
 
             // ── Lưu đơn vào Firestore (status PENDING) ───
@@ -129,7 +129,7 @@ public class PaymentController {
         try {
             boolean valid = momoService.verifySignature(
                     signature, requestId, orderId,
-                    amount,        // ← truyền amount thật thay vì 0
+                    amount,
                     orderInfo, orderType, transId, resultCode,
                     message, payType, responseTime, extraData);
 
@@ -137,6 +137,14 @@ public class PaymentController {
                 model.addAttribute("success", false);
                 model.addAttribute("message", "Chữ ký không hợp lệ");
                 return "payment-result";
+            }
+
+            // [FIX] Cập nhật database luôn ở Return URL vì môi trường localhost IPN (webhooks) không gọi được về.
+            // Trong production, bạn có thể bỏ phần này và chỉ dùng IPN.
+            Order order = orderRepository.findById(orderId);
+            if (order != null && !"PAID".equals(order.getStatus())) {
+                String newStatus = success ? "PAID" : "FAILED";
+                orderRepository.updatePaymentResult(orderId, newStatus, String.valueOf(transId));
             }
         } catch (Exception e) {
             System.err.println("❌ Verify return signature lỗi: " + e.getMessage());

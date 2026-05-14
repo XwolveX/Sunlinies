@@ -292,9 +292,9 @@
                                     <div class="order-card__head">
                                         <div>
                                             <div class="order-id" th:text="'#' + ${order.id}">ORD_XXX</div>
-                                            <!-- FIX dòng 299: dùng order.createdAtDate thay vì new java.util.Date() -->
+                                            <!-- FIX dòng 299: dùng new java.util.Date(order.createdAt) -->
                                             <div class="order-date"
-                                                 th:text="${#dates.format(order.createdAtDate, 'dd/MM/yyyy HH:mm')}">
+                                                 th:text="${#dates.format(new java.util.Date(order.createdAt), 'dd/MM/yyyy HH:mm')}">
                                             </div>
                                         </div>
                                         <!-- FIX dòng 305: bỏ emoji khỏi th:text, dùng text thuần -->

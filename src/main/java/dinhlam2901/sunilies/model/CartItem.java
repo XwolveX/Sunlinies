@@ -1,11 +1,13 @@
 package dinhlam2901.sunilies.model;
 
 import java.io.Serializable;
+import com.google.cloud.firestore.annotation.IgnoreExtraProperties;
 
 /**
  * CartItem – một dòng trong giỏ hàng
  * Lưu trong HTTP Session nên phải implements Serializable
  */
+@IgnoreExtraProperties
 public class CartItem implements Serializable {
 
     private String productId;
@@ -35,10 +37,12 @@ public class CartItem implements Serializable {
     }
 
     /** Key dùng để nhận diện item (product + size + color) */
+    @com.google.cloud.firestore.annotation.Exclude
     public String getKey() {
         return productId + "_" + (size != null ? size : "") + "_" + (color != null ? color : "");
     }
 
+    @com.google.cloud.firestore.annotation.Exclude
     public double getSubtotal() {
         return price != null ? price * qty : 0;
     }
