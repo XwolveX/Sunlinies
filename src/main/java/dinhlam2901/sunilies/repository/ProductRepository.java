@@ -50,6 +50,12 @@ public class ProductRepository {
                 .map(this::toProduct)
                 .collect(Collectors.toList());
     }
+    //find id
+    public Product findById(String id) throws ExecutionException, InterruptedException {
+        DocumentSnapshot doc = db().collection(COLLECTION).document(id).get().get();
+        if (!doc.exists()) return null;
+        return toProduct(doc);
+    }
 
     // ─── Sản phẩm mới (isNew = true) ─────────────────────────────
     public List<Product> findNewProducts(int limit) throws ExecutionException, InterruptedException {
