@@ -286,14 +286,17 @@ document.addEventListener('DOMContentLoaded', function () {
     /* =============================================
    10. NAV TRANSPARENT → SOLID ON SCROLL
 ============================================= */
-    const siteNav = document.querySelector('.site-nav');
+    const siteNav    = document.querySelector('.site-nav');
+    const siteHeader = document.querySelector('header.header');
 
     if (siteNav) {
-        const slider = document.querySelector('.section_slider');
+        const heroSection = document.querySelector('.section_slider') || document.querySelector('.cl-hero');
 
         const onScroll = () => {
-            const threshold = slider ? slider.offsetHeight * 0.8 : 400;
-            siteNav.classList.toggle('nav--scrolled', window.scrollY > threshold);
+            const threshold = heroSection ? heroSection.offsetHeight * 0.6 : 400;
+            const scrolled  = window.scrollY > threshold;
+            siteNav.classList.toggle('nav--scrolled',    scrolled);
+            if (siteHeader) siteHeader.classList.toggle('header--scrolled', scrolled);
         };
 
         window.addEventListener('scroll', onScroll, { passive: true });
@@ -361,4 +364,26 @@ document.addEventListener('DOMContentLoaded', function () {
 
         observer.observe(storySection);
     }
+    document.querySelectorAll('.btn-wishlist').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const card = this.closest('[data-product-id]') || this.closest('.item_product_main');
+            const item = {
+                id:           card.dataset.productId,
+                handle:       card.dataset.handle,
+                name:         card.querySelector('.product-name a')?.textContent,
+                image:        card.querySelector('img')?.src,
+                price:        parseFloat(card.dataset.price || 0),
+                comparePrice: parseFloat(card.dataset.comparePrice || 0),
+                onSale:       card.dataset.onsale === 'true',
+                isNew:        card.dataset.isnew === 'true'
+            };
+            const list = JSON.parse(localStorage.getItem('sunilies_wishlist') || '[]');
+            const idx  = list.findIndex(p => p.id === item.id);
+            if (idx > -1) { list.splice(idx, 1); this.classList.remove('is-wished'); }
+            else          { list.push(item);      this.classList.add('is-wished'); }
+            localStorage.setItem('sunilies_wishlist', JSON.stringify(list));
+            document.querySelectorAll('.js-wishlist-count')
+                .forEach(el => el.textContent = list.length || '');
+        });
+    });
 }); // end DOMContentLoaded
