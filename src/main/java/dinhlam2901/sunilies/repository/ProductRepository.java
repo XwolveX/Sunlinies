@@ -114,7 +114,18 @@ public class ProductRepository {
                 .update("active", false)
                 .get();
     }
+    public List<Product> findAllAdmin() throws ExecutionException, InterruptedException {
+        return db().collection(COLLECTION)
+                .get().get()
+                .getDocuments().stream()
+                .map(this::toProduct)
+                .collect(Collectors.toList());
+    }
 
+    // ─── Xoá vĩnh viễn sản phẩm khỏi Firestore ──────────────────
+    public void hardDelete(String id) throws ExecutionException, InterruptedException {
+        db().collection(COLLECTION).document(id).delete().get();
+    }
     // ─── Helper: DocumentSnapshot → Product ──────────────────────
     private Product toProduct(DocumentSnapshot doc) {
         Product p = doc.toObject(Product.class);

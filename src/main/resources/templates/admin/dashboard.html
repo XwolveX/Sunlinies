@@ -1,451 +1,649 @@
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Admin – SUNILIES</title>
-    <link rel="stylesheet" th:href="@{/css/admin.css}"/>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com"/>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
-</head>
+<head th:replace="~{layout/base :: head('Admin – SUNILIES')}"></head>
 <body>
+<style>
+    /* ── Biến màu dùng lại từ brand ─────────────────── */
+    :root{
+        --mc:#c8986a; --dk:#3d2e1c; --bd:#e8e4de;
+        --bg:#faf7f2; --muted:#7a6a57;
+        --fd:'Playfair Display',serif;
+        --green:#27ae60; --red:#e74c3c; --yellow:#e67e22;
+    }
 
-<!-- ══════════════════════════════════════════════════════════
-     SIDEBAR
-     ══════════════════════════════════════════════════════════ -->
-<aside class="adm-sidebar">
-    <div class="adm-sidebar__brand">
-        <span class="adm-sidebar__logo">S</span>
-        <span class="adm-sidebar__title">SUNILIES<br/><small>Admin Panel</small></span>
-    </div>
-    <nav class="adm-nav">
-        <a href="#section-stats"   class="adm-nav__link adm-nav__link--active">
-            <span class="adm-nav__icon">📊</span> Tổng quan
-        </a>
-        <a href="#section-add"     class="adm-nav__link">
-            <span class="adm-nav__icon">➕</span> Thêm sản phẩm
-        </a>
-        <a href="#section-list"    class="adm-nav__link">
-            <span class="adm-nav__icon">📦</span> Quản lý kho
-        </a>
-    </nav>
-    <div class="adm-sidebar__footer">
-        <div class="adm-admin-info">
-            <div class="adm-admin-avatar" th:text="${admin.fullName != null ? admin.fullName.substring(0,1).toUpperCase() : 'A'}">A</div>
+    /* ── Layout tổng ─────────────────────────────────── */
+    .adm-page{padding:48px 0 80px;min-height:70vh;background:var(--bg);}
+    .adm-grid{display:grid;grid-template-columns:260px 1fr;gap:32px;align-items:start;}
+
+    /* ── Sidebar ──────────────────────────────────────── */
+    .adm-sidebar{background:#fff;border-radius:16px;overflow:hidden;border:1px solid var(--bd);position:sticky;top:100px;}
+    .adm-profile{background:var(--dk);padding:28px 24px;text-align:center;}
+    .adm-avatar{width:72px;height:72px;border-radius:50%;background:var(--mc);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:#fff;margin:0 auto 14px;font-family:var(--fd);}
+    .adm-name{font-family:var(--fd);font-size:17px;color:#faf2e6;margin-bottom:4px;}
+    .adm-role-badge{display:inline-block;font-size:10px;padding:3px 12px;border-radius:50px;font-weight:700;letter-spacing:1px;background:rgba(200,152,106,.25);color:var(--mc);border:1px solid rgba(200,152,106,.4);margin-top:8px;}
+
+    .adm-nav{padding:12px 0;}
+    .adm-nav__item{display:flex;align-items:center;gap:12px;padding:13px 20px;font-size:14px;color:var(--muted);cursor:pointer;transition:all .2s;border-left:3px solid transparent;text-decoration:none;background:none;border-top:none;border-right:none;border-bottom:none;width:100%;text-align:left;font-family:inherit;}
+    .adm-nav__item:hover{background:#faf7f2;color:var(--dk);}
+    .adm-nav__item.is-active{background:#faf7f2;color:var(--dk);border-left-color:var(--mc);font-weight:600;}
+    .adm-nav__item svg{width:18px;height:18px;flex-shrink:0;}
+    .adm-nav__badge{margin-left:auto;background:var(--mc);color:#fff;border-radius:50px;font-size:10px;font-weight:700;padding:2px 7px;}
+    .adm-nav__badge--warn{background:var(--yellow);}
+    .adm-nav__sep{height:1px;background:var(--bd);margin:6px 0;}
+
+    /* ── Cards chung ─────────────────────────────────── */
+    .adm-card{background:#fff;border-radius:16px;border:1px solid var(--bd);overflow:hidden;margin-bottom:20px;}
+    .adm-card__header{display:flex;align-items:center;justify-content:space-between;padding:18px 24px;border-bottom:1px solid var(--bd);}
+    .adm-card__title{font-family:var(--fd);font-size:16px;font-weight:500;color:var(--dk);}
+    .adm-card__body{padding:20px 24px;}
+
+    /* ── Toast ───────────────────────────────────────── */
+    .adm-toast{padding:14px 20px;border-radius:10px;font-size:13px;font-weight:500;margin-bottom:16px;}
+    .adm-toast--ok{background:#f0fdf4;border:1px solid #bbf7d0;color:#166534;}
+    .adm-toast--err{background:#fff0ee;border:1px solid #fdb7b0;color:#c0392b;}
+
+    /* ── Stat cards ──────────────────────────────────── */
+    .adm-stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;margin-bottom:20px;}
+    .adm-stat{background:#fff;border-radius:12px;border:1px solid var(--bd);padding:18px 16px;text-align:center;transition:transform .2s;}
+    .adm-stat:hover{transform:translateY(-2px);}
+    .adm-stat__icon{font-size:26px;margin-bottom:6px;}
+    .adm-stat__num{font-size:24px;font-weight:700;color:var(--dk);line-height:1;margin-bottom:4px;}
+    .adm-stat__label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;}
+    .adm-stat--sp{border-top:3px solid var(--mc);}
+    .adm-stat--ok{border-top:3px solid var(--green);}
+    .adm-stat--warn{border-top:3px solid var(--yellow);}
+    .adm-stat--err{border-top:3px solid var(--red);}
+    .adm-stat--money{border-top:3px solid #a67c52;}
+    .adm-stat__num.small{font-size:16px;}
+
+    /* ── Bảng ────────────────────────────────────────── */
+    .adm-table-wrap{overflow-x:auto;}
+    .adm-table{width:100%;border-collapse:collapse;font-size:13px;}
+    .adm-table thead th{background:var(--dk);color:rgba(255,255,255,.75);padding:11px 14px;text-align:left;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;white-space:nowrap;}
+    .adm-table tbody tr{border-bottom:1px solid var(--bd);transition:background .15s;}
+    .adm-table tbody tr:hover{background:#fdf8f3;}
+    .adm-table tbody td{padding:10px 14px;vertical-align:middle;}
+    .adm-table__thumb{width:44px;height:44px;border-radius:8px;object-fit:cover;border:1px solid var(--bd);display:block;}
+    .adm-table__name{font-weight:600;color:var(--dk);}
+    .adm-table__sub{font-size:11px;color:var(--muted);margin-top:2px;}
+    .adm-table__empty{text-align:center;padding:40px;color:var(--muted);font-style:italic;}
+    .adm-row--out{background:#fff5f5!important;}
+    .adm-row--low{background:#fffbf0!important;}
+
+    /* ── Inline edit ────────────────────────────────── */
+    .adm-ie{display:flex;align-items:center;gap:5px;}
+    .adm-ie input{width:88px;padding:5px 8px;border:1.5px solid var(--bd);border-radius:6px;font-size:12px;font-family:inherit;outline:none;}
+    .adm-ie input:focus{border-color:var(--mc);}
+    .adm-ie-btn{width:24px;height:24px;border-radius:5px;border:none;cursor:pointer;background:#eafaf1;color:var(--green);font-size:12px;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0;}
+    .adm-ie-btn:hover{background:var(--green);color:#fff;}
+
+    /* ── Toggle ─────────────────────────────────────── */
+    .adm-toggle{position:relative;display:inline-block;width:40px;height:22px;cursor:pointer;}
+    .adm-toggle input{opacity:0;width:0;height:0;}
+    .adm-toggle__s{position:absolute;inset:0;background:#ddd;border-radius:22px;transition:background .25s;}
+    .adm-toggle__s::before{content:'';position:absolute;width:16px;height:16px;border-radius:50%;background:#fff;left:3px;top:3px;transition:transform .25s;box-shadow:0 1px 3px rgba(0,0,0,.2);}
+    .adm-toggle input:checked+.adm-toggle__s{background:var(--green);}
+    .adm-toggle input:checked+.adm-toggle__s::before{transform:translateX(18px);}
+
+    /* ── Badges ─────────────────────────────────────── */
+    .adm-chip{display:inline-block;padding:3px 10px;border-radius:20px;background:#f0e8de;color:#7a5a3a;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;}
+    .adm-badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;margin-top:2px;}
+    .adm-badge--out{background:#fff0ee;color:var(--red);}
+    .adm-badge--low{background:#fef9e7;color:var(--yellow);}
+
+    /* ── Status đơn hàng ────────────────────────────── */
+    .ord-status{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:50px;font-size:11px;font-weight:700;letter-spacing:.5px;}
+    .ord-status--PENDING{background:#fef9e7;color:var(--yellow);border:1px solid #f9ca24;}
+    .ord-status--PAID{background:#eafaf1;color:var(--green);border:1px solid #a9dfbf;}
+    .ord-status--FAILED{background:#fff0ee;color:var(--red);border:1px solid #fdb7b0;}
+    .ord-status--CANCELLED{background:#f5f5f5;color:#999;border:1px solid #ddd;}
+
+    /* ── Buttons ─────────────────────────────────────── */
+    .adm-btn{display:inline-flex;align-items:center;gap:5px;padding:8px 16px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;text-decoration:none;border:none;font-family:inherit;}
+    .adm-btn--primary{background:var(--mc);color:#fff;} .adm-btn--primary:hover{background:#a87248;}
+    .adm-btn--ghost{background:transparent;border:1.5px solid var(--bd);color:var(--dk);} .adm-btn--ghost:hover{border-color:var(--mc);color:var(--mc);}
+    .adm-btn--outline{background:#fff;border:1.5px solid var(--mc);color:var(--mc);} .adm-btn--outline:hover{background:#faf0e6;}
+    .adm-btn--danger{background:#fff0ee;border:1px solid #fdb7b0;color:var(--red);} .adm-btn--danger:hover{background:var(--red);color:#fff;}
+    .adm-btn--warn{background:#fef9e7;border:1px solid #f9ca24;color:var(--yellow);}  .adm-btn--warn:hover{background:var(--yellow);color:#fff;}
+    .adm-btn--sm{padding:5px 10px;font-size:11px;}
+    .adm-btn-actions{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+
+    /* ── Form ────────────────────────────────────────── */
+    .adm-form{display:flex;flex-direction:column;gap:14px;}
+    .adm-form-row{display:grid;gap:14px;}
+    .adm-form-row--2{grid-template-columns:1fr 1fr;}
+    .adm-form-row--3{grid-template-columns:1fr 1fr 1fr;}
+    .adm-label{display:block;font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);margin-bottom:5px;}
+    .req{color:var(--red);}
+    .adm-input{width:100%;padding:9px 12px;border:1.5px solid var(--bd);border-radius:8px;font-size:13px;font-family:inherit;color:var(--dk);background:#fff;outline:none;transition:border-color .2s;}
+    .adm-input:focus{border-color:var(--mc);box-shadow:0 0 0 3px rgba(200,152,106,.12);}
+    .adm-textarea{width:100%;padding:9px 12px;border:1.5px solid var(--bd);border-radius:8px;font-size:13px;font-family:inherit;color:var(--dk);background:#fff;resize:vertical;outline:none;transition:border-color .2s;}
+    .adm-textarea:focus{border-color:var(--mc);}
+    .adm-checkrow{display:flex;flex-wrap:wrap;gap:16px;padding:14px;background:#faf7f2;border-radius:8px;}
+    .adm-check{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:500;cursor:pointer;}
+    .adm-check input{width:15px;height:15px;accent-color:var(--mc);cursor:pointer;}
+    .adm-form-actions{display:flex;gap:12px;padding-top:8px;border-top:1px solid var(--bd);}
+
+    /* ── Search ──────────────────────────────────────── */
+    .adm-search{position:relative;max-width:280px;}
+    .adm-search input{padding-left:32px;}
+    .adm-search::before{content:'🔍';position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:12px;pointer-events:none;}
+
+    /* ── Modal ───────────────────────────────────────── */
+    .adm-overlay{display:none;position:fixed;inset:0;background:rgba(20,12,5,.5);z-index:300;backdrop-filter:blur(3px);align-items:flex-start;justify-content:center;padding:40px 16px;overflow-y:auto;}
+    .adm-overlay.open{display:flex;}
+    .adm-modal{background:#fff;border-radius:16px;width:100%;max-width:740px;box-shadow:0 20px 60px rgba(0,0,0,.2);animation:mIn .25s ease;}
+    @keyframes mIn{from{opacity:0;transform:translateY(-16px) scale(.97)}to{opacity:1;transform:none}}
+    .adm-modal__head{display:flex;align-items:center;justify-content:space-between;padding:18px 24px 14px;border-bottom:1px solid var(--bd);}
+    .adm-modal__title{font-family:var(--fd);font-size:17px;font-weight:500;}
+    .adm-modal__close{width:30px;height:30px;border-radius:50%;border:none;background:#f5f5f5;cursor:pointer;font-size:14px;color:var(--muted);transition:background .2s;}
+    .adm-modal__close:hover{background:var(--bd);}
+    .adm-modal__body{padding:20px 24px 24px;}
+
+    /* ── Order detail modal ────────────────────────── */
+    .ord-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
+    .ord-detail-item label{font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:3px;}
+    .ord-detail-item span{font-size:13px;color:var(--dk);font-weight:500;}
+    .ord-items-list{border-top:1px solid var(--bd);padding-top:12px;display:flex;flex-direction:column;gap:8px;}
+    .ord-item-row{display:flex;align-items:center;gap:10px;padding:8px;background:#faf7f2;border-radius:8px;}
+    .ord-item-row img{width:44px;height:44px;object-fit:cover;border-radius:6px;flex-shrink:0;}
+    .ord-item-row .name{flex:1;font-size:13px;font-weight:500;color:var(--dk);}
+    .ord-item-row .name small{display:block;font-size:11px;color:var(--muted);font-weight:400;}
+    .ord-item-row .price{font-size:13px;font-weight:600;color:var(--mc);white-space:nowrap;}
+
+    /* ── Responsive ───────────────────────────────── */
+    @media(max-width:900px){
+        .adm-grid{grid-template-columns:1fr;}
+        .adm-sidebar{position:static;}
+        .adm-stats{grid-template-columns:1fr 1fr 1fr;}
+    }
+    @media(max-width:600px){
+        .adm-stats{grid-template-columns:1fr 1fr;}
+        .adm-form-row--2,.adm-form-row--3{grid-template-columns:1fr;}
+    }
+</style>
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+<div class="adm-page">
+    <div class="container">
+        <div class="adm-grid">
+
+            <!-- ══════════════════════════════════════════
+                 SIDEBAR
+                 ══════════════════════════════════════════ -->
+            <aside class="adm-sidebar">
+                <div class="adm-profile">
+                    <div class="adm-avatar"
+                         th:text="${admin.fullName != null ? admin.fullName.substring(0,1).toUpperCase() : 'A'}">A</div>
+                    <div class="adm-name" th:text="${admin.fullName ?: admin.email}">Admin</div>
+                    <div class="adm-email" style="font-size:11px;color:rgba(250,242,230,.55);"
+                         th:text="${admin.email}">email</div>
+                    <div class="adm-role-badge">ADMIN</div>
+                </div>
+
+                <nav class="adm-nav">
+                    <!-- Tổng quan -->
+                    <button class="adm-nav__item"
+                            th:classappend="${activeTab=='stats'} ? ' is-active'"
+                            onclick="switchTab('stats',this)">
+                        <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                            <path d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"/>
+                        </svg>
+                        Tổng quan
+                    </button>
+
+                    <!-- Sản phẩm -->
+                    <button class="adm-nav__item"
+                            th:classappend="${activeTab=='products'} ? ' is-active'"
+                            onclick="switchTab('products',this)">
+                        <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                            <path d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z"/>
+                        </svg>
+                        Sản phẩm
+                        <span class="adm-nav__badge" th:text="${totalProducts}">0</span>
+                    </button>
+
+                    <!-- Đơn hàng -->
+                    <button class="adm-nav__item"
+                            th:classappend="${activeTab=='orders'} ? ' is-active'"
+                            onclick="switchTab('orders',this)">
+                        <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                            <path d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z"/>
+                        </svg>
+                        Đơn hàng
+                        <span th:if="${pendingOrders > 0}" class="adm-nav__badge adm-nav__badge--warn"
+                              th:text="${pendingOrders}">0</span>
+                    </button>
+
+                    <div class="adm-nav__sep"></div>
+
+                    <a th:href="@{/}" target="_blank" class="adm-nav__item">
+                        <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                            <path d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"/>
+                        </svg>
+                        Xem trang web
+                    </a>
+                    <a th:href="@{/logout}" class="adm-nav__item" style="color:var(--red);">
+                        <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                            <path d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"/>
+                        </svg>
+                        Đăng xuất
+                    </a>
+                </nav>
+            </aside>
+
+            <!-- ══════════════════════════════════════════
+                 MAIN CONTENT
+                 ══════════════════════════════════════════ -->
             <div>
-                <div class="adm-admin-name" th:text="${admin.fullName ?: admin.email}">Admin</div>
-                <div class="adm-admin-role">ADMIN</div>
-            </div>
-        </div>
-        <a href="/logout" class="adm-btn-logout">Đăng xuất</a>
-    </div>
-</aside>
+                <!-- Flash messages -->
+                <div th:if="${success}" class="adm-toast adm-toast--ok" th:text="${success}"></div>
+                <div th:if="${error}"   class="adm-toast adm-toast--err" th:text="${error}"></div>
 
-<!-- ══════════════════════════════════════════════════════════
-     MAIN CONTENT
-     ══════════════════════════════════════════════════════════ -->
-<main class="adm-main">
+                <!-- ════════════════════════════════════
+                     TAB 1: TỔNG QUAN
+                     ════════════════════════════════════ -->
+                <div id="tab-stats" th:style="${activeTab != 'stats'} ? 'display:none'">
 
-    <!-- ── Header ── -->
-    <header class="adm-header">
-        <div>
-            <h1 class="adm-header__title">Quản lý sản phẩm</h1>
-            <p class="adm-header__sub">Thêm, chỉnh sửa, quản lý kho hàng SUNILIES</p>
-        </div>
-        <a href="/static" target="_blank" class="adm-btn adm-btn--ghost">🔗 Xem trang web</a>
-    </header>
-
-    <!-- ── Flash messages ── -->
-    <div th:if="${success}" class="adm-toast adm-toast--success" th:text="${success}"></div>
-    <div th:if="${error}"   class="adm-toast adm-toast--error"   th:text="${error}"></div>
-
-    <!-- ══════════════════════════════════════════════════
-         SECTION 1: THỐNG KÊ TỔNG QUAN
-         ══════════════════════════════════════════════════ -->
-    <section id="section-stats" class="adm-section">
-        <div class="adm-stats-grid">
-            <div class="adm-stat-card adm-stat-card--total">
-                <div class="adm-stat-card__icon">📦</div>
-                <div class="adm-stat-card__num" th:text="${totalProducts}">0</div>
-                <div class="adm-stat-card__label">Tổng sản phẩm</div>
-            </div>
-            <div class="adm-stat-card adm-stat-card--active">
-                <div class="adm-stat-card__icon">✅</div>
-                <div class="adm-stat-card__num" th:text="${activeProducts}">0</div>
-                <div class="adm-stat-card__label">Đang hiển thị</div>
-            </div>
-            <div class="adm-stat-card adm-stat-card--low">
-                <div class="adm-stat-card__icon">⚠️</div>
-                <div class="adm-stat-card__num" th:text="${lowStock}">0</div>
-                <div class="adm-stat-card__label">Sắp hết hàng (≤5)</div>
-            </div>
-            <div class="adm-stat-card adm-stat-card--out">
-                <div class="adm-stat-card__icon">🚫</div>
-                <div class="adm-stat-card__num" th:text="${outOfStock}">0</div>
-                <div class="adm-stat-card__label">Hết hàng</div>
-            </div>
-            <div class="adm-stat-card adm-stat-card--value">
-                <div class="adm-stat-card__icon">💰</div>
-                <div class="adm-stat-card__num"
-                     th:text="${#numbers.formatDecimal(totalValue, 0, 'COMMA', 0, 'POINT')} + '₫'">0₫</div>
-                <div class="adm-stat-card__label">Tổng giá trị kho</div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ══════════════════════════════════════════════════
-         SECTION 2: THÊM SẢN PHẨM MỚI
-         ══════════════════════════════════════════════════ -->
-    <section id="section-add" class="adm-section">
-        <div class="adm-section__header">
-            <h2 class="adm-section__title">➕ Thêm sản phẩm mới</h2>
-            <button class="adm-btn adm-btn--outline" onclick="toggleAddForm()">Thu gọn / Mở rộng</button>
-        </div>
-
-        <div id="add-form-wrapper" class="adm-card" style="display:none;">
-            <form th:action="@{/admin/products/add}" method="post" class="adm-form">
-
-                <!-- Hàng 1: Tên + Handle -->
-                <div class="adm-form__row">
-                    <div class="adm-form__group adm-form__group--2">
-                        <label class="adm-label">Tên sản phẩm <span class="req">*</span></label>
-                        <input type="text" name="name" class="adm-input" required placeholder="VD: Sandy Bag"/>
-                    </div>
-                    <div class="adm-form__group adm-form__group--2">
-                        <label class="adm-label">Handle (URL slug) <span class="req">*</span></label>
-                        <input type="text" name="handle" class="adm-input" required placeholder="VD: sandy-bag"/>
-                    </div>
-                </div>
-
-                <!-- Hàng 2: Giá + Giá gốc + Tồn kho -->
-                <div class="adm-form__row">
-                    <div class="adm-form__group adm-form__group--3">
-                        <label class="adm-label">Giá bán (₫) <span class="req">*</span></label>
-                        <input type="number" name="price" class="adm-input" required min="0" placeholder="350000"/>
-                    </div>
-                    <div class="adm-form__group adm-form__group--3">
-                        <label class="adm-label">Giá gốc (₫)</label>
-                        <input type="number" name="comparePrice" class="adm-input" min="0" placeholder="450000"/>
-                    </div>
-                    <div class="adm-form__group adm-form__group--3">
-                        <label class="adm-label">Số lượng tồn kho <span class="req">*</span></label>
-                        <input type="number" name="stock" class="adm-input" required min="0" value="0"/>
-                    </div>
-                </div>
-
-                <!-- Hàng 3: Category + Collection -->
-                <div class="adm-form__row">
-                    <div class="adm-form__group adm-form__group--2">
-                        <label class="adm-label">Danh mục (category) <span class="req">*</span></label>
-                        <input type="text" name="category" class="adm-input" required placeholder="bag / hat / accessory"/>
-                    </div>
-                    <div class="adm-form__group adm-form__group--2">
-                        <label class="adm-label">Bộ sưu tập (collection)</label>
-                        <input type="text" name="collection" class="adm-input" placeholder="dang-ha / vi-may"/>
-                    </div>
-                </div>
-
-                <!-- Ảnh đại diện -->
-                <div class="adm-form__group">
-                    <label class="adm-label">URL ảnh đại diện <span class="req">*</span></label>
-                    <input type="url" name="imageUrl" class="adm-input" required placeholder="https://..."/>
-                </div>
-
-                <!-- Danh sách ảnh -->
-                <div class="adm-form__group">
-                    <label class="adm-label">Danh sách ảnh (cách nhau bởi dấu phẩy)</label>
-                    <input type="text" name="images" class="adm-input" placeholder="https://img1.jpg, https://img2.jpg"/>
-                </div>
-
-                <!-- Mô tả ngắn -->
-                <div class="adm-form__group">
-                    <label class="adm-label">Mô tả ngắn <span class="req">*</span></label>
-                    <textarea name="description" class="adm-textarea" rows="2" required placeholder="Mô tả 1-2 dòng..."></textarea>
-                </div>
-
-                <!-- Mô tả chi tiết -->
-                <div class="adm-form__group">
-                    <label class="adm-label">Mô tả chi tiết (HTML)</label>
-                    <textarea name="fullDescription" class="adm-textarea adm-textarea--tall" rows="4" placeholder="<p>Nội dung chi tiết...</p>"></textarea>
-                </div>
-
-                <!-- Sizes + Colors + Tags -->
-                <div class="adm-form__row">
-                    <div class="adm-form__group adm-form__group--3">
-                        <label class="adm-label">Sizes (cách nhau bởi dấu phẩy)</label>
-                        <input type="text" name="sizes" class="adm-input" placeholder="S, M, L, XL"/>
-                    </div>
-                    <div class="adm-form__group adm-form__group--3">
-                        <label class="adm-label">Màu sắc (cách nhau bởi dấu phẩy)</label>
-                        <input type="text" name="colors" class="adm-input" placeholder="Nâu, Kem, Đen"/>
-                    </div>
-                    <div class="adm-form__group adm-form__group--3">
-                        <label class="adm-label">Tags (cách nhau bởi dấu phẩy)</label>
-                        <input type="text" name="tags" class="adm-input" placeholder="new, hot, summer"/>
-                    </div>
-                </div>
-
-                <!-- Trạng thái -->
-                <div class="adm-form__row adm-form__row--checkboxes">
-                    <label class="adm-checkbox"><input type="checkbox" name="active" checked/> Hiển thị (active)</label>
-                    <label class="adm-checkbox"><input type="checkbox" name="onSale"/> Đang giảm giá</label>
-                    <label class="adm-checkbox"><input type="checkbox" name="isNew"/> Sản phẩm mới</label>
-                    <label class="adm-checkbox"><input type="checkbox" name="hot"/> Bán chạy / Hot</label>
-                </div>
-
-                <!-- SEO -->
-                <div class="adm-form__row">
-                    <div class="adm-form__group adm-form__group--2">
-                        <label class="adm-label">Meta Title (SEO)</label>
-                        <input type="text" name="metaTitle" class="adm-input" placeholder="Tiêu đề SEO"/>
-                    </div>
-                    <div class="adm-form__group adm-form__group--2">
-                        <label class="adm-label">Meta Description (SEO)</label>
-                        <input type="text" name="metaDescription" class="adm-input" placeholder="Mô tả SEO"/>
-                    </div>
-                </div>
-
-                <div class="adm-form__actions">
-                    <button type="submit" class="adm-btn adm-btn--primary">💾 Lưu sản phẩm</button>
-                    <button type="reset"  class="adm-btn adm-btn--ghost">🔄 Đặt lại</button>
-                </div>
-            </form>
-        </div>
-    </section>
-
-    <!-- ══════════════════════════════════════════════════
-         SECTION 3: DANH SÁCH & QUẢN LÝ KHO
-         ══════════════════════════════════════════════════ -->
-    <section id="section-list" class="adm-section">
-        <div class="adm-section__header">
-            <h2 class="adm-section__title">📦 Danh sách sản phẩm &amp; Kho hàng</h2>
-            <div class="adm-search-bar">
-                <input type="text" id="searchInput" class="adm-input adm-input--search"
-                       placeholder="🔍 Tìm theo tên, category..." oninput="filterTable()"/>
-            </div>
-        </div>
-
-        <div class="adm-card adm-card--flush">
-            <div class="adm-table-wrap">
-                <table class="adm-table" id="productTable">
-                    <thead>
-                    <tr>
-                        <th>Ảnh</th>
-                        <th>Tên sản phẩm</th>
-                        <th>Giá bán</th>
-                        <th>Giá gốc</th>
-                        <th>Tồn kho</th>
-                        <th>Category</th>
-                        <th>Trạng thái</th>
-                        <th>Thao tác</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr th:each="p : ${products}" th:id="'row-' + ${p.id}"
-                        th:classappend="${p.stock <= 0} ? ' adm-row--out' : (${p.stock <= 5} ? ' adm-row--low' : '')">
-
-                        <!-- Ảnh -->
-                        <td>
-                            <img th:src="${p.featuredImage}" th:alt="${p.name}"
-                                 class="adm-table__thumb"
-                                 onerror="this.src='/images/no-image.png'"/>
-                        </td>
-
-                        <!-- Tên -->
-                        <td>
-                            <div class="adm-table__name" th:text="${p.name}">Tên SP</div>
-                            <div class="adm-table__handle" th:text="'/' + ${p.handle}">/handle</div>
-                        </td>
-
-                        <!-- Giá bán – có thể sửa inline -->
-                        <td>
-                            <div class="adm-inline-edit">
-                                <input type="number" class="adm-input adm-input--inline"
-                                       th:value="${p.price}"
-                                       th:id="'price-' + ${p.id}"
-                                       min="0"/>
-                                <button class="adm-btn-icon adm-btn-icon--save"
-                                        th:onclick="'savePrice(\'' + ${p.id} + '\')'">✓</button>
+                    <!-- Sản phẩm stats -->
+                    <div class="adm-card">
+                        <div class="adm-card__header">
+                            <span class="adm-card__title">📦 Kho sản phẩm</span>
+                            <button class="adm-btn adm-btn--outline adm-btn--sm" onclick="switchTab('products',null)">Xem tất cả</button>
+                        </div>
+                        <div class="adm-card__body">
+                            <div class="adm-stats">
+                                <div class="adm-stat adm-stat--sp">
+                                    <div class="adm-stat__icon">📦</div>
+                                    <div class="adm-stat__num" th:text="${totalProducts}">0</div>
+                                    <div class="adm-stat__label">Tổng sản phẩm</div>
+                                </div>
+                                <div class="adm-stat adm-stat--ok">
+                                    <div class="adm-stat__icon">✅</div>
+                                    <div class="adm-stat__num" th:text="${activeProducts}">0</div>
+                                    <div class="adm-stat__label">Đang hiển thị</div>
+                                </div>
+                                <div class="adm-stat adm-stat--warn">
+                                    <div class="adm-stat__icon">⚠️</div>
+                                    <div class="adm-stat__num" th:text="${lowStock}">0</div>
+                                    <div class="adm-stat__label">Sắp hết (≤5)</div>
+                                </div>
+                                <div class="adm-stat adm-stat--err">
+                                    <div class="adm-stat__icon">🚫</div>
+                                    <div class="adm-stat__num" th:text="${outOfStock}">0</div>
+                                    <div class="adm-stat__label">Hết hàng</div>
+                                </div>
+                                <div class="adm-stat adm-stat--money">
+                                    <div class="adm-stat__icon">💰</div>
+                                    <div class="adm-stat__num small"
+                                         th:text="${#numbers.formatDecimal(totalValue,0,'COMMA',0,'POINT')} + '₫'">0₫</div>
+                                    <div class="adm-stat__label">Giá trị kho</div>
+                                </div>
                             </div>
-                        </td>
+                        </div>
+                    </div>
 
-                        <!-- Giá gốc -->
-                        <td>
-                            <div class="adm-inline-edit">
-                                <input type="number" class="adm-input adm-input--inline"
-                                       th:value="${p.comparePrice}"
-                                       th:id="'cmp-' + ${p.id}"
-                                       min="0" placeholder="—"/>
-                                <button class="adm-btn-icon adm-btn-icon--save"
-                                        th:onclick="'savePrice(\'' + ${p.id} + '\')'">✓</button>
+                    <!-- Đơn hàng stats -->
+                    <div class="adm-card">
+                        <div class="adm-card__header">
+                            <span class="adm-card__title">🧾 Đơn hàng</span>
+                            <button class="adm-btn adm-btn--outline adm-btn--sm" onclick="switchTab('orders',null)">Xem tất cả</button>
+                        </div>
+                        <div class="adm-card__body">
+                            <div class="adm-stats">
+                                <div class="adm-stat adm-stat--sp">
+                                    <div class="adm-stat__icon">🧾</div>
+                                    <div class="adm-stat__num" th:text="${totalOrders}">0</div>
+                                    <div class="adm-stat__label">Tổng đơn</div>
+                                </div>
+                                <div class="adm-stat adm-stat--warn">
+                                    <div class="adm-stat__icon">⏳</div>
+                                    <div class="adm-stat__num" th:text="${pendingOrders}">0</div>
+                                    <div class="adm-stat__label">Chờ TT</div>
+                                </div>
+                                <div class="adm-stat adm-stat--ok">
+                                    <div class="adm-stat__icon">💳</div>
+                                    <div class="adm-stat__num" th:text="${paidOrders}">0</div>
+                                    <div class="adm-stat__label">Đã TT</div>
+                                </div>
+                                <div class="adm-stat adm-stat--money">
+                                    <div class="adm-stat__icon">💵</div>
+                                    <div class="adm-stat__num small"
+                                         th:text="${#numbers.formatDecimal(totalRevenue,0,'COMMA',0,'POINT')} + '₫'">0₫</div>
+                                    <div class="adm-stat__label">Doanh thu</div>
+                                </div>
                             </div>
-                        </td>
+                        </div>
+                    </div>
 
-                        <!-- Tồn kho – có thể sửa inline -->
-                        <td>
-                            <div class="adm-inline-edit">
-                                <input type="number" class="adm-input adm-input--inline adm-input--stock"
-                                       th:value="${p.stock}"
-                                       th:id="'stock-' + ${p.id}"
-                                       min="0"/>
-                                <button class="adm-btn-icon adm-btn-icon--save"
-                                        th:onclick="'saveStock(\'' + ${p.id} + '\')'">✓</button>
-                            </div>
-                            <!-- Badge cảnh báo -->
-                            <span th:if="${p.stock <= 0}"  class="adm-badge adm-badge--out">Hết</span>
-                            <span th:if="${p.stock > 0 and p.stock <= 5}" class="adm-badge adm-badge--low">Sắp hết</span>
-                        </td>
+                    <!-- Sản phẩm sắp hết / hết hàng -->
+                    <div class="adm-card" th:if="${outOfStock > 0 or lowStock > 0}">
+                        <div class="adm-card__header">
+                            <span class="adm-card__title">⚠️ Cần nhập hàng</span>
+                        </div>
+                        <div class="adm-table-wrap">
+                            <table class="adm-table">
+                                <thead><tr><th>Sản phẩm</th><th>Tồn kho</th><th>Trạng thái</th><th>Thao tác</th></tr></thead>
+                                <tbody>
+                                <tr th:each="p : ${products}"
+                                    th:if="${p.stock <= 5}"
+                                    th:classappend="${p.stock <= 0} ? ' adm-row--out' : ' adm-row--low'">
+                                    <td>
+                                        <div style="display:flex;align-items:center;gap:10px;">
+                                            <img class="adm-table__thumb" th:src="${p.featuredImage}" th:alt="${p.name}" onerror="this.style.display='none'"/>
+                                            <div>
+                                                <div class="adm-table__name" th:text="${p.name}">-</div>
+                                                <div class="adm-table__sub" th:text="${p.category}">-</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td style="font-weight:700;" th:text="${p.stock}">0</td>
+                                    <td>
+                                        <span th:if="${p.stock <= 0}"  class="adm-badge adm-badge--out">Hết hàng</span>
+                                        <span th:if="${p.stock > 0}"   class="adm-badge adm-badge--low">Sắp hết</span>
+                                    </td>
+                                    <td>
+                                        <button class="adm-btn adm-btn--sm adm-btn--outline"
+                                                th:data-id="${p.id}" onclick="openEditModal(this.dataset.id)">✏️ Sửa kho</button>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
 
-                        <!-- Category -->
-                        <td>
-                            <span class="adm-chip" th:text="${p.category}">-</span>
-                        </td>
 
-                        <!-- Trạng thái toggle -->
-                        <td>
-                            <label class="adm-toggle" th:title="${p.active ? 'Đang hiển thị' : 'Đang ẩn'}">
-                                <input type="checkbox"
-                                       th:checked="${p.active}"
-                                       th:onchange="'toggleActive(\'' + ${p.id} + '\', this)'"/>
-                                <span class="adm-toggle__slider"></span>
-                            </label>
-                        </td>
+                <!-- ════════════════════════════════════
+                     TAB 2: SẢN PHẨM
+                     ════════════════════════════════════ -->
+                <div id="tab-products" th:style="${activeTab != 'products'} ? 'display:none'">
 
-                        <!-- Thao tác -->
-                        <td>
-                            <div class="adm-actions">
-                                <!-- Nút Sửa – mở modal -->
-                                <button class="adm-btn adm-btn--sm adm-btn--outline"
-                                        th:onclick="'openEditModal(\'' + ${p.id} + '\')'">✏️ Sửa</button>
-
-                                <!-- Nút Xoá mềm -->
-                                <form th:action="@{/admin/products/{id}/delete(id=${p.id})}" method="post"
-                                      style="display:inline"
-                                      onsubmit="return confirm('Ẩn sản phẩm này?')">
-                                    <button type="submit" class="adm-btn adm-btn--sm adm-btn--danger">🗑 Ẩn</button>
+                    <!-- Form thêm sản phẩm -->
+                    <div class="adm-card">
+                        <div class="adm-card__header">
+                            <span class="adm-card__title">➕ Thêm sản phẩm mới</span>
+                            <button class="adm-btn adm-btn--ghost adm-btn--sm" onclick="toggleAddForm()">Thu gọn / Mở rộng</button>
+                        </div>
+                        <div id="add-form-wrap" style="display:none;">
+                            <div class="adm-card__body">
+                                <form th:action="@{/admin/products/add}" method="post" class="adm-form">
+                                    <div class="adm-form-row adm-form-row--2">
+                                        <div><label class="adm-label">Tên SP <span class="req">*</span></label>
+                                            <input type="text" name="name" id="add-name" class="adm-input" required placeholder="Sandy Bag"/></div>
+                                        <div><label class="adm-label">Handle (URL) <span class="req">*</span></label>
+                                            <input type="text" name="handle" id="add-handle" class="adm-input" required placeholder="sandy-bag"/></div>
+                                    </div>
+                                    <div class="adm-form-row adm-form-row--3">
+                                        <div><label class="adm-label">Giá bán (₫) <span class="req">*</span></label>
+                                            <input type="number" name="price" class="adm-input" required min="0"/></div>
+                                        <div><label class="adm-label">Giá gốc (₫)</label>
+                                            <input type="number" name="comparePrice" class="adm-input" min="0"/></div>
+                                        <div><label class="adm-label">Tồn kho <span class="req">*</span></label>
+                                            <input type="number" name="stock" class="adm-input" required min="0" value="0"/></div>
+                                    </div>
+                                    <div class="adm-form-row adm-form-row--2">
+                                        <div><label class="adm-label">Danh mục <span class="req">*</span></label>
+                                            <input type="text" name="category" class="adm-input" required placeholder="bag / hat / acce"/></div>
+                                        <div><label class="adm-label">Collection</label>
+                                            <input type="text" name="collection" class="adm-input" placeholder="dang-ha / vi-may"/></div>
+                                    </div>
+                                    <div><label class="adm-label">Ảnh đại diện (URL) <span class="req">*</span></label>
+                                        <input type="url" name="imageUrl" class="adm-input" required placeholder="https://..."/></div>
+                                    <div><label class="adm-label">Danh sách ảnh (cách nhau bởi dấu phẩy)</label>
+                                        <input type="text" name="images" class="adm-input" placeholder="https://img1.jpg, https://img2.jpg"/></div>
+                                    <div><label class="adm-label">Mô tả ngắn</label>
+                                        <textarea name="description" class="adm-textarea" rows="2" placeholder="Mô tả ngắn gọn..."></textarea></div>
+                                    <div><label class="adm-label">Mô tả chi tiết (HTML)</label>
+                                        <textarea name="fullDescription" class="adm-textarea" rows="3" placeholder="&lt;p&gt;Nội dung...&lt;/p&gt;"></textarea></div>
+                                    <div class="adm-form-row adm-form-row--3">
+                                        <div><label class="adm-label">Sizes</label>
+                                            <input type="text" name="sizes" class="adm-input" placeholder="S, M, L, XL"/></div>
+                                        <div><label class="adm-label">Màu sắc</label>
+                                            <input type="text" name="colors" class="adm-input" placeholder="Nâu, Kem, Đen"/></div>
+                                        <div><label class="adm-label">Tags</label>
+                                            <input type="text" name="tags" class="adm-input" placeholder="new, hot, summer"/></div>
+                                    </div>
+                                    <div class="adm-checkrow">
+                                        <label class="adm-check"><input type="checkbox" name="active" checked/> Hiển thị</label>
+                                        <label class="adm-check"><input type="checkbox" name="onSale"/> Giảm giá</label>
+                                        <label class="adm-check"><input type="checkbox" name="isNew"/> Sản phẩm mới</label>
+                                        <label class="adm-check"><input type="checkbox" name="hot"/> Hot</label>
+                                    </div>
+                                    <div class="adm-form-row adm-form-row--2">
+                                        <div><label class="adm-label">Meta Title</label>
+                                            <input type="text" name="metaTitle" class="adm-input"/></div>
+                                        <div><label class="adm-label">Meta Description</label>
+                                            <input type="text" name="metaDescription" class="adm-input"/></div>
+                                    </div>
+                                    <div class="adm-form-actions">
+                                        <button type="submit" class="adm-btn adm-btn--primary">💾 Lưu sản phẩm</button>
+                                        <button type="reset"  class="adm-btn adm-btn--ghost">🔄 Đặt lại</button>
+                                    </div>
                                 </form>
                             </div>
-                        </td>
-                    </tr>
+                        </div>
+                    </div>
 
-                    <!-- Trường hợp rỗng -->
-                    <tr th:if="${#lists.isEmpty(products)}">
-                        <td colspan="8" class="adm-table__empty">Chưa có sản phẩm nào. Hãy thêm ngay!</td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </section>
+                    <!-- Danh sách sản phẩm -->
+                    <div class="adm-card">
+                        <div class="adm-card__header">
+                            <span class="adm-card__title">📋 Danh sách sản phẩm</span>
+                            <div class="adm-search">
+                                <input type="text" id="searchInput" class="adm-input" placeholder="Tìm tên, category..." oninput="filterTable()"/>
+                            </div>
+                        </div>
+                        <div class="adm-table-wrap">
+                            <table class="adm-table" id="productTable">
+                                <thead>
+                                <tr>
+                                    <th>Ảnh</th><th>Tên sản phẩm</th><th>Giá bán</th><th>Giá gốc</th>
+                                    <th>Tồn kho</th><th>Category</th><th>Hiển thị</th><th>Thao tác</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="p : ${products}" th:id="'row-' + ${p.id}"
+                                    th:classappend="${p.stock <= 0} ? ' adm-row--out' : (${p.stock <= 5} ? ' adm-row--low' : '')">
+                                    <td><img class="adm-table__thumb" th:src="${p.featuredImage}" th:alt="${p.name}" onerror="this.style.display='none'"/></td>
+                                    <td>
+                                        <div class="adm-table__name" th:text="${p.name}">-</div>
+                                        <div class="adm-table__sub" th:text="'/' + ${p.handle}">-</div>
+                                    </td>
+                                    <td>
+                                        <div class="adm-ie">
+                                            <input type="number" th:id="'price-'+${p.id}" th:value="${p.price}" min="0" class="adm-ie"/>
+                                            <button class="adm-ie-btn" th:data-id="${p.id}" onclick="savePrice(this.dataset.id)">✓</button>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="adm-ie">
+                                            <input type="number" th:id="'cmp-'+${p.id}" th:value="${p.comparePrice}" min="0" placeholder="—" class="adm-ie"/>
+                                            <button class="adm-ie-btn" th:data-id="${p.id}" onclick="savePrice(this.dataset.id)">✓</button>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="adm-ie">
+                                            <input type="number" th:id="'stock-'+${p.id}" th:value="${p.stock}" min="0" style="width:60px" class="adm-ie"/>
+                                            <button class="adm-ie-btn" th:data-id="${p.id}" onclick="saveStock(this.dataset.id)">✓</button>
+                                        </div>
+                                        <span th:if="${p.stock <= 0}"  class="adm-badge adm-badge--out">Hết</span>
+                                        <span th:if="${p.stock > 0 and p.stock <= 5}" class="adm-badge adm-badge--low">Sắp hết</span>
+                                    </td>
+                                    <td><span class="adm-chip" th:text="${p.category}">-</span></td>
+                                    <td>
+                                        <label class="adm-toggle">
+                                            <input type="checkbox" th:checked="${p.active}" th:data-id="${p.id}" onchange="toggleActive(this.dataset.id,this)"/>
+                                            <span class="adm-toggle__s"></span>
+                                        </label>
+                                    </td>
+                                    <td>
+                                        <div class="adm-btn-actions">
+                                            <button class="adm-btn adm-btn--sm adm-btn--outline"
+                                                    th:data-id="${p.id}" onclick="openEditModal(this.dataset.id)">✏️ Sửa</button>
+                                            <form th:action="@{/admin/products/{id}/hide(id=${p.id})}" method="post" style="display:inline"
+                                                  onsubmit="return confirm('Ẩn sản phẩm này?')">
+                                                <button type="submit" class="adm-btn adm-btn--sm adm-btn--warn">👁 Ẩn</button>
+                                            </form>
+                                            <form th:action="@{/admin/products/{id}/delete(id=${p.id})}" method="post" style="display:inline"
+                                                  onsubmit="return confirm('XOÁ VĨNH VIỄN sản phẩm này? Không thể phục hồi!')">
+                                                <button type="submit" class="adm-btn adm-btn--sm adm-btn--danger">🗑 Xoá</button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(products)}">
+                                    <td colspan="8" class="adm-table__empty">Chưa có sản phẩm nào.</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
 
-</main><!-- /adm-main -->
+
+                <!-- ════════════════════════════════════
+                     TAB 3: ĐƠN HÀNG
+                     ════════════════════════════════════ -->
+                <div id="tab-orders" th:style="${activeTab != 'orders'} ? 'display:none'">
+
+                    <!-- Bộ lọc -->
+                    <div class="adm-card">
+                        <div class="adm-card__header">
+                            <span class="adm-card__title">🧾 Quản lý đơn hàng</span>
+                            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                                <button class="adm-btn adm-btn--sm adm-btn--outline ord-filter-btn is-active" data-filter="ALL" onclick="filterOrders('ALL',this)">Tất cả</button>
+                                <button class="adm-btn adm-btn--sm adm-btn--ghost ord-filter-btn" data-filter="PENDING"   onclick="filterOrders('PENDING',this)">⏳ Chờ TT</button>
+                                <button class="adm-btn adm-btn--sm adm-btn--ghost ord-filter-btn" data-filter="PAID"      onclick="filterOrders('PAID',this)">✅ Đã TT</button>
+                                <button class="adm-btn adm-btn--sm adm-btn--ghost ord-filter-btn" data-filter="FAILED"    onclick="filterOrders('FAILED',this)">❌ Thất bại</button>
+                                <button class="adm-btn adm-btn--sm adm-btn--ghost ord-filter-btn" data-filter="CANCELLED" onclick="filterOrders('CANCELLED',this)">🚫 Đã huỷ</button>
+                            </div>
+                        </div>
+                        <div class="adm-table-wrap">
+                            <table class="adm-table" id="ordersTable">
+                                <thead>
+                                <tr>
+                                    <th>Mã đơn</th><th>Khách hàng</th><th>Tổng tiền</th>
+                                    <th>PT Thanh toán</th><th>Trạng thái</th><th>Ngày đặt</th><th>Thao tác</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="o : ${orders}" th:id="'ord-'+${o.id}" th:data-status="${o.status}">
+                                    <td>
+                                        <div class="adm-table__name" th:text="'#' + ${o.id.length() > 12 ? o.id.substring(0,12) + '…' : o.id}">-</div>
+                                        <div class="adm-table__sub" th:if="${o.momoTransId != null}" th:text="'Trans: ' + ${o.momoTransId}">-</div>
+                                    </td>
+                                    <td>
+                                        <div class="adm-table__name" th:text="${o.fullName}">-</div>
+                                        <div class="adm-table__sub" th:text="${o.phone}">-</div>
+                                    </td>
+                                    <td style="font-weight:700;color:var(--mc);"
+                                        th:text="${#numbers.formatDecimal(o.totalAmount,0,'COMMA',0,'POINT')} + '₫'">0₫</td>
+                                    <td>
+                                        <span class="adm-chip" th:text="${o.paymentMethod ?: 'COD'}">-</span>
+                                    </td>
+                                    <td>
+                                <span th:id="'status-'+${o.id}"
+                                      class="ord-status"
+                                      th:classappend="'ord-status--' + ${o.status}"
+                                      th:text="${o.status == 'PENDING'   ? 'Chờ thanh toán' :
+                                                 o.status == 'PAID'      ? 'Đã thanh toán'  :
+                                                 o.status == 'FAILED'    ? 'Thất bại'        :
+                                                 o.status == 'CANCELLED' ? 'Đã huỷ'          : o.status}">-</span>
+                                    </td>
+                                    <td class="adm-table__sub"
+                                        th:text="${#dates.format(new java.util.Date(o.createdAt), 'dd/MM/yy HH:mm')}">-</td>
+                                    <td>
+                                        <div class="adm-btn-actions">
+                                            <button class="adm-btn adm-btn--sm adm-btn--outline"
+                                                    th:data-id="${o.id}" onclick="openOrderModal(this.dataset.id)">🔍 Chi tiết</button>
+                                            <select class="adm-input" style="width:auto;padding:5px 8px;font-size:11px;"
+                                                    th:data-id="${o.id}" onchange="changeOrderStatus(this.dataset.id, this.value)">
+                                                <option value="PENDING"   th:selected="${o.status=='PENDING'}">Chờ TT</option>
+                                                <option value="PAID"      th:selected="${o.status=='PAID'}">Đã TT</option>
+                                                <option value="FAILED"    th:selected="${o.status=='FAILED'}">Thất bại</option>
+                                                <option value="CANCELLED" th:selected="${o.status=='CANCELLED'}">Đã huỷ</option>
+                                            </select>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(orders)}">
+                                    <td colspan="7" class="adm-table__empty">Chưa có đơn hàng nào.</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div><!-- /main -->
+        </div><!-- /grid -->
+    </div><!-- /container -->
+</div><!-- /page -->
+
+<div th:replace="~{fragments/footer :: footer}"></div>
 
 
-<!-- ══════════════════════════════════════════════════════════
+<!-- ══════════════════════════════════════════
      MODAL: CHỈNH SỬA SẢN PHẨM
-     ══════════════════════════════════════════════════════════ -->
-<div class="adm-modal-overlay" id="editModalOverlay" onclick="closeEditModal()">
+     ══════════════════════════════════════════ -->
+<div class="adm-overlay" id="editOverlay" onclick="closeEditModal()">
     <div class="adm-modal" onclick="event.stopPropagation()">
-        <div class="adm-modal__header">
-            <h3 class="adm-modal__title">✏️ Chỉnh sửa sản phẩm</h3>
+        <div class="adm-modal__head">
+            <span class="adm-modal__title">✏️ Chỉnh sửa sản phẩm</span>
             <button class="adm-modal__close" onclick="closeEditModal()">✕</button>
         </div>
         <div class="adm-modal__body">
             <form id="editForm" method="post" class="adm-form">
-                <input type="hidden" name="_method" value="POST"/>
-
-                <div class="adm-form__row">
-                    <div class="adm-form__group adm-form__group--2">
-                        <label class="adm-label">Tên sản phẩm *</label>
-                        <input type="text" name="name" id="edit-name" class="adm-input" required/>
-                    </div>
-                    <div class="adm-form__group adm-form__group--2">
-                        <label class="adm-label">Handle *</label>
-                        <input type="text" name="handle" id="edit-handle" class="adm-input" required/>
-                    </div>
+                <div class="adm-form-row adm-form-row--2">
+                    <div><label class="adm-label">Tên SP *</label>
+                        <input type="text" name="name" id="e-name" class="adm-input" required/></div>
+                    <div><label class="adm-label">Handle *</label>
+                        <input type="text" name="handle" id="e-handle" class="adm-input" required/></div>
                 </div>
-
-                <div class="adm-form__row">
-                    <div class="adm-form__group adm-form__group--3">
-                        <label class="adm-label">Giá bán *</label>
-                        <input type="number" name="price" id="edit-price" class="adm-input" required min="0"/>
-                    </div>
-                    <div class="adm-form__group adm-form__group--3">
-                        <label class="adm-label">Giá gốc</label>
-                        <input type="number" name="comparePrice" id="edit-comparePrice" class="adm-input" min="0"/>
-                    </div>
-                    <div class="adm-form__group adm-form__group--3">
-                        <label class="adm-label">Tồn kho *</label>
-                        <input type="number" name="stock" id="edit-stock" class="adm-input" required min="0"/>
-                    </div>
+                <div class="adm-form-row adm-form-row--3">
+                    <div><label class="adm-label">Giá bán *</label>
+                        <input type="number" name="price" id="e-price" class="adm-input" required min="0"/></div>
+                    <div><label class="adm-label">Giá gốc</label>
+                        <input type="number" name="comparePrice" id="e-cmp" class="adm-input" min="0"/></div>
+                    <div><label class="adm-label">Tồn kho *</label>
+                        <input type="number" name="stock" id="e-stock" class="adm-input" required min="0"/></div>
                 </div>
-
-                <div class="adm-form__row">
-                    <div class="adm-form__group adm-form__group--2">
-                        <label class="adm-label">Danh mục</label>
-                        <input type="text" name="category" id="edit-category" class="adm-input"/>
-                    </div>
-                    <div class="adm-form__group adm-form__group--2">
-                        <label class="adm-label">Bộ sưu tập</label>
-                        <input type="text" name="collection" id="edit-collection" class="adm-input"/>
-                    </div>
+                <div class="adm-form-row adm-form-row--2">
+                    <div><label class="adm-label">Danh mục</label>
+                        <input type="text" name="category" id="e-cat" class="adm-input"/></div>
+                    <div><label class="adm-label">Collection</label>
+                        <input type="text" name="collection" id="e-col" class="adm-input"/></div>
                 </div>
-
-                <div class="adm-form__group">
-                    <label class="adm-label">URL ảnh đại diện</label>
-                    <input type="url" name="imageUrl" id="edit-imageUrl" class="adm-input"/>
+                <div><label class="adm-label">URL ảnh đại diện</label>
+                    <input type="url" name="imageUrl" id="e-img" class="adm-input"/></div>
+                <div><label class="adm-label">Danh sách ảnh</label>
+                    <input type="text" name="images" id="e-imgs" class="adm-input"/></div>
+                <div><label class="adm-label">Mô tả ngắn</label>
+                    <textarea name="description" id="e-desc" class="adm-textarea" rows="2"></textarea></div>
+                <div><label class="adm-label">Mô tả chi tiết</label>
+                    <textarea name="fullDescription" id="e-fdesc" class="adm-textarea" rows="3"></textarea></div>
+                <div class="adm-form-row adm-form-row--3">
+                    <div><label class="adm-label">Sizes</label>
+                        <input type="text" name="sizes" id="e-sizes" class="adm-input"/></div>
+                    <div><label class="adm-label">Màu sắc</label>
+                        <input type="text" name="colors" id="e-colors" class="adm-input"/></div>
+                    <div><label class="adm-label">Tags</label>
+                        <input type="text" name="tags" id="e-tags" class="adm-input"/></div>
                 </div>
-
-                <div class="adm-form__group">
-                    <label class="adm-label">Danh sách ảnh (phân cách bởi dấu phẩy)</label>
-                    <input type="text" name="images" id="edit-images" class="adm-input"/>
+                <div class="adm-checkrow">
+                    <label class="adm-check"><input type="checkbox" name="active"   id="e-active"/>   Hiển thị</label>
+                    <label class="adm-check"><input type="checkbox" name="onSale"   id="e-onSale"/>   Giảm giá</label>
+                    <label class="adm-check"><input type="checkbox" name="isNew"    id="e-isNew"/>    Mới</label>
+                    <label class="adm-check"><input type="checkbox" name="hot"      id="e-hot"/>      Hot</label>
                 </div>
-
-                <div class="adm-form__group">
-                    <label class="adm-label">Mô tả ngắn</label>
-                    <textarea name="description" id="edit-description" class="adm-textarea" rows="2"></textarea>
+                <div class="adm-form-row adm-form-row--2">
+                    <div><label class="adm-label">Meta Title</label>
+                        <input type="text" name="metaTitle" id="e-mt" class="adm-input"/></div>
+                    <div><label class="adm-label">Meta Description</label>
+                        <input type="text" name="metaDescription" id="e-md" class="adm-input"/></div>
                 </div>
-
-                <div class="adm-form__group">
-                    <label class="adm-label">Mô tả chi tiết (HTML)</label>
-                    <textarea name="fullDescription" id="edit-fullDescription" class="adm-textarea" rows="3"></textarea>
-                </div>
-
-                <div class="adm-form__row">
-                    <div class="adm-form__group adm-form__group--3">
-                        <label class="adm-label">Sizes</label>
-                        <input type="text" name="sizes" id="edit-sizes" class="adm-input" placeholder="S, M, L"/>
-                    </div>
-                    <div class="adm-form__group adm-form__group--3">
-                        <label class="adm-label">Màu sắc</label>
-                        <input type="text" name="colors" id="edit-colors" class="adm-input" placeholder="Nâu, Kem"/>
-                    </div>
-                    <div class="adm-form__group adm-form__group--3">
-                        <label class="adm-label">Tags</label>
-                        <input type="text" name="tags" id="edit-tags" class="adm-input" placeholder="new, hot"/>
-                    </div>
-                </div>
-
-                <div class="adm-form__row adm-form__row--checkboxes">
-                    <label class="adm-checkbox"><input type="checkbox" name="active"   id="edit-active"/>   Hiển thị</label>
-                    <label class="adm-checkbox"><input type="checkbox" name="onSale"   id="edit-onSale"/>   Giảm giá</label>
-                    <label class="adm-checkbox"><input type="checkbox" name="isNew"    id="edit-isNew"/>    Sản phẩm mới</label>
-                    <label class="adm-checkbox"><input type="checkbox" name="hot"      id="edit-hot"/>      Hot</label>
-                </div>
-
-                <div class="adm-form__row">
-                    <div class="adm-form__group adm-form__group--2">
-                        <label class="adm-label">Meta Title</label>
-                        <input type="text" name="metaTitle" id="edit-metaTitle" class="adm-input"/>
-                    </div>
-                    <div class="adm-form__group adm-form__group--2">
-                        <label class="adm-label">Meta Description</label>
-                        <input type="text" name="metaDescription" id="edit-metaDescription" class="adm-input"/>
-                    </div>
-                </div>
-
-                <div class="adm-form__actions">
+                <div class="adm-form-actions">
                     <button type="submit" class="adm-btn adm-btn--primary">💾 Lưu thay đổi</button>
                     <button type="button" class="adm-btn adm-btn--ghost" onclick="closeEditModal()">Huỷ</button>
                 </div>
@@ -454,39 +652,30 @@
     </div>
 </div>
 
+<!-- ══════════════════════════════════════════
+     MODAL: CHI TIẾT ĐƠN HÀNG
+     ══════════════════════════════════════════ -->
+<div class="adm-overlay" id="orderOverlay" onclick="closeOrderModal()">
+    <div class="adm-modal" onclick="event.stopPropagation()">
+        <div class="adm-modal__head">
+            <span class="adm-modal__title">🧾 Chi tiết đơn hàng</span>
+            <button class="adm-modal__close" onclick="closeOrderModal()">✕</button>
+        </div>
+        <div class="adm-modal__body" id="orderDetail">
+            <!-- Filled by JS -->
+        </div>
+    </div>
+</div>
 
-<!-- ══════════════════════════════════════════════════════════
-     DATA: Thymeleaf → JS (để modal dùng)
-     ══════════════════════════════════════════════════════════ -->
+<!-- Data cho JS modal -->
 <script th:inline="javascript">
-    /*<![CDATA[*/
-    const PRODUCTS_DATA = {};
-    /*[# th:each="p : ${products}"]*/
-    PRODUCTS_DATA[/*[[${p.id}]]*/ ''] = {
-        id:              /*[[${p.id}]]*/ '',
-        name:            /*[[${p.name}]]*/ '',
-        handle:          /*[[${p.handle}]]*/ '',
-        description:     /*[[${p.description}]]*/ '',
-        fullDescription: /*[[${p.fullDescription}]]*/ '',
-        price:           /*[[${p.price}]]*/ 0,
-        comparePrice:    /*[[${p.comparePrice}]]*/ 0,
-        imageUrl:        /*[[${p.imageUrl}]]*/ '',
-        images:          /*[[${p.images != null ? #strings.arrayJoin(p.images.toArray(), ',') : ''}]]*/ '',
-        category:        /*[[${p.category}]]*/ '',
-        collection:      /*[[${p.collection}]]*/ '',
-        sizes:           /*[[${p.sizes != null ? #strings.arrayJoin(p.sizes.toArray(), ',') : ''}]]*/ '',
-        colors:          /*[[${p.colors != null ? #strings.arrayJoin(p.colors.toArray(), ',') : ''}]]*/ '',
-        tags:            /*[[${p.tags != null ? #strings.arrayJoin(p.tags.toArray(), ',') : ''}]]*/ '',
-        stock:           /*[[${p.stock}]]*/ 0,
-        active:          /*[[${p.active}]]*/ false,
-        onSale:          /*[[${p.onSale}]]*/ false,
-        isNew:           /*[[${p.isNew()}]]*/ false,
-        hot:             /*[[${p.hot}]]*/ false,
-        metaTitle:       /*[[${p.metaTitle}]]*/ '',
-        metaDescription: /*[[${p.metaDescription}]]*/ ''
-    };
-    /*[/]*/
-    /*]]>*/
+    const _productsArray = /*[[${products}]]*/ [];
+    const PRODUCTS_DATA  = {};
+    _productsArray.forEach(function(p){ if(p && p.id) PRODUCTS_DATA[p.id] = p; });
+
+    const _ordersArray = /*[[${orders}]]*/ [];
+    const ORDERS_DATA  = {};
+    _ordersArray.forEach(function(o){ if(o && o.id) ORDERS_DATA[o.id] = o; });
 </script>
 
 <script th:src="@{/js/admin.js}"></script>

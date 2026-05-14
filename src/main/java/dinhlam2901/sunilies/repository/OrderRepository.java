@@ -26,7 +26,26 @@ public class OrderRepository {
                 .set(order)
                 .get();
     }
+    // ─── Lấy tất cả đơn hàng (dành cho Admin) ────────────────────
+    public List<Order> findAllOrders() throws Exception {
+        QuerySnapshot snap = db().collection(COLLECTION)
+                .orderBy("createdAt", Query.Direction.DESCENDING)
+                .get().get();
+        List<Order> orders = new ArrayList<>();
+        for (DocumentSnapshot doc : snap.getDocuments()) {
+            Order o = doc.toObject(Order.class);
+            if (o != null) orders.add(o);
+        }
+        return orders;
+    }
 
+    // ─── Cập nhật trạng thái đơn hàng (Admin) ────────────────────
+    public void updateStatus(String orderId, String status) throws Exception {
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("status",    status);
+        updates.put("updatedAt", System.currentTimeMillis());
+        db().collection(COLLECTION).document(orderId).update(updates).get();
+    }
     // ── Tìm theo orderId ───────────────────────────────────
     public Order findById(String orderId) throws Exception {
         DocumentSnapshot doc = db().collection(COLLECTION)
