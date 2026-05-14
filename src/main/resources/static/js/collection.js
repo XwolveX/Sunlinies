@@ -1,8 +1,3 @@
-/**
- * collection.js – SUNILIES Collection Page
- * src/main/resources/static/js/collection.js
- */
-
 (function () {
     'use strict';
 
@@ -30,6 +25,7 @@
         initPriceFilter();
         initFilterDrawer();
         initScrollAnimation();
+        syncWishlistIcons(); // ✅ FIX: khởi tạo trạng thái tim khi load trang
     });
 
     /* ════════════════════════════════════════════════════
@@ -53,7 +49,6 @@
                     activeStatuses = new Set();
                 }
 
-                // Sync sidebar
                 syncSidebarCategory(activeCategory);
                 currentPage = 1;
                 applyFilters();
@@ -168,9 +163,9 @@
        FILTER DRAWER (mobile)
        ════════════════════════════════════════════════════ */
     function initFilterDrawer() {
-        const overlay = document.getElementById('clFilterOverlay');
-        const drawer  = document.getElementById('clFilterDrawer');
-        const btnOpen = document.getElementById('clBtnFilterOpen');
+        const overlay  = document.getElementById('clFilterOverlay');
+        const drawer   = document.getElementById('clFilterDrawer');
+        const btnOpen  = document.getElementById('clBtnFilterOpen');
         const btnClose = document.getElementById('clBtnFilterClose');
 
         btnOpen?.addEventListener('click', () => {
@@ -208,8 +203,8 @@
             const cat    = card.dataset.category || '';
             const price  = parseFloat(card.dataset.price) || 0;
             const isSale = card.dataset.sale === 'true';
-            const isNew  = card.dataset.new === 'true';
-            const isHot  = card.dataset.hot === 'true';
+            const isNew  = card.dataset.new  === 'true';
+            const isHot  = card.dataset.hot  === 'true';
 
             // Category
             if (activeCategory !== 'all' && cat !== activeCategory) return false;
@@ -241,7 +236,6 @@
             if (currentSort === 'price-desc') return pb - pa;
             if (currentSort === 'name-asc')   return na.localeCompare(nb, 'vi');
             if (currentSort === 'newest') {
-                // New items first
                 const newA = a.dataset.new === 'true' ? 1 : 0;
                 const newB = b.dataset.new === 'true' ? 1 : 0;
                 return newB - newA;
@@ -259,8 +253,8 @@
 
     function renderPage(page) {
         currentPage = page;
-        const start = (page - 1) * ITEMS_PER_PAGE;
-        const end   = start + ITEMS_PER_PAGE;
+        const start     = (page - 1) * ITEMS_PER_PAGE;
+        const end       = start + ITEMS_PER_PAGE;
         const pageCards = filteredCards.slice(start, end);
 
         // Hide all
@@ -288,7 +282,6 @@
         if (totalPages <= 1) { container.innerHTML = ''; return; }
 
         let html = '';
-        // Prev
         html += `<button class="cl-page-btn" ${currentPage === 1 ? 'disabled' : ''} onclick="goPage(${currentPage - 1})">‹</button>`;
 
         for (let i = 1; i <= totalPages; i++) {
@@ -299,9 +292,7 @@
             html += `<button class="cl-page-btn ${i === currentPage ? 'is-active' : ''}" onclick="goPage(${i})">${i}</button>`;
         }
 
-        // Next
         html += `<button class="cl-page-btn" ${currentPage === totalPages ? 'disabled' : ''} onclick="goPage(${currentPage + 1})">›</button>`;
-
         container.innerHTML = html;
     }
 
@@ -322,12 +313,12 @@
         });
 
         const map = {
-            countAll: allCards.length,
-            countBag: counts['bag'] || 0,
-            countHat: counts['hat'] || 0,
+            countAll:       allCards.length,
+            countBag:       counts['bag']       || 0,
+            countHat:       counts['hat']       || 0,
             countAccessory: counts['accessory'] || 0,
-            countAo: counts['ao'] || 0,
-            countVay: counts['vay'] || 0,
+            countAo:        counts['ao']        || 0,
+            countVay:       counts['vay']       || 0,
         };
         Object.entries(map).forEach(([id, val]) => {
             const el = document.getElementById(id);
@@ -337,32 +328,92 @@
 
     /* ════════════════════════════════════════════════════
        WISHLIST TOGGLE
+       ✅ FIX: Lưu vào localStorage + cập nhật badge
+          Trước đây chỉ đổi màu SVG mà không lưu gì cả
        ════════════════════════════════════════════════════ */
+    function parsePriceText(text) {
+        if (!text) return 0;
+        return parseInt(text.replace(/[^\d]/g, '')) || 0;
+    }
+
     window.toggleWish = function (btn) {
-        btn.classList.toggle('is-wished');
-        const svg = btn.querySelector('svg');
-        if (btn.classList.contains('is-wished')) {
-            svg.setAttribute('fill', 'currentColor');
+        const card = btn.closest('.cl-card');
+        if (!card) return;
+
+        // Đọc data từ card — ưu tiên data attributes, fallback đọc DOM text
+        const id           = card.dataset.productId || card.dataset.id;
+        const handle       = card.dataset.handle || id;
+        const name         = card.querySelector('.cl-card__name a')?.textContent?.trim()
+            || card.querySelector('[class*="name"] a')?.textContent?.trim();
+        const image        = card.querySelector('img:not(.img-hover)')?.src;
+        const priceFromAttr = parseFloat(card.dataset.price) || 0;
+        const priceFromDOM  = parsePriceText(card.querySelector('.cl-card__price--main, .price')?.textContent);
+        const price         = priceFromAttr || priceFromDOM;
+        const comparePrice  = parseFloat(card.dataset.comparePrice) || 0;
+        const onSale        = card.dataset.sale === 'true';
+        const isNew         = card.dataset.new  === 'true';
+
+        const item = { id, handle, name, image, price, comparePrice, onSale, isNew };
+
+        const list = JSON.parse(localStorage.getItem('sunilies_wishlist') || '[]');
+        const idx  = list.findIndex(p => p.id === id);
+
+        if (idx > -1) {
+            // ── Đã wish → bỏ wish
+            list.splice(idx, 1);
+            btn.classList.remove('is-wished');
+            btn.querySelector('svg')?.setAttribute('fill', 'none');
         } else {
-            svg.setAttribute('fill', 'none');
+            // ── Chưa wish → thêm vào
+            list.push(item);
+            btn.classList.add('is-wished');
+            btn.querySelector('svg')?.setAttribute('fill', 'currentColor');
         }
+
+        localStorage.setItem('sunilies_wishlist', JSON.stringify(list));
+
+        // Cập nhật badge số lượng trên header
+        document.querySelectorAll('.js-wishlist-count')
+            .forEach(el => el.textContent = list.length || '');
     };
+
+    /**
+     * Đồng bộ trạng thái tim khi load trang
+     * (sản phẩm đã wish từ trước sẽ hiện tim đỏ ngay)
+     */
+    function syncWishlistIcons() {
+        const list = JSON.parse(localStorage.getItem('sunilies_wishlist') || '[]');
+        const ids  = new Set(list.map(p => p.id));
+
+        allCards.forEach(card => {
+            const id  = card.dataset.productId || card.dataset.id;
+            const btn = card.querySelector('.cl-card__btn-wish');
+            if (btn && ids.has(id)) {
+                btn.classList.add('is-wished');
+                btn.querySelector('svg')?.setAttribute('fill', 'currentColor');
+            }
+        });
+
+        document.querySelectorAll('.js-wishlist-count')
+            .forEach(el => el.textContent = list.length || '');
+    }
 
     /* ════════════════════════════════════════════════════
        SCROLL ANIMATION
        ════════════════════════════════════════════════════ */
     function initScrollAnimation() {
-        if (!('IntersectionObserver' in window)) return;
-        const obs = new IntersectionObserver((entries) => {
-            entries.forEach(e => {
-                if (e.isIntersecting) {
-                    e.target.classList.add('is-visible');
-                    obs.unobserve(e.target);
+        if (!window.IntersectionObserver) return;
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                    observer.unobserve(entry.target);
                 }
             });
-        }, { threshold: 0.08 });
+        }, { threshold: 0.1 });
 
-        allCards.forEach(c => obs.observe(c));
+        allCards.forEach(card => observer.observe(card));
     }
 
 })();
