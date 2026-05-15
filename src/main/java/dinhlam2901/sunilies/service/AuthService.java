@@ -84,6 +84,7 @@ public class AuthService {
         user.setLastLogin(new Date());
         userRepository.update(user);
         session.setAttribute(SESSION_USER, user.getId());
+        session.setAttribute("SUNILIES_ROLE", user.getRole());
         return user;
     }
 

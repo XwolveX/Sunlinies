@@ -71,6 +71,9 @@
                         </a>
                         <ul>
                             <!-- Trong wolf-header-account ul -->
+                            <li th:if="${session.SUNILIES_ROLE == 'ADMIN'}">
+                                <a th:href="@{/admin}" style="color:#c8986a;font-weight:600;">⚙ Admin Panel</a>
+                            </li>
                             <li th:if="${session.SUNILIES_USER != null}">
                                 <a th:href="@{/account}">Tài khoản</a>
                             </li>

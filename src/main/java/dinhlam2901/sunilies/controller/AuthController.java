@@ -105,6 +105,7 @@ public class AuthController {
         try {
             User user = authService.verifyEmailOtp(email, otp);
             session.setAttribute("SUNILIES_USER", user.getId());
+            session.setAttribute("SUNILIES_ROLE", user.getRole());
             ra.addFlashAttribute("success", "Xác minh email thành công! Chào mừng bạn đến SUNILIES 🎉");
             if (user.getPhone() != null && !user.getPhone().isBlank() && !user.isPhoneVerified()) {
                 return "redirect:/verify-phone";
