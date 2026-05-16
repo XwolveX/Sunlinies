@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{layout/base :: head('Tìm kiếm')}"></head>
+
+<body>
+<link rel="stylesheet" th:href="@{/css/collection.css}">
+<style>
+    /* ── Search Page Specific ────────────────────────────── */
+    .sr-hero {
+        background: var(--bgLight, #faf7f2);
+        padding: 52px 0 36px;
+        text-align: center;
+        border-bottom: 1px solid #ede9e3;
+    }
+    .sr-hero__eyebrow {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--mainColor, #c8986a);
+        margin-bottom: 12px;
+    }
+    .sr-hero__title {
+        font-family: 'Playfair Display', serif;
+        font-size: clamp(22px, 4vw, 34px);
+        font-weight: 400;
+        color: var(--darkColor, #3d2e1c);
+        margin-bottom: 12px;
+    }
+    .sr-hero__keyword {
+        font-style: italic;
+        color: var(--mainColor, #c8986a);
+    }
+    .sr-hero__count {
+        font-size: 13px;
+        color: var(--muted, #9a8874);
+    }
+
+    /* Search bar inline */
+    .sr-search-form {
+        display: flex;
+        align-items: center;
+        max-width: 500px;
+        margin: 22px auto 0;
+        border: 1.5px solid #d9d3cb;
+        border-radius: 8px;
+        overflow: hidden;
+        background: #fff;
+    }
+    .sr-search-form input {
+        flex: 1;
+        border: none;
+        padding: 12px 18px;
+        font-size: 14px;
+        font-family: inherit;
+        color: var(--darkColor, #3d2e1c);
+        background: transparent;
+        outline: none;
+    }
+    .sr-search-form button {
+        background: var(--darkColor, #3d2e1c);
+        border: none;
+        padding: 0 20px;
+        height: 46px;
+        color: var(--bgLight, #faf7f2);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background .2s;
+    }
+    .sr-search-form button:hover { background: var(--mainColor, #c8986a); }
+
+    /* Breadcrumb */
+    .sr-breadcrumb {
+        padding: 14px 0;
+        background: #fff;
+        border-bottom: 1px solid #f0ece5;
+    }
+    .sr-breadcrumb__inner {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+        color: var(--muted, #9a8874);
+    }
+    .sr-breadcrumb__inner a { color: var(--muted, #9a8874); text-decoration: none; }
+    .sr-breadcrumb__inner a:hover { color: var(--mainColor, #c8986a); }
+
+    /* Layout */
+    .sr-main {
+        padding: 36px 0 64px;
+    }
+
+    /* Result count row */
+    .sr-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 24px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid #ede9e3;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+    .sr-toolbar__count {
+        font-size: 13px;
+        color: var(--muted, #9a8874);
+    }
+    .sr-toolbar__count strong {
+        color: var(--darkColor, #3d2e1c);
+        font-weight: 700;
+    }
+    .sr-toolbar__sort {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        color: var(--muted, #9a8874);
+    }
+    .sr-toolbar__sort select {
+        border: 1px solid #d9d3cb;
+        border-radius: 6px;
+        padding: 6px 28px 6px 10px;
+        font-size: 13px;
+        font-family: inherit;
+        color: var(--darkColor, #3d2e1c);
+        background: #fff;
+        cursor: pointer;
+        outline: none;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%239a8874' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+    }
+
+    /* Empty state */
+    .sr-empty {
+        text-align: center;
+        padding: 80px 20px;
+        color: var(--muted, #9a8874);
+    }
+    .sr-empty__icon { font-size: 52px; margin-bottom: 20px; opacity: .5; }
+    .sr-empty__title {
+        font-family: 'Playfair Display', serif;
+        font-size: 22px;
+        color: var(--darkColor, #3d2e1c);
+        margin-bottom: 10px;
+    }
+    .sr-empty__desc { font-size: 14px; line-height: 1.7; margin-bottom: 28px; }
+    .sr-empty__btn {
+        display: inline-block;
+        padding: 12px 32px;
+        background: var(--darkColor, #3d2e1c);
+        color: var(--bgLight, #faf7f2);
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        text-decoration: none;
+        transition: background .2s;
+    }
+    .sr-empty__btn:hover { background: var(--mainColor, #c8986a); color: #fff; text-decoration: none; }
+
+    /* Suggestions */
+    .sr-suggest {
+        margin-top: 28px;
+    }
+    .sr-suggest__title {
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--muted, #9a8874);
+        margin-bottom: 12px;
+    }
+    .sr-suggest__tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: center;
+    }
+    .sr-suggest__tag {
+        padding: 7px 16px;
+        border: 1px solid #d9d3cb;
+        border-radius: 20px;
+        font-size: 12px;
+        color: var(--darkColor, #3d2e1c);
+        text-decoration: none;
+        transition: all .2s;
+    }
+    .sr-suggest__tag:hover {
+        background: var(--mainColor, #c8986a);
+        border-color: var(--mainColor, #c8986a);
+        color: #fff;
+        text-decoration: none;
+    }
+
+    /* No keyword banner */
+    .sr-no-query {
+        text-align: center;
+        padding: 80px 20px 40px;
+    }
+    .sr-no-query__title {
+        font-family: 'Playfair Display', serif;
+        font-size: 26px;
+        color: var(--darkColor, #3d2e1c);
+        margin-bottom: 10px;
+    }
+    .sr-no-query__desc { font-size: 14px; color: var(--muted, #9a8874); margin-bottom: 0; }
+
+    /* Override animation từ collection.css — search page không dùng collection.js */
+    .cl-card { opacity: 1 !important; transform: none !important; }
+
+    /* Reuse cl-grid from collection.css */
+    @media (max-width: 767px) {
+        .cl-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+    }
+</style>
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+<!-- Mobile menu (copy từ collection.html) -->
+<div class="mobile-menu-overlay" id="mobileOverlay"></div>
+<div class="mobile-menu" id="mobileMenu">
+    <div class="mobile-menu-head">
+        <span class="logo-text">SUNILIES</span>
+        <button class="mobile-menu-close" id="mobileMenuClose">×</button>
+    </div>
+    <ul>
+        <li><a th:href="@{/}">Trang chủ</a></li>
+        <li><a th:href="@{/collections}">Sản phẩm</a></li>
+        <li><a th:href="@{/collections/san-pham-moi}">Sản phẩm mới</a></li>
+        <li><a th:href="@{/contact}">Liên hệ</a></li>
+    </ul>
+</div>
+
+<!-- ══ HERO ════════════════════════════════════════════════ -->
+<div class="sr-hero">
+    <div class="sr-hero__eyebrow">Kết quả tìm kiếm</div>
+
+    <!-- Có keyword -->
+    <h1 class="sr-hero__title" th:if="${query != null and !#strings.isEmpty(query)}">
+        Kết quả cho
+        <span class="sr-hero__keyword" th:text="'&quot;' + ${query} + '&quot;'">"..."</span>
+    </h1>
+
+    <!-- Không có keyword -->
+    <h1 class="sr-hero__title" th:if="${query == null or #strings.isEmpty(query)}">
+        Tìm kiếm sản phẩm
+    </h1>
+
+    <p class="sr-hero__count"
+       th:if="${products != null and query != null and !#strings.isEmpty(query)}"
+       th:text="${products.size()} + ' sản phẩm được tìm thấy'">
+        0 sản phẩm được tìm thấy
+    </p>
+
+    <!-- Search form inline để tìm lại -->
+    <form th:action="@{/search}" method="get" class="sr-search-form" role="search">
+        <input name="q" type="text"
+               th:value="${query}"
+               placeholder="Tìm sản phẩm khác..."
+               autocomplete="off" />
+        <button type="submit" aria-label="Tìm kiếm">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85zm-5.242 1.156a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/>
+            </svg>
+        </button>
+    </form>
+</div>
+
+<!-- ══ BREADCRUMB ══════════════════════════════════════════ -->
+<div class="sr-breadcrumb">
+    <div class="container">
+        <div class="sr-breadcrumb__inner">
+            <a th:href="@{/}">Trang chủ</a>
+            <span>›</span>
+            <span>Tìm kiếm</span>
+            <span th:if="${query != null and !#strings.isEmpty(query)}">›</span>
+            <span th:if="${query != null and !#strings.isEmpty(query)}"
+                  th:text="${query}" style="color:var(--darkColor,#3d2e1c); font-weight:600;"></span>
+        </div>
+    </div>
+</div>
+
+<!-- ══ MAIN CONTENT ════════════════════════════════════════ -->
+<main class="sr-main">
+    <div class="container">
+
+        <!-- Không có keyword → hiển thị prompt tìm kiếm -->
+        <div class="sr-no-query" th:if="${query == null or #strings.isEmpty(query)}">
+            <div style="font-size:56px; margin-bottom:20px; opacity:.4;">🔍</div>
+            <p class="sr-no-query__title">Bạn đang tìm gì?</p>
+            <p class="sr-no-query__desc">Nhập tên sản phẩm vào ô tìm kiếm ở trên để bắt đầu.</p>
+            <div class="sr-suggest" style="margin-top:32px;">
+                <p class="sr-suggest__title">Gợi ý tìm kiếm</p>
+                <div class="sr-suggest__tags">
+                    <a href="/search?q=túi" class="sr-suggest__tag">Túi</a>
+                    <a href="/search?q=mũ" class="sr-suggest__tag">Mũ</a>
+                    <a href="/search?q=phụ kiện" class="sr-suggest__tag">Phụ kiện</a>
+                    <a href="/search?q=bag" class="sr-suggest__tag">Bag</a>
+                    <a href="/search?q=dáng hạ" class="sr-suggest__tag">Dáng Hạ</a>
+                    <a href="/search?q=vị mây" class="sr-suggest__tag">Vị Mây</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Có keyword nhưng không có kết quả -->
+        <div class="sr-empty"
+             th:if="${query != null and !#strings.isEmpty(query) and (products == null or products.isEmpty())}">
+            <div class="sr-empty__icon">😔</div>
+            <p class="sr-empty__title">Không tìm thấy sản phẩm nào</p>
+            <p class="sr-empty__desc">
+                Không có sản phẩm phù hợp với từ khoá
+                <strong th:text="'&quot;' + ${query} + '&quot;'">"..."</strong>.<br/>
+                Hãy thử từ khoá khác hoặc xem toàn bộ bộ sưu tập của chúng tôi.
+            </p>
+            <a th:href="@{/collections}" class="sr-empty__btn">Xem tất cả sản phẩm</a>
+            <div class="sr-suggest">
+                <p class="sr-suggest__title">Gợi ý</p>
+                <div class="sr-suggest__tags">
+                    <a href="/search?q=túi" class="sr-suggest__tag">Túi</a>
+                    <a href="/search?q=mũ" class="sr-suggest__tag">Mũ</a>
+                    <a href="/search?q=phụ kiện" class="sr-suggest__tag">Phụ kiện</a>
+                    <a href="/search?q=bag" class="sr-suggest__tag">Bag</a>
+                    <a href="/search?q=dáng hạ" class="sr-suggest__tag">Dáng Hạ</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Có kết quả -->
+        <div th:if="${products != null and !products.isEmpty()}">
+
+            <!-- Toolbar: count + sort -->
+            <div class="sr-toolbar">
+                <div class="sr-toolbar__count">
+                    Tìm thấy <strong th:text="${products.size()}">0</strong> sản phẩm
+                    <span th:if="${query != null and !#strings.isEmpty(query)}">
+                        cho <em th:text="'&quot;' + ${query} + '&quot;'">"..."</em>
+                    </span>
+                </div>
+                <div class="sr-toolbar__sort">
+                    <label for="srSort" style="white-space:nowrap;">Sắp xếp:</label>
+                    <select id="srSort" onchange="sortResults(this.value)">
+                        <option value="default">Mặc định</option>
+                        <option value="price-asc">Giá tăng dần</option>
+                        <option value="price-desc">Giá giảm dần</option>
+                        <option value="name-asc">Tên A → Z</option>
+                        <option value="name-desc">Tên Z → A</option>
+                        <option value="sale">Đang giảm giá</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Product Grid -->
+            <div class="cl-grid" id="srGrid">
+                <div class="cl-card"
+                     th:each="product : ${products}"
+                     th:data-product-id="${product.id}"
+                     th:data-handle="${product.handle}"
+                     th:data-price="${product.price}"
+                     th:data-compare-price="${product.comparePrice}"
+                     th:data-sale="${product.onSale}"
+                     th:data-new="${product.isNew()}"
+                     th:data-name="${product.name}">
+
+                    <!-- Thumbnail -->
+                    <div class="cl-card__thumb">
+                        <div class="cl-card__badges">
+                            <span th:if="${product.onSale}" class="cl-badge cl-badge--sale"
+                                  th:text="'-' + ${product.discountPercent} + '%'">Sale</span>
+                            <span th:if="${product.isNew()}" class="cl-badge cl-badge--new">Mới</span>
+                            <span th:if="${product.isHot() and !product.onSale and !product.isNew()}"
+                                  class="cl-badge cl-badge--hot">Hot</span>
+                        </div>
+
+                        <a th:href="@{/products/{h}(h=${product.handle})}">
+                            <img th:src="${product.featuredImage}"
+                                 th:alt="${product.name}"
+                                 loading="lazy"
+                                 onerror="this.src='/image/placeholder.jpg'" />
+                        </a>
+
+                        <!-- Quick actions -->
+                        <div class="cl-card__actions">
+                            <a class="cl-card__btn-view"
+                               th:href="@{/products/{h}(h=${product.handle})}">Xem chi tiết</a>
+                            <button class="cl-card__btn-wish" type="button"
+                                    aria-label="Yêu thích"
+                                    onclick="toggleWish(this)">
+                                <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                                    <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Info -->
+                    <div class="cl-card__info">
+                        <div class="cl-card__name">
+                            <a th:href="@{/products/{h}(h=${product.handle})}"
+                               th:text="${product.name}">Tên sản phẩm</a>
+                        </div>
+                        <div class="cl-card__price">
+                            <span class="cl-card__price--main"
+                                  th:classappend="${product.onSale} ? 'sale' : ''"
+                                  th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT') + 'đ'}">0đ</span>
+                            <span th:if="${product.comparePrice != null}"
+                                  class="cl-card__price--compare"
+                                  th:text="${#numbers.formatDecimal(product.comparePrice, 0, 'COMMA', 0, 'POINT') + 'đ'}"></span>
+                            <span th:if="${product.onSale}" class="cl-card__price--save"
+                                  th:text="'-' + ${product.discountPercent} + '%'"></span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <!-- /cl-grid -->
+
+        </div>
+        <!-- /có kết quả -->
+
+    </div>
+</main>
+
+<!-- ══ FOOTER ══════════════════════════════════════════════ -->
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<!-- Side Cart Drawer (giống collection.html) -->
+<div class="cart-overlay" id="cartOverlay"></div>
+<div class="cart-drawer" id="cartDrawer">
+    <div class="cart-drawer-head">
+        <h3>Giỏ hàng (<span id="cartItemCount">0</span>)</h3>
+        <button class="cart-close" id="btnCartClose">×</button>
+    </div>
+    <div class="cart-items" id="cartItemsList">
+        <div class="cart-empty">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
+                      d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+            </svg>
+            <p>Giỏ hàng của bạn đang trống</p>
+        </div>
+    </div>
+    <div class="cart-footer" id="cartFooter" style="display:none;">
+        <div class="cart-total-row">
+            <span>Tổng tiền</span>
+            <span id="cartTotal">0đ</span>
+        </div>
+        <a th:href="@{/cart}" class="btn-checkout">Tiến hành thanh toán</a>
+    </div>
+</div>
+
+<!-- Back to top -->
+<button class="back-to-top" id="backToTop" aria-label="Lên đầu trang">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none"
+         viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/>
+    </svg>
+</button>
+
+<!-- ══ SCRIPTS ═════════════════════════════════════════════ -->
+<script>
+    /* ── Mobile menu ── */
+    const _ham  = document.getElementById('btnHamburger');
+    const _menu = document.getElementById('mobileMenu');
+    const _ov   = document.getElementById('mobileOverlay');
+    const _mc   = document.getElementById('mobileMenuClose');
+    if (_ham)  _ham.addEventListener('click',  () => { _menu?.classList.add('active');    _ov?.classList.add('active'); });
+    if (_mc)   _mc.addEventListener('click',   () => { _menu?.classList.remove('active'); _ov?.classList.remove('active'); });
+    if (_ov)   _ov.addEventListener('click',   () => { _menu?.classList.remove('active'); _ov?.classList.remove('active'); });
+
+    /* ── Cart drawer ── */
+    document.getElementById('btnCartOpen')?.addEventListener('click', () => {
+        document.getElementById('cartDrawer')?.classList.add('active');
+        document.getElementById('cartOverlay')?.classList.add('active');
+    });
+    document.getElementById('btnCartClose')?.addEventListener('click', () => {
+        document.getElementById('cartDrawer')?.classList.remove('active');
+        document.getElementById('cartOverlay')?.classList.remove('active');
+    });
+    document.getElementById('cartOverlay')?.addEventListener('click', () => {
+        document.getElementById('cartDrawer')?.classList.remove('active');
+        document.getElementById('cartOverlay')?.classList.remove('active');
+    });
+
+    /* ── Search overlay (header) ── */
+    document.querySelectorAll('.wolf-search-toggle, [data-search-toggle]').forEach(btn =>
+        btn.addEventListener('click', () => document.body.classList.toggle('show-search'))
+    );
+    document.querySelector('.wolf-main-search-close')?.addEventListener('click', () =>
+        document.body.classList.remove('show-search')
+    );
+
+    /* ── Back to top ── */
+    const _btt = document.getElementById('backToTop');
+    if (_btt) {
+        window.addEventListener('scroll', () =>
+            _btt.classList.toggle('visible', window.scrollY > 400)
+        );
+        _btt.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+    }
+
+    /* ── Wishlist icon sync ── */
+    document.addEventListener('DOMContentLoaded', function () {
+        const list = JSON.parse(localStorage.getItem('sunilies_wishlist') || '[]');
+        const ids  = new Set(list.map(p => p.id));
+        document.querySelectorAll('.cl-card').forEach(card => {
+            const btn = card.querySelector('.cl-card__btn-wish');
+            if (btn && ids.has(card.dataset.productId)) {
+                btn.classList.add('is-wished');
+                btn.querySelector('svg')?.setAttribute('fill', 'currentColor');
+            }
+        });
+        document.querySelectorAll('.js-wishlist-count')
+            .forEach(el => el.textContent = list.length || '');
+    });
+</script>
+
+<script>
+    /* ── Client-side sort cho kết quả search ── */
+    function sortResults(mode) {
+        const grid = document.getElementById('srGrid');
+        if (!grid) return;
+        const cards = Array.from(grid.querySelectorAll('.cl-card'));
+
+        cards.sort((a, b) => {
+            const aPrice = parseFloat(a.dataset.price) || 0;
+            const bPrice = parseFloat(b.dataset.price) || 0;
+            const aName  = (a.dataset.name || '').toLowerCase();
+            const bName  = (b.dataset.name || '').toLowerCase();
+            const aSale  = a.dataset.sale === 'true';
+            const bSale  = b.dataset.sale === 'true';
+
+            switch (mode) {
+                case 'price-asc':  return aPrice - bPrice;
+                case 'price-desc': return bPrice - aPrice;
+                case 'name-asc':   return aName.localeCompare(bName, 'vi');
+                case 'name-desc':  return bName.localeCompare(aName, 'vi');
+                case 'sale':       return (bSale ? 1 : 0) - (aSale ? 1 : 0);
+                default:           return 0;
+            }
+        });
+
+        cards.forEach(c => grid.appendChild(c));
+    }
+
+    /* ── Highlight keyword trong tên sản phẩm ── */
+    (function highlightKeyword() {
+        const query = /*[[${query}]]*/ '';
+        if (!query || query.trim() === '') return;
+        const kw = query.trim().toLowerCase();
+        document.querySelectorAll('.cl-card__name a').forEach(el => {
+            const text = el.textContent;
+            const idx  = text.toLowerCase().indexOf(kw);
+            if (idx === -1) return;
+            el.innerHTML =
+                text.slice(0, idx) +
+                '<mark style="background:#fdeeba;border-radius:2px;padding:0 2px;">' +
+                text.slice(idx, idx + kw.length) +
+                '</mark>' +
+                text.slice(idx + kw.length);
+        });
+    })();
+</script>
+
+</body>
+</html>

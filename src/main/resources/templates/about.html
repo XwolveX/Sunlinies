@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<!--
+  ╔══════════════════════════════════════════════════════╗
+  ║  Trang GIỚI THIỆU – SUNILIES                          ║
+  ║  HTML: src/main/resources/templates/pages/gioi-thieu.html
+  ║  CSS : src/main/resources/static/css/about.css       ║
+  ║  JS  : src/main/resources/static/js/about.js         ║
+  ║  URL : /pages/gioi-thieu                             ║
+  ╚══════════════════════════════════════════════════════╝
+-->
+
+<head th:replace="~{layout/base :: head('Giới thiệu')}"></head>
+
+<body>
+
+<!-- About CSS riêng -->
+<link rel="stylesheet" th:href="@{/css/about.css}">
+
+<!-- HEADER fragment -->
+<div th:replace="~{fragments/header :: header}"></div>
+
+<!-- Mobile menu -->
+<div class="mobile-menu-overlay" id="mobileOverlay"></div>
+<div class="mobile-menu" id="mobileMenu">
+    <div class="mobile-menu-head">
+        <span class="logo-text">SUNILIES</span>
+        <button class="mobile-menu-close" id="mobileMenuClose">×</button>
+    </div>
+    <ul>
+        <li><a th:href="@{/}">Trang chủ</a></li>
+        <li><a th:href="@{/collections}">Sản phẩm</a></li>
+        <li><a th:href="@{/about}">Giới thiệu</a></li>
+        <li><a th:href="@{/contact}">Liên hệ</a></li>
+    </ul>
+</div>
+
+<!-- ════════════════════════════════════════════════════
+     BREADCRUMB
+═════════════════════════════════════════════════════ -->
+<div class="ab-bc">
+    <div class="container">
+        <a th:href="@{/}">Trang chủ</a>
+        <span class="ab-bc__sep">›</span>
+        <span class="ab-bc__current">Giới thiệu</span>
+    </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════
+     HERO – Câu mở đầu
+═════════════════════════════════════════════════════ -->
+<section class="ab-hero">
+    <div class="ab-hero__bg-text">Sunilies</div>
+    <div class="container">
+        <div class="ab-hero__inner">
+
+            <div class="reveal">
+                <div class="ab-hero__eyebrow">Về SUNILIES</div>
+                <h1 class="ab-hero__title">
+                    Không chỉ là phụ kiện,<br/>
+                    đó là <em>một hành trình</em><br/>
+                    của bàn tay Việt.
+                </h1>
+                <p class="ab-hero__desc">
+                    SUNILIES là nơi cói mây tự nhiên gặp gỡ đôi bàn tay nghệ nhân
+                    làng nghề Việt Nam — kết tinh thành những món phụ kiện độc bản,
+                    nhẹ tênh nắng hè và đậm sâu câu chuyện văn hoá.
+                </p>
+
+                <div class="ab-hero__meta">
+                    <div class="ab-hero__meta-item">
+                        <div class="ab-hero__meta-num">2023</div>
+                        <div class="ab-hero__meta-label">Năm thành lập</div>
+                    </div>
+                    <div class="ab-hero__meta-item">
+                        <div class="ab-hero__meta-num">100%</div>
+                        <div class="ab-hero__meta-label">Thủ công Việt</div>
+                    </div>
+                    <div class="ab-hero__meta-item">
+                        <div class="ab-hero__meta-num">3+</div>
+                        <div class="ab-hero__meta-label">Làng nghề</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ab-hero__img reveal reveal--delay-2">
+                <img th:src="@{/image/LumerHat.JPG}"
+                     src="https://images.unsplash.com/photo-1582142306909-195724d33ffc?w=900&q=80"
+                     alt="SUNILIES handmade">
+                <div class="ab-hero__img-tag">Đan thủ công · Cói mây Việt</div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════
+     MARQUEE
+═════════════════════════════════════════════════════ -->
+<div class="ab-marquee">
+    <div class="ab-marquee__track">
+        <span>Handmade in Vietnam</span>
+        <span class="ab-marquee__dot">✦</span>
+        <span>100% Cói mây tự nhiên</span>
+        <span class="ab-marquee__dot">✦</span>
+        <span>Mỗi sản phẩm là một câu chuyện</span>
+        <span class="ab-marquee__dot">✦</span>
+        <span>Handmade in Vietnam</span>
+        <span class="ab-marquee__dot">✦</span>
+        <span>100% Cói mây tự nhiên</span>
+        <span class="ab-marquee__dot">✦</span>
+        <span>Mỗi sản phẩm là một câu chuyện</span>
+        <span class="ab-marquee__dot">✦</span>
+    </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════
+     STORY – 2 khối ảnh + chữ xen kẽ
+═════════════════════════════════════════════════════ -->
+<section class="ab-section">
+    <div class="container">
+
+        <div class="ab-section__head reveal">
+            <div class="ab-section__eyebrow">Câu chuyện thương hiệu</div>
+            <h2 class="ab-section__title">
+                Khởi đầu từ một <em>tình yêu</em> cũ
+            </h2>
+            <div class="ab-section__divider"></div>
+            <p class="ab-section__desc">
+                Hành trình của SUNILIES bắt đầu rất giản dị —
+                từ tiếng đan cói lách cách trong những buổi trưa làng quê
+                và mong muốn đưa nét đẹp ấy đến gần hơn với thế hệ hôm nay.
+            </p>
+        </div>
+
+        <div class="ab-story-wrap">
+            <div class="ab-story reveal">
+                <div class="ab-story__media">
+                    <img th:src="@{/image/SandyBag.jpg}"
+                         src="https://images.unsplash.com/photo-1591561954557-26941169b49e?w=900&q=80"
+                         alt="Khởi nguồn">
+                </div>
+                <div class="ab-story__text">
+                    <div class="ab-story__num">01</div>
+                    <h3 class="ab-story__title">
+                        Từ làng quê đến <em>phố thị</em>
+                    </h3>
+                    <p class="ab-story__body">
+                        SUNILIES sinh ra giữa năm 2023, khi chúng tôi nhận ra rằng
+                        <strong>nghề đan cói mây</strong> — di sản tinh hoa của các làng nghề Việt —
+                        đang dần vắng bóng trong đời sống hiện đại.
+                    </p>
+                    <p class="ab-story__body">
+                        Chúng tôi muốn kể lại câu chuyện ấy bằng ngôn ngữ thời trang:
+                        nhẹ nhàng, đương đại, nhưng không quên gốc rễ.
+                        Mỗi chiếc túi, mỗi chiếc nón vì thế đều mang trong mình
+                        một mảnh ký ức quê hương.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="ab-story-wrap">
+            <div class="ab-story ab-story--reverse reveal">
+                <div class="ab-story__media">
+                    <img th:src="@{/image/bag_charm.jpeg}"
+                         src="https://images.unsplash.com/photo-1622445275576-721325763afe?w=900&q=80"
+                         alt="Triết lý">
+                </div>
+                <div class="ab-story__text">
+                    <div class="ab-story__num">02</div>
+                    <h3 class="ab-story__title">
+                        Chậm rãi & <em>tử tế</em>
+                    </h3>
+                    <p class="ab-story__body">
+                        Trong thế giới chuộng nhanh, SUNILIES chọn đi
+                        <strong>chậm hơn một nhịp</strong>.
+                        Mỗi sản phẩm phải mất hàng giờ — đôi khi hàng ngày —
+                        để hoàn thiện qua đôi tay người thợ.
+                    </p>
+                    <p class="ab-story__body">
+                        Chúng tôi tin rằng sự tử tế trong từng đường đan
+                        sẽ được người mặc cảm nhận. Và chính cảm nhận đó
+                        làm nên giá trị bền vững mà không công nghệ nào thay thế được.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════
+     GIÁ TRỊ CỐT LÕI
+═════════════════════════════════════════════════════ -->
+<section class="ab-section ab-section--cream">
+    <div class="container">
+
+        <div class="ab-section__head reveal">
+            <div class="ab-section__eyebrow">Giá trị cốt lõi</div>
+            <h2 class="ab-section__title">
+                Bốn điều chúng tôi <em>luôn giữ</em>
+            </h2>
+            <div class="ab-section__divider"></div>
+        </div>
+
+        <div class="ab-values">
+
+            <div class="ab-value reveal reveal--delay-1">
+                <div class="ab-value__icon">
+                    <svg width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                        <path d="M12 2L9 9H2l5.5 4.5L5 21l7-5 7 5-2.5-7.5L22 9h-7l-3-7z"/>
+                    </svg>
+                </div>
+                <h4 class="ab-value__title">Thủ công</h4>
+                <p class="ab-value__desc">
+                    100% từ đôi bàn tay nghệ nhân Việt — không khuôn mẫu, không dây chuyền.
+                </p>
+            </div>
+
+            <div class="ab-value reveal reveal--delay-2">
+                <div class="ab-value__icon">
+                    <svg width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                        <path d="M12 2v20M5 12c0-4 3-7 7-7s7 3 7 7M5 12c0 4 3 7 7 7s7-3 7-7"/>
+                    </svg>
+                </div>
+                <h4 class="ab-value__title">Tự nhiên</h4>
+                <p class="ab-value__desc">
+                    Cói mây thuần Việt, không hoá chất độc hại, thân thiện với làn da và môi trường.
+                </p>
+            </div>
+
+            <div class="ab-value reveal reveal--delay-3">
+                <div class="ab-value__icon">
+                    <svg width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                        <path d="M3 12c0-5 4-9 9-9s9 4 9 9-4 9-9 9c-2 0-4-1-5-2"/>
+                        <path d="M3 21v-6h6"/>
+                    </svg>
+                </div>
+                <h4 class="ab-value__title">Bền vững</h4>
+                <p class="ab-value__desc">
+                    Sản phẩm bền theo thời gian, được tạo ra để dùng lâu — không phải để bỏ đi.
+                </p>
+            </div>
+
+            <div class="ab-value reveal reveal--delay-4">
+                <div class="ab-value__icon">
+                    <svg width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="3"/>
+                        <path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2"/>
+                    </svg>
+                </div>
+                <h4 class="ab-value__title">Độc bản</h4>
+                <p class="ab-value__desc">
+                    Không có hai sản phẩm nào giống nhau — mỗi đường đan là một dấu vân tay.
+                </p>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════
+     QUY TRÌNH
+═════════════════════════════════════════════════════ -->
+<section class="ab-section">
+    <div class="container">
+
+        <div class="ab-section__head reveal">
+            <div class="ab-section__eyebrow">Hành trình một sản phẩm</div>
+            <h2 class="ab-section__title">
+                Bốn bước, từ <em>cánh đồng cói</em><br/>đến tay bạn
+            </h2>
+            <div class="ab-section__divider"></div>
+        </div>
+
+        <div class="ab-process">
+
+            <div class="ab-step reveal reveal--delay-1">
+                <div class="ab-step__num">I</div>
+                <h4 class="ab-step__title">Tuyển chọn</h4>
+                <p class="ab-step__desc">
+                    Cói mây được thu hoạch và sàng lọc kỹ — chỉ giữ những sợi đẹp,
+                    bền, đúng độ già.
+                </p>
+            </div>
+
+            <div class="ab-step reveal reveal--delay-2">
+                <div class="ab-step__num">II</div>
+                <h4 class="ab-step__title">Sơ chế</h4>
+                <p class="ab-step__desc">
+                    Phơi nắng, làm mềm và nhuộm tự nhiên để giữ nguyên hương cói
+                    và sắc đất Việt.
+                </p>
+            </div>
+
+            <div class="ab-step reveal reveal--delay-3">
+                <div class="ab-step__num">III</div>
+                <h4 class="ab-step__title">Đan tay</h4>
+                <p class="ab-step__desc">
+                    Nghệ nhân đan từng đường, từng nút — có khi mất nhiều ngày
+                    cho một chiếc túi hoàn thiện.
+                </p>
+            </div>
+
+            <div class="ab-step reveal reveal--delay-4">
+                <div class="ab-step__num">IV</div>
+                <h4 class="ab-step__title">Hoàn thiện</h4>
+                <p class="ab-step__desc">
+                    Kiểm tra, ghép phụ kiện, đóng gói cẩn thận
+                    trước khi đến với bạn.
+                </p>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════
+     BANNER NGHỆ NHÂN – QUOTE
+═════════════════════════════════════════════════════ -->
+<section class="ab-artisan">
+    <div class="container">
+        <div class="reveal">
+            <div class="ab-artisan__quote-mark">"</div>
+            <p class="ab-artisan__quote">
+                Đan một chiếc túi không khó — khó là giữ được hồn cói trong đó.
+                Khi người dùng cầm vào và mỉm cười, là tôi biết mình đã làm đúng.
+            </p>
+            <div class="ab-artisan__author">Cô Tám · Nghệ nhân làng nghề Phú Vinh</div>
+        </div>
+    </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════
+     STATS – những con số
+═════════════════════════════════════════════════════ -->
+<section class="ab-section">
+    <div class="container">
+
+        <div class="ab-section__head reveal">
+            <div class="ab-section__eyebrow">Trên hành trình</div>
+            <h2 class="ab-section__title">
+                Những con số <em>thầm lặng</em>
+            </h2>
+            <div class="ab-section__divider"></div>
+        </div>
+
+        <div class="ab-stats">
+            <div class="ab-stat reveal reveal--delay-1">
+                <div class="ab-stat__num"><em>+30</em></div>
+                <div class="ab-stat__label">Nghệ nhân đồng hành</div>
+            </div>
+            <div class="ab-stat reveal reveal--delay-2">
+                <div class="ab-stat__num">10K<em>+</em></div>
+                <div class="ab-stat__label">Sản phẩm đan tay</div>
+            </div>
+            <div class="ab-stat reveal reveal--delay-3">
+                <div class="ab-stat__num">3</div>
+                <div class="ab-stat__label">Làng nghề Bắc – Trung – Nam</div>
+            </div>
+            <div class="ab-stat reveal reveal--delay-4">
+                <div class="ab-stat__num"><em>100</em>%</div>
+                <div class="ab-stat__label">Vật liệu tự nhiên</div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════
+     SỨ MỆNH
+═════════════════════════════════════════════════════ -->
+<section class="ab-section ab-section--cream ab-section--mission">
+    <div class="container">
+        <div class="ab-mission reveal">
+            <p class="ab-mission__text">
+                Sứ mệnh của chúng tôi là đưa <em>nghề thủ công Việt</em>
+                trở lại đời sống đương đại — không phải như một di sản phải gìn giữ,
+                mà như một <em>người bạn đồng hành</em> trẻ trung, tử tế và bền lâu.
+            </p>
+            <p class="ab-mission__sub">
+                Mỗi sản phẩm bạn chọn là một lời cảm ơn gửi đến người nghệ nhân,
+                và là một nhịp đập tiếp nối cho làng nghề.
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════
+     CTA cuối trang
+═════════════════════════════════════════════════════ -->
+<section class="ab-cta">
+    <div class="ab-cta__bg">Sunilies</div>
+    <div class="container">
+        <div class="ab-cta__inner reveal">
+            <h2 class="ab-cta__title">
+                Khám phá <em>câu chuyện</em><br/>của riêng bạn
+            </h2>
+            <p class="ab-cta__desc">
+                Mỗi sản phẩm SUNILIES đều chờ một người đồng hành xứng đáng.
+                Hãy bắt đầu hành trình của bạn ngay hôm nay.
+            </p>
+            <div class="ab-cta__btns">
+                <a th:href="@{/collections}" class="ab-btn ab-btn--primary">Khám phá bộ sưu tập</a>
+                <a th:href="@{/contact}" class="ab-btn ab-btn--ghost">Liên hệ với chúng tôi</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FOOTER fragment -->
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<!-- About JS riêng -->
+<script th:src="@{/js/about.js}"></script>
+
+</body>
+</html>

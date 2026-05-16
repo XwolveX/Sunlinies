@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 public class HomeController {
@@ -22,11 +23,9 @@ public class HomeController {
         model.addAttribute("categories", getCategories());
 
         try {
-            // Sản phẩm bán chạy (hot = true)
             List<Product> hotProducts = productRepository.findHotProducts(8);
             model.addAttribute("hotProducts", hotProducts);
 
-            // Sản phẩm mới (isNew = true)
             List<Product> newProducts = productRepository.findNewProducts(8);
             model.addAttribute("newProducts", newProducts);
 
@@ -44,35 +43,80 @@ public class HomeController {
         return "contact";
     }
 
+    // ══════════════════════════════════════════════════════
+    // SEARCH — tìm kiếm sản phẩm theo keyword
+    // Tìm trong: name, description, category, tags, collection
+    // ══════════════════════════════════════════════════════
     @GetMapping("/search")
     public String search(@RequestParam(required = false) String q, Model model) {
         model.addAttribute("query", q);
+
+        // Không có keyword → trả về trang trống (gợi ý tìm kiếm)
+        if (q == null || q.isBlank()) {
+            model.addAttribute("products", List.of());
+            return "search";
+        }
+
         try {
-            // Tìm kiếm đơn giản: lấy tất cả rồi filter theo tên
-            if (q != null && !q.isBlank()) {
-                String keyword = q.toLowerCase();
-                List<Product> results = productRepository.findAll().stream()
-                        .filter(p -> p.getName() != null &&
-                                p.getName().toLowerCase().contains(keyword))
-                        .toList();
-                model.addAttribute("products", results);
-            } else {
-                model.addAttribute("products", List.of());
-            }
+            String keyword = q.trim().toLowerCase();
+
+            List<Product> results = productRepository.findAll().stream()
+                    .filter(p -> matchesKeyword(p, keyword))
+                    // Ưu tiên: tên chứa keyword lên đầu, sau đó description/tags
+                    .sorted((a, b) -> {
+                        boolean aName = a.getName() != null && a.getName().toLowerCase().contains(keyword);
+                        boolean bName = b.getName() != null && b.getName().toLowerCase().contains(keyword);
+                        if (aName && !bName) return -1;
+                        if (!aName && bName) return 1;
+                        return 0;
+                    })
+                    .collect(Collectors.toList());
+
+            model.addAttribute("products", results);
+
+            System.out.println("🔍 Tìm kiếm '" + q + "' → " + results.size() + " kết quả");
+
         } catch (Exception e) {
+            System.err.println("❌ Lỗi tìm kiếm: " + e.getMessage());
             model.addAttribute("products", List.of());
         }
+
         return "search";
+    }
+    /**
+     * Kiểm tra xem product có khớp với keyword không.
+     * Tìm trong: name, description, category, tags, collection
+     */
+    private boolean matchesKeyword(Product p, String keyword) {
+        // Tìm trong tên (quan trọng nhất)
+        if (p.getName() != null && p.getName().toLowerCase().contains(keyword)) return true;
+
+        // Tìm trong mô tả ngắn
+        if (p.getDescription() != null && p.getDescription().toLowerCase().contains(keyword)) return true;
+
+        // Tìm trong category
+        if (p.getCategory() != null && p.getCategory().toLowerCase().contains(keyword)) return true;
+
+        // Tìm trong collection
+        if (p.getCollection() != null && p.getCollection().toLowerCase().contains(keyword)) return true;
+
+        // Tìm trong tags
+        if (p.getTags() != null) {
+            for (String tag : p.getTags()) {
+                if (tag != null && tag.toLowerCase().contains(keyword)) return true;
+            }
+        }
+
+        return false;
     }
 
     @GetMapping("/newsletter")
     public String newsletter(@RequestParam String email) {
-        // TODO: lưu email vào Firestore collection "subscribers"
         System.out.println("📧 Email đăng ký: " + email);
         return "redirect:/";
     }
 
-    // ─── Categories tĩnh (có thể chuyển sang Firestore sau) ──────
+    // ─── Categories tĩnh ──────────────────────────────────────────
     private List<Category> getCategories() {
         return List.of(
                 new Category("ao", "Áo", "/image/collection_banner.jpg"),

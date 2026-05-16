@@ -404,6 +404,13 @@
     function initScrollAnimation() {
         if (!window.IntersectionObserver) return;
 
+        // Set hidden state qua JS thay vì CSS
+        // → trang không dùng collection.js (search, wishlist...) sẽ hiển thị cards bình thường
+        allCards.forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+        });
+
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -415,5 +422,6 @@
 
         allCards.forEach(card => observer.observe(card));
     }
+
 
 })();
