@@ -28,8 +28,9 @@ target/
 build/
 !**/src/main/**/build/
 !**/src/test/**/build/
-
+src/main/resources/application.properties
+src/main/resources/chat-faq.json
+src/main/resources/chat-knowledge-base.txt
 ### VS Code ###
 .vscode/
 src/main/resources/firebase-service-account.json
-src/main/resources/application.properties
