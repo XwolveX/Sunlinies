@@ -1,0 +1,96 @@
+<!--
+  ╔══════════════════════════════════════════════════════╗
+  ║  Chatbox AI Fragment – SUNILIES                       ║
+  ║  Path: src/main/resources/templates/fragments/chatbox.html
+  ║  Include: <div th:replace="~{fragments/chatbox :: chatbox}"></div>
+  ║  Đặt ngay trước </body> trong layout chính            ║
+  ╚══════════════════════════════════════════════════════╝
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="chatbox">
+
+    <!-- CSS riêng -->
+    <link rel="stylesheet" th:href="@{/css/chatbox.css}">
+
+    <!-- Nút bubble nổi -->
+    <button id="sun-chat-toggle" class="sun-chat-toggle" aria-label="Mở chatbox">
+        <svg class="sun-chat-toggle__icon-open" width="26" height="26"
+             viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+        <svg class="sun-chat-toggle__icon-close" width="22" height="22"
+             viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+        <span class="sun-chat-toggle__pulse"></span>
+        <span class="sun-chat-toggle__badge" id="sun-chat-badge">1</span>
+    </button>
+
+    <!-- Cửa sổ chat -->
+    <div id="sun-chat-panel" class="sun-chat-panel" role="dialog" aria-label="Trợ lý SUNILIES">
+
+        <!-- Header -->
+        <div class="sun-chat-header">
+            <div class="sun-chat-header__avatar">
+                <span>S</span>
+            </div>
+            <div class="sun-chat-header__info">
+                <div class="sun-chat-header__name">SUNILIES Assistant</div>
+                <div class="sun-chat-header__status">
+                    <span class="sun-chat-header__dot"></span>
+                    Đang hoạt động
+                </div>
+            </div>
+            <button class="sun-chat-header__close" id="sun-chat-close" aria-label="Đóng">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Khu vực tin nhắn -->
+        <div class="sun-chat-body" id="sun-chat-body">
+            <!-- Tin nhắn sẽ được JS render vào đây -->
+        </div>
+
+        <!-- Gợi ý câu hỏi nhanh -->
+        <div class="sun-chat-suggestions" id="sun-chat-suggestions"></div>
+
+        <!-- Input -->
+        <form class="sun-chat-input-wrap" id="sun-chat-form" autocomplete="off">
+            <input type="text"
+                   id="sun-chat-input"
+                   class="sun-chat-input"
+                   placeholder="Nhập câu hỏi cho SUNILIES..."
+                   maxlength="500"
+                   autocomplete="off">
+            <button type="submit" class="sun-chat-send" id="sun-chat-send" aria-label="Gửi">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2"
+                     stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="22" y1="2" x2="11" y2="13"/>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                </svg>
+            </button>
+        </form>
+
+        <!-- Footer -->
+        <div class="sun-chat-footer">
+            Trợ lý ảo SUNILIES · Powered by AI
+        </div>
+    </div>
+
+    <!-- JS -->
+    <script th:src="@{/js/chatbox.js}"></script>
+</div>
+
+</body>
+</html>
