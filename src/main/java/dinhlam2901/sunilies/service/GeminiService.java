@@ -21,22 +21,6 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
-
-/**
- * GeminiService – Gọi Google Gemini API trả lời câu hỏi khách
- *
- *  Cấu hình trong application.properties:
- *      gemini.enabled=true
- *      gemini.api-key=AIza...
- *      gemini.model=gemini-2.0-flash
- *
- *  Lấy API key MIỄN PHÍ tại: https://aistudio.google.com/apikey
- *  Free tier: 15 requests/phút, 1500 requests/ngày (đủ cho shop nhỏ)
- *
- *  Knowledge base = file tĩnh (chat-knowledge-base.txt)
- *                 + danh sách sản phẩm động (từ Firestore)
- *  Cache products 5 phút để không spam Firestore.
- */
 @Service
 public class GeminiService {
 

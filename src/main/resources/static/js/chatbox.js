@@ -1,8 +1,3 @@
-/* ═══════════════════════════════════════════════════════
-   SUNILIES CHATBOX — Frontend logic
-   Path: src/main/resources/static/js/chatbox.js
-   API : POST /api/chat  |  GET /api/chat/welcome
-   ═══════════════════════════════════════════════════════ */
 
 (function () {
     'use strict';
