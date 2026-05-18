@@ -7,6 +7,10 @@
         <div class="container wolf-main-header-grid">
             <!-- Left -->
             <div class="wolf-header-left">
+                <!-- Hamburger: chỉ hiện trên mobile -->
+                <button class="btn-hamburger" id="btnHamburger" aria-label="Mở menu">
+                    <span></span><span></span><span></span>
+                </button>
                 <ul class="header-nav-secondary header-nav-secondary-left">
                     <li class="wolf-hide-mobile">
                         <a th:href="@{/he-thong-cua-hang}" title="Hệ thống cửa hàng">
@@ -108,7 +112,7 @@
             </div>
         </div>
 
-        <!-- Navigation -->
+        <!-- Navigation: desktop only -->
         <nav class="site-nav">
             <div class="container">
                 <ul class="nav-menu">
@@ -120,6 +124,38 @@
             </div>
         </nav>
     </div>
+
+    <!-- ── MOBILE MENU (dùng chung toàn site) ── -->
+    <div class="mobile-menu-overlay" id="mobileOverlay"></div>
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="mobile-menu-head">
+            <span class="logo-text">SUNILIES</span>
+            <button class="mobile-menu-close" id="mobileMenuClose">&#x2715;</button>
+        </div>
+        <ul>
+            <li><a th:href="@{/}">Trang chủ</a></li>
+            <li><a th:href="@{/collections}">Sản phẩm</a></li>
+            <li><a th:href="@{/collections/san-pham-moi}">Sản phẩm mới</a></li>
+            <li><a th:href="@{/blogs}">Blog</a></li>
+            <li><a th:href="@{/about}">Giới thiệu</a></li>
+            <li><a th:href="@{/contact}">Liên hệ</a></li>
+        </ul>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var btn      = document.getElementById('btnHamburger');
+        var menu     = document.getElementById('mobileMenu');
+        var overlay  = document.getElementById('mobileOverlay');
+        var closeBtn = document.getElementById('mobileMenuClose');
+        if (!btn || !menu) return;
+        function openMenu()  { menu.classList.add('active'); overlay.classList.add('active'); document.body.style.overflow = 'hidden'; }
+        function closeMenu() { menu.classList.remove('active'); overlay.classList.remove('active'); document.body.style.overflow = ''; }
+        btn.addEventListener('click', openMenu);
+        if (closeBtn) closeBtn.addEventListener('click', closeMenu);
+        if (overlay)  overlay.addEventListener('click', closeMenu);
+    });
+    </script>
 </header>
 </body>
 </html>

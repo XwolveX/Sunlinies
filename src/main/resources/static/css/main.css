@@ -976,3 +976,30 @@ body.opacitycart:before {
 
 /* Fix logo */
 .logo-wrapper img { max-height: 50px; width: auto; object-fit: contain; }
+
+/* ============================================================
+   FOOTER – RESPONSIVE MOBILE (căn giữa)
+   ============================================================ */
+@media (max-width: 767px) {
+    /* Brand column: căn giữa logo, mô tả, social */
+    footer .footer-brand { text-align: center; }
+    footer .footer-brand img { margin: 0 auto; }
+    footer .footer-brand p { max-width: 100% !important; }
+    footer .footer-social { justify-content: center; }
+
+    /* Các cột link: căn giữa tiêu đề và danh sách */
+    footer .col-6 { text-align: center; }
+    footer .col-6 ul { display: flex; flex-direction: column; align-items: center; }
+
+    /* Newsletter column */
+    footer .col-12 { text-align: center; }
+    footer .footer-payment { justify-content: center; }
+
+    /* Bottom bar: xếp dọc, căn giữa */
+    footer .footer-bottom-bar {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    footer .footer-bottom-bar > div { justify-content: center; }
+}

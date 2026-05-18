@@ -24,21 +24,6 @@
 ========================================================= -->
 <div th:replace="~{fragments/header :: header}"></div>
 
-<!-- Mobile Menu Overlay (dùng chung với header) -->
-<div class="mobile-menu-overlay" id="mobileOverlay"></div>
-<div class="mobile-menu" id="mobileMenu">
-    <div class="mobile-menu-head">
-        <span class="logo-text">SUNILIES</span>
-        <button class="mobile-menu-close" id="mobileMenuClose">×</button>
-    </div>
-    <ul>
-        <li><a th:href="@{/}">Trang chủ</a></li>
-        <li><a th:href="@{/collections}">Sản phẩm</a></li>
-        <li><a th:href="@{/collections/san-pham-moi}">Sản phẩm mới</a></li>
-        <li><a th:href="@{/blogs}">Tin tức</a></li>
-        <li><a th:href="@{/contact}">Liên hệ</a></li>
-    </ul>
-</div>
 <div style="position: relative;">
 <!-- =========================================================
      SECTION 1: HERO SLIDER

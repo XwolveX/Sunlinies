@@ -27,17 +27,7 @@ const productSwiper = new Swiper('.productSwiper', {
 });
 
 /* ======= MOBILE MENU ======= */
-const btnHamburger   = document.getElementById('btnHamburger');
-const mobileMenu     = document.getElementById('mobileMenu');
-const mobileOverlay  = document.getElementById('mobileOverlay');
-const mobileMenuClose= document.getElementById('mobileMenuClose');
-
-function openMobileMenu() { mobileMenu.classList.add('active'); mobileOverlay.classList.add('active'); }
-function closeMobileMenu() { mobileMenu.classList.remove('active'); mobileOverlay.classList.remove('active'); }
-
-btnHamburger.addEventListener('click', openMobileMenu);
-mobileMenuClose.addEventListener('click', closeMobileMenu);
-mobileOverlay.addEventListener('click', closeMobileMenu);
+// Mobile menu được xử lý bởi inline script trong header.html fragment
 
 /* ======= CART DRAWER ======= */
 // Lưu giỏ hàng đơn giản bằng JS (trong Spring Boot sẽ gọi /api/cart)

@@ -766,7 +766,10 @@ body.has-hero-page .site-nav:not(.nav--scrolled) .nav-menu li a:hover {
     .btn-hamburger { display: flex; }
     .wolf-hide-mobile { display: none !important; }
 
-    .slide-content { padding: 0 30px; }
+    /* Hero slider: cao hơn trên mobile để thấy nội dung */
+    .section_slider .swiper-slide { aspect-ratio: 4/3; }
+    .slide-content { padding: 0 24px; }
+    .slide-content .slide-title { font-size: clamp(24px, 7vw, 40px); }
 
     .gallery-grid { grid-template-columns: repeat(2, 1fr); }
     .section_services { margin: 40px 0 30px; }
@@ -778,6 +781,31 @@ body.has-hero-page .site-nav:not(.nav--scrolled) .nav-menu li a:hover {
 
     .cart-drawer { width: 100%; }
     .section-subscribe { padding: 40px 0; }
+
+    /* Back-to-top: nhấc lên trên footer nav mobile (cao 60px) */
+    .back-to-top { bottom: 80px; right: 16px; }
+
+    /* Section story: giảm padding, ẩn cây trang trí */
+    .section-story { padding: 56px 20px; }
+    .story-tree-left, .story-tree-right { display: none; }
+    .story-bg-text { font-size: clamp(50px, 15vw, 80px); }
+    .stat-item { padding: 0 20px; }
+    .stat-num { font-size: 32px; }
+}
+
+@media (max-width: 480px) {
+    /* Hero: vuông hơn trên điện thoại nhỏ */
+    .section_slider .swiper-slide { aspect-ratio: 1/1; }
+    .slide-content { padding: 0 16px; }
+
+    /* Story stats xếp dọc */
+    .story-stats { flex-direction: column; gap: 20px; }
+    .stat-item { border-right: none; border-bottom: 1px solid #e0d8ce; padding-bottom: 20px; }
+    .stat-item:last-child { border-bottom: none; padding-bottom: 0; }
+
+    /* Product slider nav: ẩn mũi tên trên màn hình rất nhỏ */
+    .product-slider-nav .swiper-button-next,
+    .product-slider-nav .swiper-button-prev { display: none; }
 }
 
 @media (max-width: 640px) {
