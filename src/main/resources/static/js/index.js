@@ -8,6 +8,49 @@
 document.addEventListener('DOMContentLoaded', function () {
 
     /* =============================================
+       0. PRELOADER & HERO ENTRANCE CONTROL
+    ============================================= */
+    const preloader = document.getElementById('preloader');
+    const preloaderBar = document.getElementById('preloaderBar');
+    
+    // Cho thanh tiến trình chạy mượt tới 65% khi DOM đã sẵn sàng
+    if (preloaderBar) {
+        setTimeout(() => {
+            preloaderBar.style.width = '65%';
+        }, 50);
+    }
+
+    // Hàm đóng màn hình chờ và kích hoạt hiệu ứng hero
+    function removePreloader() {
+        if (!preloader || preloader.classList.contains('preloader-hidden')) return;
+        
+        // Đẩy tiến trình lên 100%
+        if (preloaderBar) preloaderBar.style.width = '100%';
+        
+        setTimeout(() => {
+            // Ẩn preloader mượt mà (trượt lên và fade-out)
+            preloader.classList.add('preloader-hidden');
+            document.body.classList.remove('preloader-active');
+            
+            // Kích hoạt hiệu ứng xuất hiện của hero slider & chữ bay vào
+            document.body.classList.add('hero-ready');
+            
+            // Xóa preloader khỏi DOM sau khi hoàn thành transition
+            setTimeout(() => {
+                preloader.remove();
+            }, 1000);
+        }, 300);
+    }
+
+    // Đóng preloader khi toàn bộ tài nguyên (bao gồm ảnh hero) đã tải xong
+    window.addEventListener('load', function() {
+        removePreloader();
+    });
+
+    // Fallback: Tự động đóng sau tối đa 2.5 giây để bảo vệ trải nghiệm người dùng
+    setTimeout(removePreloader, 2500);
+
+    /* =============================================
        1. SWIPER – HERO SLIDER
     ============================================= */
     if (document.querySelector('.sliderSwiper')) {

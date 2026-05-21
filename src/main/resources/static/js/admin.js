@@ -114,7 +114,14 @@ function openEditModal(id) {
     s('e-price',  p.price);   s('e-cmp',    p.comparePrice||'');
     s('e-stock',  p.stock);   s('e-cat',    p.category);
     s('e-col',    p.collection); s('e-img', p.imageUrl);
-    s('e-imgs',   Array.isArray(p.images) ? p.images.join(', ') : (p.images||''));
+    const currentImgsStr = Array.isArray(p.images) ? p.images.join(', ') : (p.images||'');
+    s('e-imgs',   currentImgsStr);
+    if (currentImgsStr.trim()) {
+        currentEditSubUrls = currentImgsStr.split(',').map(url => url.trim()).filter(url => url.length > 0);
+    } else {
+        currentEditSubUrls = [];
+    }
+    renderCurrentSubImagesPreview();
     s('e-desc',   p.description); s('e-fdesc', p.fullDescription);
     s('e-sizes',  Array.isArray(p.sizes)  ? p.sizes.join(', ')  : (p.sizes||''));
     s('e-colors', Array.isArray(p.colors) ? p.colors.join(', ') : (p.colors||''));
@@ -123,12 +130,194 @@ function openEditModal(id) {
     c('e-active', p.active); c('e-onSale', p.onSale);
     c('e-isNew',  p['new'] !== undefined ? p['new'] : p.isNew);
     c('e-hot',    p.hot);
+
+    // Reset file input và hiển thị ảnh hiện tại
+    const fileInput = document.getElementById('e-imageFile');
+    if (fileInput) fileInput.value = '';
+    const imgEl    = document.getElementById('e-img-preview');
+    const noneEl   = document.getElementById('e-img-none');
+    const newPreviewWrap = document.getElementById('e-img-preview-new');
+    if (newPreviewWrap) newPreviewWrap.style.display = 'none';
+    if (p.imageUrl) {
+        if (imgEl)  { imgEl.src = p.imageUrl; imgEl.style.display = 'block'; }
+        if (noneEl) noneEl.style.display = 'none';
+    } else {
+        if (imgEl)  imgEl.style.display = 'none';
+        if (noneEl) noneEl.style.display = 'inline';
+    }
+
+    // Reset danh sách ảnh phụ mới tải lên từ máy và preview của chúng
+    selectedEditSubFiles = [];
+    const filesInput = document.getElementById('e-imageFiles');
+    if (filesInput) filesInput.value = '';
+    const newSubPreviewWrap = document.getElementById('e-subimgs-preview-new');
+    if (newSubPreviewWrap) newSubPreviewWrap.innerHTML = '';
+
     document.getElementById('editOverlay').classList.add('open');
     document.body.style.overflow = 'hidden';
 }
 function closeEditModal() {
     document.getElementById('editOverlay').classList.remove('open');
     document.body.style.overflow = '';
+}
+
+// ── Preview ảnh sản phẩm (modal edit) ────────────────────────
+function previewProductImageEdit(input) {
+    let wrap = document.getElementById('e-img-preview-new');
+    if (!wrap) {
+        wrap = document.createElement('div');
+        wrap.id = 'e-img-preview-new';
+        wrap.style.marginTop = '8px';
+        wrap.innerHTML = '<img style="max-height:120px;border-radius:6px;object-fit:cover;" alt="Ảnh mới"/>';
+        input.parentNode.insertBefore(wrap, input.nextSibling);
+    }
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = e => {
+            wrap.style.display = 'block';
+            wrap.querySelector('img').src = e.target.result;
+        };
+        reader.readAsDataURL(input.files[0]);
+    } else {
+        wrap.style.display = 'none';
+    }
+}
+
+// ── Khai báo các mảng trạng thái lưu ảnh phụ xem trước ──
+let selectedAddSubFiles = [];
+let selectedEditSubFiles = [];
+let currentEditSubUrls = [];
+
+// ── Preview & Xử lý nhiều ảnh phụ (form thêm mới) ───────────────────
+function previewMultipleImages(input, previewId) {
+    if (input.files && input.files.length > 0) {
+        Array.from(input.files).forEach(file => {
+            selectedAddSubFiles.push(file);
+        });
+    }
+    renderAddSubImagesPreview(input, previewId);
+}
+
+function renderAddSubImagesPreview(input, previewId) {
+    const wrap = document.getElementById(previewId);
+    if (!wrap) return;
+    wrap.innerHTML = '';
+
+    // Đồng bộ lại mảng tệp tin thực tế vào input.files
+    const dt = new DataTransfer();
+    selectedAddSubFiles.forEach(file => dt.items.add(file));
+    input.files = dt.files;
+
+    selectedAddSubFiles.forEach((file, index) => {
+        const reader = new FileReader();
+        reader.onload = e => {
+            const item = document.createElement('div');
+            item.className = 'preview-item';
+
+            const img = document.createElement('img');
+            img.src = e.target.result;
+
+            const btn = document.createElement('div');
+            btn.className = 'btn-remove-preview';
+            btn.innerHTML = '✕';
+            btn.onclick = () => {
+                selectedAddSubFiles.splice(index, 1);
+                renderAddSubImagesPreview(input, previewId);
+            };
+
+            item.appendChild(img);
+            item.appendChild(btn);
+            wrap.appendChild(item);
+        };
+        reader.readAsDataURL(file);
+    });
+}
+
+// ── Preview & Xử lý nhiều ảnh phụ mới (modal edit) ───────────────────────
+function previewMultipleImagesEdit(input) {
+    if (input.files && input.files.length > 0) {
+        Array.from(input.files).forEach(file => {
+            selectedEditSubFiles.push(file);
+        });
+    }
+    renderEditSubImagesNewPreview(input);
+}
+
+function renderEditSubImagesNewPreview(input) {
+    let wrap = document.getElementById('e-subimgs-preview-new');
+    if (!wrap) {
+        wrap = document.createElement('div');
+        wrap.id = 'e-subimgs-preview-new';
+        wrap.style.display = 'flex';
+        wrap.style.flexWrap = 'wrap';
+        wrap.style.gap = '8px';
+        wrap.style.marginTop = '8px';
+        input.parentNode.insertBefore(wrap, input.nextSibling);
+    }
+    wrap.innerHTML = '';
+
+    // Đồng bộ lại mảng tệp tin thực tế vào input.files mới
+    const dt = new DataTransfer();
+    selectedEditSubFiles.forEach(file => dt.items.add(file));
+    input.files = dt.files;
+
+    selectedEditSubFiles.forEach((file, index) => {
+        const reader = new FileReader();
+        reader.onload = e => {
+            const item = document.createElement('div');
+            item.className = 'preview-item';
+
+            const img = document.createElement('img');
+            img.src = e.target.result;
+
+            const btn = document.createElement('div');
+            btn.className = 'btn-remove-preview';
+            btn.innerHTML = '✕';
+            btn.onclick = () => {
+                selectedEditSubFiles.splice(index, 1);
+                renderEditSubImagesNewPreview(input);
+            };
+
+            item.appendChild(img);
+            item.appendChild(btn);
+            wrap.appendChild(item);
+        };
+        reader.readAsDataURL(file);
+    });
+}
+
+// ── Render ảnh phụ hiện tại (cũ từ DB) có nút xóa ──
+function renderCurrentSubImagesPreview() {
+    const wrap = document.getElementById('e-subimgs-preview-current');
+    if (!wrap) return;
+    wrap.innerHTML = '';
+
+    // Cập nhật lại giá trị input chứa URL danh sách để gửi đi khi submit form
+    const input = document.getElementById('e-imgs');
+    if (input) {
+        input.value = currentEditSubUrls.join(', ');
+    }
+
+    currentEditSubUrls.forEach((url, index) => {
+        const item = document.createElement('div');
+        item.className = 'preview-item';
+
+        const img = document.createElement('img');
+        img.src = url;
+        img.onerror = () => { item.style.display = 'none'; }; // Ẩn item nếu URL ảnh lỗi
+
+        const btn = document.createElement('div');
+        btn.className = 'btn-remove-preview';
+        btn.innerHTML = '✕';
+        btn.onclick = () => {
+            currentEditSubUrls.splice(index, 1);
+            renderCurrentSubImagesPreview();
+        };
+
+        item.appendChild(img);
+        item.appendChild(btn);
+        wrap.appendChild(item);
+    });
 }
 
 // ── Modal đơn hàng ────────────────────────────────────────────

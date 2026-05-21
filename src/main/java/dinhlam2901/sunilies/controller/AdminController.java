@@ -114,6 +114,8 @@ public class AdminController {
                              @RequestParam(required = false) String fullDescription,
                              @RequestParam Double price, @RequestParam(required = false) Double comparePrice,
                              @RequestParam(defaultValue = "") String imageUrl,
+                             @RequestParam(required = false) MultipartFile imageFile,
+                             @RequestParam(required = false) MultipartFile[] imageFiles,
                              @RequestParam(required = false) String images,
                              @RequestParam(defaultValue = "") String category,
                              @RequestParam(required = false) String collection,
@@ -129,15 +131,44 @@ public class AdminController {
                              RedirectAttributes ra) throws Exception {
 
         if (requireAdmin(session) == null) return "redirect:/login?redirect=/admin";
+        
+        String finalImageUrl = (imageUrl != null) ? imageUrl.trim() : "";
+        if (imageFile != null && !imageFile.isEmpty()) {
+            try {
+                finalImageUrl = storageService.uploadProductImage(imageFile);
+            } catch (Exception e) {
+                ra.addFlashAttribute("error", "❌ Upload ảnh thất bại: " + e.getMessage());
+                return "redirect:/admin?tab=products";
+            }
+        }
+
+        java.util.List<String> finalSubImages = new java.util.ArrayList<>();
+        if (images != null && !images.isBlank()) {
+            finalSubImages.addAll(split(images));
+        }
+        if (imageFiles != null && imageFiles.length > 0) {
+            for (MultipartFile file : imageFiles) {
+                if (file != null && !file.isEmpty()) {
+                    try {
+                        String url = storageService.uploadProductImage(file);
+                        finalSubImages.add(url);
+                    } catch (Exception e) {
+                        ra.addFlashAttribute("error", "❌ Upload ảnh phụ thất bại: " + e.getMessage());
+                        return "redirect:/admin?tab=products";
+                    }
+                }
+            }
+        }
+
         Product p = new Product();
         p.setName(name.trim()); p.setHandle(handle.trim().toLowerCase().replaceAll("\\s+","-"));
         p.setDescription(description); p.setFullDescription(fullDescription);
         p.setPrice(price); p.setComparePrice(comparePrice);
-        p.setImageUrl(imageUrl.trim()); p.setCategory(category.trim());
+        p.setImageUrl(finalImageUrl); p.setCategory(category.trim());
         p.setCollection(collection != null ? collection.trim() : null);
         p.setStock(stock); p.setOnSale(onSale); p.setNew(isNew); p.setHot(hot); p.setActive(active);
         p.setMetaTitle(metaTitle); p.setMetaDescription(metaDescription);
-        if (images != null && !images.isBlank()) p.setImages(split(images));
+        p.setImages(finalSubImages);
         if (sizes  != null && !sizes.isBlank())  p.setSizes(split(sizes));
         if (colors != null && !colors.isBlank()) p.setColors(split(colors));
         if (tags   != null && !tags.isBlank())   p.setTags(split(tags));
@@ -156,6 +187,8 @@ public class AdminController {
                                 @RequestParam(required = false) String fullDescription,
                                 @RequestParam Double price, @RequestParam(required = false) Double comparePrice,
                                 @RequestParam(required = false) String imageUrl,
+                                @RequestParam(required = false) MultipartFile imageFile,
+                                @RequestParam(required = false) MultipartFile[] imageFiles,
                                 @RequestParam(required = false) String images,
                                 @RequestParam(required = false) String category,
                                 @RequestParam(required = false) String collection,
@@ -177,11 +210,30 @@ public class AdminController {
             p.setName(name.trim()); p.setHandle(handle.trim().toLowerCase().replaceAll("\\s+","-"));
             p.setDescription(description); p.setFullDescription(fullDescription);
             p.setPrice(price); p.setComparePrice(comparePrice);
-            if (imageUrl != null && !imageUrl.isBlank()) p.setImageUrl(imageUrl.trim());
+            
+            if (imageFile != null && !imageFile.isEmpty()) {
+                p.setImageUrl(storageService.uploadProductImage(imageFile));
+            } else if (imageUrl != null && !imageUrl.isBlank()) {
+                p.setImageUrl(imageUrl.trim());
+            }
+
+            java.util.List<String> finalSubImages = new java.util.ArrayList<>();
+            if (images != null && !images.isBlank()) {
+                finalSubImages.addAll(split(images));
+            }
+            if (imageFiles != null && imageFiles.length > 0) {
+                for (MultipartFile file : imageFiles) {
+                    if (file != null && !file.isEmpty()) {
+                        String url = storageService.uploadProductImage(file);
+                        finalSubImages.add(url);
+                    }
+                }
+            }
+            p.setImages(finalSubImages);
+
             p.setCategory(category); p.setCollection(collection);
             p.setStock(stock); p.setOnSale(onSale); p.setNew(isNew); p.setHot(hot); p.setActive(active);
             p.setMetaTitle(metaTitle); p.setMetaDescription(metaDescription);
-            if (images != null && !images.isBlank()) p.setImages(split(images));
             if (sizes  != null && !sizes.isBlank())  p.setSizes(split(sizes));
             if (colors != null && !colors.isBlank()) p.setColors(split(colors));
             if (tags   != null && !tags.isBlank())   p.setTags(split(tags));

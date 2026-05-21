@@ -88,10 +88,11 @@ public class Product {
         // computed field — không lưu
     }
 
-    /** Ảnh đầu tiên trong list (fallback về imageUrl) */
+    /** Ảnh đại diện chính (fallback về ảnh phụ đầu tiên) */
     public String getFeaturedImage() {
+        if (imageUrl != null && !imageUrl.trim().isEmpty()) return imageUrl;
         if (images != null && !images.isEmpty()) return images.get(0);
-        return imageUrl;
+        return "";
     }
 
     /**

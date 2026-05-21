@@ -63,9 +63,16 @@
 
         <div class="pd-gallery__thumbs"
              th:if="${product.images != null and !product.images.isEmpty()}">
+          <!-- Ảnh đại diện chính làm thumbnail đầu tiên -->
+          <div class="pd-gallery__thumb is-active"
+               th:if="${product.imageUrl != null and !product.imageUrl.isEmpty()}"
+               th:data-src="${product.imageUrl}">
+            <img th:src="${product.imageUrl}" th:alt="${product.name}" loading="lazy"/>
+          </div>
+          <!-- Các ảnh phụ -->
           <div class="pd-gallery__thumb"
                th:each="img, idx : ${product.images}"
-               th:classappend="${idx.index == 0} ? ' is-active' : ''"
+               th:classappend="${(product.imageUrl == null || product.imageUrl.isEmpty()) and idx.index == 0} ? ' is-active' : ''"
                th:data-src="${img}">
             <img th:src="${img}" th:alt="${product.name}" loading="lazy"/>
           </div>

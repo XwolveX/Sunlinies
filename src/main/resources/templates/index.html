@@ -17,7 +17,21 @@
 
 <head th:replace="~{layout/base :: head('Trang chủ')}"></head>
 
-<body class="has-hero-page">
+<body class="has-hero-page preloader-active">
+
+<!-- =========================================================
+     MÀN HÌNH CHỜ (PRELOADER SANG TRỌNG)
+========================================================= -->
+<div id="preloader" class="preloader">
+    <div class="preloader-content">
+        <h1 class="preloader-logo">SUNILIES</h1>
+        <div class="preloader-tagline">ĐAN THỦ CÔNG BỞI NGHỆ NHÂN VIỆT</div>
+        <div class="preloader-bar-wrap">
+            <div class="preloader-bar" id="preloaderBar"></div>
+        </div>
+        <div class="preloader-spinner"></div>
+    </div>
+</div>
 
 <!-- =========================================================
      HEADER (fragment từ fragments/header.html)

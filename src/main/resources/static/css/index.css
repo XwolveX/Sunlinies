@@ -1042,6 +1042,159 @@ body.has-hero-page .site-nav:not(.nav--scrolled) .nav-menu li a:hover {
     to   { transform: translateX(-50%); }
 }
 
+/* -----------------------------------------------
+   16. PRELOADER (MÀN HÌNH CHỜ SANG TRỌNG)
+----------------------------------------------- */
+.preloader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: var(--bgLight);
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    transition: opacity 0.8s ease, transform 0.9s cubic-bezier(0.85, 0, 0.15, 1);
+}
+
+/* Hiệu ứng trượt lên như cánh màn sân khấu mở ra */
+.preloader.preloader-hidden {
+    opacity: 0;
+    transform: translateY(-100%);
+    pointer-events: none;
+}
+
+.preloader-content {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 90%;
+}
+
+.preloader-logo {
+    font-family: var(--fontDisplay);
+    font-size: clamp(36px, 8vw, 54px);
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    color: var(--darkColor);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    animation: preloader-logo-pulse 2s ease-in-out infinite;
+    text-indent: 0.3em; /* Cân bằng letter-spacing ở chữ cuối */
+}
+
+.preloader-tagline {
+    font-family: var(--fontBody);
+    font-size: clamp(10px, 2.5vw, 12px);
+    font-weight: 700;
+    letter-spacing: 0.25em;
+    color: var(--mainColor);
+    margin-bottom: 32px;
+    text-transform: uppercase;
+    opacity: 0;
+    animation: preloader-fade-in 1.2s ease-out 0.3s forwards;
+}
+
+.preloader-bar-wrap {
+    height: 2px;
+    width: 220px;
+    background: rgba(61, 46, 28, 0.08);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 24px;
+    position: relative;
+}
+
+.preloader-bar {
+    height: 100%;
+    width: 0%;
+    background: var(--darkColor);
+    border-radius: 4px;
+    transition: width 0.4s cubic-bezier(0.1, 0.8, 0.3, 1);
+}
+
+.preloader-spinner {
+    width: 24px;
+    height: 24px;
+    border: 2px solid rgba(61, 46, 28, 0.1);
+    border-top-color: var(--darkColor);
+    border-radius: 50%;
+    animation: preloader-spin 1s linear infinite;
+    opacity: 0.8;
+}
+
+/* Animations */
+@keyframes preloader-logo-pulse {
+    0%, 100% {
+        transform: scale(1);
+        letter-spacing: 0.3em;
+        opacity: 0.95;
+    }
+    50% {
+        transform: scale(1.02);
+        letter-spacing: 0.33em;
+        opacity: 1;
+        text-shadow: 0 0 10px rgba(200, 152, 106, 0.15);
+    }
+}
+
+@keyframes preloader-fade-in {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 0.85; transform: translateY(0); }
+}
+
+@keyframes preloader-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Ẩn scroll bar của body khi preloader đang chạy */
+body.preloader-active {
+    overflow: hidden !important;
+}
+
+/* Hiệu ứng mượt mà cho Hero Slider khi xuất hiện */
+.section_slider {
+    opacity: 0;
+    transform: scale(1.02);
+    transition: opacity 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.hero-ready .section_slider {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* Slide content animation ban đầu */
+.slide-content .slide-sub,
+.slide-content .slide-title,
+.slide-content .btn-slide {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.hero-ready .swiper-slide-active .slide-content .slide-sub {
+    opacity: 0.85;
+    transform: translateY(0);
+    transition-delay: 0.4s;
+}
+
+.hero-ready .swiper-slide-active .slide-content .slide-title {
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: 0.6s;
+}
+
+.hero-ready .swiper-slide-active .slide-content .btn-slide {
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: 0.8s;
+}
+
 html {
     scroll-behavior: smooth;
 }

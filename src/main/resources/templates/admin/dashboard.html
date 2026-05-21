@@ -130,7 +130,7 @@
     .adm-search::before{content:'🔍';position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:12px;pointer-events:none;}
 
     /* ── Modal ───────────────────────────────────────── */
-    .adm-overlay{display:none;position:fixed;inset:0;background:rgba(20,12,5,.5);z-index:300;backdrop-filter:blur(3px);align-items:flex-start;justify-content:center;padding:40px 16px;overflow-y:auto;}
+    .adm-overlay{display:none;position:fixed;inset:0;background:rgba(20,12,5,.5);z-index:9999;backdrop-filter:blur(3px);align-items:flex-start;justify-content:center;padding:40px 16px;overflow-y:auto;}
     .adm-overlay.open{display:flex;}
     .adm-modal{background:#fff;border-radius:16px;width:100%;max-width:740px;box-shadow:0 20px 60px rgba(0,0,0,.2);animation:mIn .25s ease;}
     @keyframes mIn{from{opacity:0;transform:translateY(-16px) scale(.97)}to{opacity:1;transform:none}}
@@ -160,6 +160,51 @@
     @media(max-width:600px){
         .adm-stats{grid-template-columns:1fr 1fr;}
         .adm-form-row--2,.adm-form-row--3{grid-template-columns:1fr;}
+    }
+
+    /* ── Preview ảnh phụ kèm nút xóa ── */
+    .preview-item {
+        position: relative;
+        display: inline-block;
+        margin-bottom: 4px;
+    }
+    .preview-item img {
+        height: 80px;
+        width: 80px;
+        object-fit: cover;
+        border-radius: 6px;
+        border: 1px solid var(--bd);
+        display: block;
+        transition: transform 0.2s;
+    }
+    .preview-item:hover img {
+        transform: scale(1.02);
+    }
+    .btn-remove-preview {
+        position: absolute;
+        top: -6px;
+        right: -6px;
+        width: 20px;
+        height: 20px;
+        background: var(--red);
+        color: #fff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        font-weight: bold;
+        cursor: pointer;
+        border: 1.5px solid #fff;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.25);
+        transition: transform 0.2s, background 0.2s;
+        user-select: none;
+        z-index: 10;
+        line-height: 1;
+    }
+    .btn-remove-preview:hover {
+        transform: scale(1.2);
+        background: #c0392b;
     }
 </style>
 
@@ -390,7 +435,7 @@
                         </div>
                         <div id="add-form-wrap" style="display:none;">
                             <div class="adm-card__body">
-                                <form th:action="@{/admin/products/add}" method="post" class="adm-form">
+                                <form th:action="@{/admin/products/add}" method="post" enctype="multipart/form-data" class="adm-form">
                                     <div class="adm-form-row adm-form-row--2">
                                         <div><label class="adm-label">Tên SP <span class="req">*</span></label>
                                             <input type="text" name="name" id="add-name" class="adm-input" required placeholder="Sandy Bag"/></div>
@@ -411,10 +456,32 @@
                                         <div><label class="adm-label">Collection</label>
                                             <input type="text" name="collection" class="adm-input" placeholder="dang-ha / vi-may"/></div>
                                     </div>
-                                    <div><label class="adm-label">Ảnh đại diện (URL) <span class="req">*</span></label>
-                                        <input type="url" name="imageUrl" class="adm-input" required placeholder="https://..."/></div>
-                                    <div><label class="adm-label">Danh sách ảnh (cách nhau bởi dấu phẩy)</label>
-                                        <input type="text" name="images" class="adm-input" placeholder="https://img1.jpg, https://img2.jpg"/></div>
+                                    <div class="adm-form-row adm-form-row--2">
+                                        <div>
+                                            <label class="adm-label">Chọn ảnh từ máy</label>
+                                            <input type="file" name="imageFile" class="adm-input" accept="image/*"
+                                                   onchange="previewBlogImage(this, 'prod-add-img-preview')"/>
+                                            <div id="prod-add-img-preview" style="display:none; margin-top:8px;">
+                                                <img style="max-height:140px; border-radius:6px; object-fit:cover;" alt="Preview"/>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label class="adm-label">Hoặc nhập URL ảnh đại diện</label>
+                                            <input type="url" name="imageUrl" class="adm-input" placeholder="https://..."/>
+                                        </div>
+                                    </div>
+                                     <div class="adm-form-row adm-form-row--2">
+                                         <div>
+                                             <label class="adm-label">Tải danh sách ảnh phụ từ máy</label>
+                                             <input type="file" name="imageFiles" class="adm-input" accept="image/*" multiple
+                                                    onchange="previewMultipleImages(this, 'prod-add-subimgs-preview')"/>
+                                             <div id="prod-add-subimgs-preview" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:8px;"></div>
+                                         </div>
+                                         <div>
+                                             <label class="adm-label">Hoặc nhập URL danh sách ảnh phụ (cách nhau bởi dấu phẩy)</label>
+                                             <input type="text" name="images" class="adm-input" placeholder="https://img1.jpg, https://img2.jpg"/>
+                                         </div>
+                                     </div>
                                     <div><label class="adm-label">Mô tả ngắn</label>
                                         <textarea name="description" class="adm-textarea" rows="2" placeholder="Mô tả ngắn gọn..."></textarea></div>
                                     <div><label class="adm-label">Mô tả chi tiết (HTML)</label>
@@ -934,7 +1001,7 @@
             <button class="adm-modal__close" onclick="closeEditModal()">✕</button>
         </div>
         <div class="adm-modal__body">
-            <form id="editForm" method="post" class="adm-form">
+            <form id="editForm" method="post" enctype="multipart/form-data" class="adm-form">
                 <div class="adm-form-row adm-form-row--2">
                     <div><label class="adm-label">Tên SP *</label>
                         <input type="text" name="name" id="e-name" class="adm-input" required/></div>
@@ -955,10 +1022,37 @@
                     <div><label class="adm-label">Collection</label>
                         <input type="text" name="collection" id="e-col" class="adm-input"/></div>
                 </div>
-                <div><label class="adm-label">URL ảnh đại diện</label>
-                    <input type="url" name="imageUrl" id="e-img" class="adm-input"/></div>
-                <div><label class="adm-label">Danh sách ảnh</label>
-                    <input type="text" name="images" id="e-imgs" class="adm-input"/></div>
+                <div class="adm-form-row adm-form-row--2">
+                    <div>
+                        <label class="adm-label">Tải ảnh mới từ máy</label>
+                        <div id="e-img-current" style="margin-bottom:8px;">
+                            <img id="e-img-preview" style="max-height:120px; border-radius:6px; object-fit:cover; display:none;" alt="Ảnh hiện tại"/>
+                            <span id="e-img-none" class="adm-table__sub" style="display:none;">Chưa có ảnh</span>
+                        </div>
+                        <input type="file" name="imageFile" id="e-imageFile" class="adm-input" accept="image/*"
+                               onchange="previewProductImageEdit(this)"/>
+                        <small class="adm-table__sub">Để trống để giữ ảnh cũ hoặc dùng URL bên phải</small>
+                    </div>
+                    <div>
+                        <label class="adm-label">Đường dẫn ảnh đại diện (URL)</label>
+                        <input type="url" name="imageUrl" id="e-img" class="adm-input" placeholder="https://..."/>
+                        <small class="adm-table__sub">URL ảnh đại diện hiện tại hoặc nhập mới</small>
+                    </div>
+                </div>
+                <div class="adm-form-row adm-form-row--2">
+                    <div>
+                        <label class="adm-label">Tải danh sách ảnh phụ mới từ máy</label>
+                        <input type="file" name="imageFiles" id="e-imageFiles" class="adm-input" accept="image/*" multiple
+                               onchange="previewMultipleImagesEdit(this)"/>
+                        <small class="adm-table__sub">Để trống để giữ nguyên hoặc bổ sung qua ô URL</small>
+                    </div>
+                    <div>
+                        <label class="adm-label">Danh sách ảnh phụ hiện tại (URL)</label>
+                        <div id="e-subimgs-preview-current" style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:8px;"></div>
+                        <input type="text" name="images" id="e-imgs" class="adm-input"/>
+                        <small class="adm-table__sub">Ngăn cách bởi dấu phẩy (bấm nút nhân trên ảnh để loại bỏ nhanh)</small>
+                    </div>
+                </div>
                 <div><label class="adm-label">Mô tả ngắn</label>
                     <textarea name="description" id="e-desc" class="adm-textarea" rows="2"></textarea></div>
                 <div><label class="adm-label">Mô tả chi tiết</label>
