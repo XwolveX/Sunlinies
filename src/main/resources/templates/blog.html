@@ -1,27 +1,13 @@
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
 
-<!--
-  ╔══════════════════════════════════════════════════════╗
-  ║  Trang BLOG – SUNILIES                                ║
-  ║  HTML: src/main/resources/templates/blog.html         ║
-  ║  CSS : src/main/resources/static/css/blog.css         ║
-  ║  URL : /blogs                                         ║
-  ╚══════════════════════════════════════════════════════╝
--->
-
-<head th:replace="~{layout/base :: head('Blog')}"></head>
+<head th:replace="~{layout/base :: head('Blog – SUNILIES')}"></head>
 
 <body>
-
 <link rel="stylesheet" th:href="@{/css/blog.css}">
-
-<!-- HEADER fragment -->
 <div th:replace="~{fragments/header :: header}"></div>
 
-<!-- ════════════════════════════════════════════════════
-     BREADCRUMB
-═════════════════════════════════════════════════════ -->
+<!-- BREADCRUMB -->
 <div class="bl-bc">
     <div class="container">
         <a th:href="@{/}">Trang chủ</a>
@@ -30,356 +16,165 @@
     </div>
 </div>
 
-<!-- ════════════════════════════════════════════════════
-     HERO
-═════════════════════════════════════════════════════ -->
+<!-- HERO -->
 <section class="bl-hero">
     <div class="bl-hero__bg-text">Blog</div>
     <div class="container">
         <div class="bl-hero__inner reveal">
             <div class="bl-hero__eyebrow">Nhật ký thương hiệu</div>
-            <h1 class="bl-hero__title">
-                Câu chuyện từ <em>làng nghề</em><br/>
-                đến cuộc sống
-            </h1>
+            <h1 class="bl-hero__title">Câu chuyện từ <em>làng nghề</em><br/>đến cuộc sống</h1>
             <p class="bl-hero__desc">
-                Khám phá những câu chuyện về nghề thủ công, bí quyết
-                chăm sóc sản phẩm cói mây, và hành trình của những
-                nghệ nhân Việt tạo nên SUNILIES.
+                Khám phá những câu chuyện về nghề thủ công, bí quyết chăm sóc sản phẩm cói mây,
+                và hành trình của những nghệ nhân Việt tạo nên SUNILIES.
             </p>
         </div>
     </div>
 </section>
 
-<!-- ════════════════════════════════════════════════════
-     MARQUEE
-═════════════════════════════════════════════════════ -->
+<!-- MARQUEE -->
 <div class="bl-marquee">
     <div class="bl-marquee__track">
-        <span>Câu chuyện làng nghề</span>
-        <span class="bl-marquee__dot">✦</span>
-        <span>Bí quyết thủ công</span>
-        <span class="bl-marquee__dot">✦</span>
-        <span>Phong cách sống chậm</span>
-        <span class="bl-marquee__dot">✦</span>
-        <span>Câu chuyện làng nghề</span>
-        <span class="bl-marquee__dot">✦</span>
-        <span>Bí quyết thủ công</span>
-        <span class="bl-marquee__dot">✦</span>
-        <span>Phong cách sống chậm</span>
-        <span class="bl-marquee__dot">✦</span>
+        <span>Câu chuyện làng nghề</span><span class="bl-marquee__dot">✦</span>
+        <span>Bí quyết thủ công</span><span class="bl-marquee__dot">✦</span>
+        <span>Phong cách sống chậm</span><span class="bl-marquee__dot">✦</span>
+        <span>Câu chuyện làng nghề</span><span class="bl-marquee__dot">✦</span>
+        <span>Bí quyết thủ công</span><span class="bl-marquee__dot">✦</span>
+        <span>Phong cách sống chậm</span><span class="bl-marquee__dot">✦</span>
     </div>
 </div>
 
-<!-- ════════════════════════════════════════════════════
-     BỘ LỌC DANH MỤC
-═════════════════════════════════════════════════════ -->
+<!-- BỘ LỌC DANH MỤC -->
 <div class="bl-filter">
     <div class="container">
         <div class="bl-filter__list">
-            <button class="bl-filter__btn bl-filter__btn--active">Tất cả</button>
-            <button class="bl-filter__btn">Làng nghề</button>
-            <button class="bl-filter__btn">Phong cách</button>
-            <button class="bl-filter__btn">Chăm sóc sản phẩm</button>
-            <button class="bl-filter__btn">Bền vững</button>
+            <button class="bl-filter__btn bl-filter__btn--active" data-cat="all">Tất cả</button>
+            <button class="bl-filter__btn" data-cat="Làng nghề">Làng nghề</button>
+            <button class="bl-filter__btn" data-cat="Phong cách">Phong cách</button>
+            <button class="bl-filter__btn" data-cat="Chăm sóc sản phẩm">Chăm sóc sản phẩm</button>
+            <button class="bl-filter__btn" data-cat="Bền vững">Bền vững</button>
         </div>
     </div>
 </div>
 
-<!-- ════════════════════════════════════════════════════
-     BÀI VIẾT NỔI BẬT (FEATURED)
-═════════════════════════════════════════════════════ -->
-<section class="bl-section">
+<!-- BÀI VIẾT NỔI BẬT (FEATURED) -->
+<section class="bl-section" th:if="${featured != null}">
     <div class="container">
-
         <div class="bl-section__head reveal">
             <div class="bl-section__eyebrow">Nổi bật</div>
             <h2 class="bl-section__title">Bài viết <em>đặc sắc</em></h2>
             <div class="bl-section__divider"></div>
         </div>
-
         <div class="bl-featured reveal">
             <div class="bl-featured__media">
-                <img th:src="@{/image/SandyBag.jpg}"
-                     src="https://images.unsplash.com/photo-1591561954557-26941169b49e?w=1200&q=80"
-                     alt="Làng nghề Phú Vinh">
-                <div class="bl-featured__tag">Làng nghề</div>
+                <img th:src="${featured.imageUrl}" th:alt="${featured.title}" onerror="this.src='/image/SandyBag.jpg'"/>
+                <div class="bl-featured__tag" th:text="${featured.category}">Danh mục</div>
             </div>
             <div class="bl-featured__content">
                 <div class="bl-featured__meta">
-                    <span class="bl-featured__date">15 tháng 5, 2025</span>
+                    <span th:text="${#dates.format(new java.util.Date(featured.createdAt), 'dd/MM/yyyy')}">01/01/2025</span>
                     <span class="bl-featured__sep">·</span>
-                    <span class="bl-featured__read">8 phút đọc</span>
+                    <span th:text="${featured.readTime} + ' phút đọc'">5 phút đọc</span>
                 </div>
-                <h2 class="bl-featured__title">
-                    Phú Vinh — Làng đan cói hàng trăm năm tuổi vẫn giữ lửa nghề
-                </h2>
-                <p class="bl-featured__excerpt">
-                    Nằm cách Hà Nội chưa đầy 30 km, làng nghề Phú Vinh (Chương Mỹ)
-                    đã có hơn 400 năm gắn bó với nghề đan mây, tre, cói.
-                    Những đôi bàn tay của các nghệ nhân nơi đây chính là
-                    nguồn cảm hứng và linh hồn của mỗi sản phẩm SUNILIES.
-                </p>
-                <a href="#" class="bl-btn bl-btn--primary">Đọc tiếp</a>
+                <h2 class="bl-featured__title" th:text="${featured.title}">Tiêu đề bài viết</h2>
+                <p class="bl-featured__excerpt" th:text="${featured.excerpt}">Tóm tắt...</p>
+                <a th:href="@{/blogs/{slug}(slug=${featured.slug})}" class="bl-btn bl-btn--primary">Đọc tiếp</a>
             </div>
         </div>
-
     </div>
 </section>
 
-<!-- ════════════════════════════════════════════════════
-     LƯỚI BÀI VIẾT
-═════════════════════════════════════════════════════ -->
+<!-- LƯỚI BÀI VIẾT -->
 <section class="bl-section bl-section--cream">
     <div class="container">
-
         <div class="bl-section__head reveal">
             <div class="bl-section__eyebrow">Gần đây</div>
             <h2 class="bl-section__title">Bài viết <em>mới nhất</em></h2>
             <div class="bl-section__divider"></div>
         </div>
 
-        <div class="bl-grid">
-
-            <!-- Card 1 -->
-            <article class="bl-card reveal reveal--delay-1">
-                <div class="bl-card__media">
-                    <img th:src="@{/image/LumerHat.JPG}"
-                         src="https://images.unsplash.com/photo-1582142306909-195724d33ffc?w=600&q=80"
-                         alt="Cách chọn túi cói phù hợp">
-                    <div class="bl-card__tag">Phong cách</div>
-                </div>
+        <!-- Danh sách bài từ Firestore -->
+        <div class="bl-grid" id="blogGrid" th:if="${!#lists.isEmpty(blogs)}">
+            <article class="bl-card reveal bl-card-item"
+                     th:each="blog, iter : ${blogs}"
+                     th:data-cat="${blog.category}">
+                <a th:href="@{/blogs/{slug}(slug=${blog.slug})}" class="bl-card__media-link">
+                    <div class="bl-card__media">
+                        <img th:src="${blog.imageUrl}" th:alt="${blog.title}"
+                             onerror="this.src='/image/SandyBag.jpg'"/>
+                        <div class="bl-card__tag" th:text="${blog.category}">Danh mục</div>
+                    </div>
+                </a>
                 <div class="bl-card__body">
                     <div class="bl-card__meta">
-                        <span>02 tháng 5, 2025</span>
+                        <span th:text="${#dates.format(new java.util.Date(blog.createdAt), 'dd/MM/yyyy')}">01/01/2025</span>
                         <span class="bl-card__sep">·</span>
-                        <span>5 phút đọc</span>
+                        <span th:text="${blog.readTime} + ' phút đọc'">5 phút đọc</span>
                     </div>
                     <h3 class="bl-card__title">
-                        5 cách phối túi cói với trang phục hàng ngày
+                        <a th:href="@{/blogs/{slug}(slug=${blog.slug})}" th:text="${blog.title}">Tiêu đề</a>
                     </h3>
-                    <p class="bl-card__excerpt">
-                        Túi cói không chỉ dành cho biển! Khám phá cách
-                        phối những chiếc túi thủ công vào phong cách
-                        đường phố, công sở và dạo phố cuối tuần.
-                    </p>
-                    <a href="#" class="bl-card__link">Đọc tiếp →</a>
+                    <p class="bl-card__excerpt" th:text="${blog.excerpt}">Tóm tắt...</p>
+                    <a th:href="@{/blogs/{slug}(slug=${blog.slug})}" class="bl-card__link">Đọc tiếp →</a>
                 </div>
             </article>
-
-            <!-- Card 2 -->
-            <article class="bl-card reveal reveal--delay-2">
-                <div class="bl-card__media">
-                    <img th:src="@{/image/bag_charm.jpeg}"
-                         src="https://images.unsplash.com/photo-1622445275576-721325763afe?w=600&q=80"
-                         alt="Chăm sóc sản phẩm cói">
-                    <div class="bl-card__tag">Chăm sóc sản phẩm</div>
-                </div>
-                <div class="bl-card__body">
-                    <div class="bl-card__meta">
-                        <span>20 tháng 4, 2025</span>
-                        <span class="bl-card__sep">·</span>
-                        <span>4 phút đọc</span>
-                    </div>
-                    <h3 class="bl-card__title">
-                        Bí quyết giữ túi cói bền đẹp qua nhiều năm
-                    </h3>
-                    <p class="bl-card__excerpt">
-                        Vật liệu tự nhiên cần được chăm sóc đúng cách.
-                        Những mẹo nhỏ này sẽ giúp chiếc túi yêu thích
-                        của bạn luôn như mới dù dùng mỗi ngày.
-                    </p>
-                    <a href="#" class="bl-card__link">Đọc tiếp →</a>
-                </div>
-            </article>
-
-            <!-- Card 3 -->
-            <article class="bl-card reveal reveal--delay-3">
-                <div class="bl-card__media">
-                    <img th:src="@{/image/SandyBag.jpg}"
-                         src="https://images.unsplash.com/photo-1605289982774-9a6fef564df8?w=600&q=80"
-                         alt="Thời trang bền vững">
-                    <div class="bl-card__tag">Bền vững</div>
-                </div>
-                <div class="bl-card__body">
-                    <div class="bl-card__meta">
-                        <span>08 tháng 4, 2025</span>
-                        <span class="bl-card__sep">·</span>
-                        <span>6 phút đọc</span>
-                    </div>
-                    <h3 class="bl-card__title">
-                        Slow fashion — Chọn ít hơn, sống đẹp hơn
-                    </h3>
-                    <p class="bl-card__excerpt">
-                        Xu hướng tiêu dùng có ý thức đang thay đổi cách
-                        chúng ta nghĩ về tủ quần áo. Cùng SUNILIES
-                        khám phá triết lý "ít mà tinh" trong thời trang.
-                    </p>
-                    <a href="#" class="bl-card__link">Đọc tiếp →</a>
-                </div>
-            </article>
-
-            <!-- Card 4 -->
-            <article class="bl-card reveal reveal--delay-1">
-                <div class="bl-card__media">
-                    <img th:src="@{/image/LumerHat.JPG}"
-                         src="https://images.unsplash.com/photo-1523779917675-b6ed3a42a561?w=600&q=80"
-                         alt="Nón cói mùa hè">
-                    <div class="bl-card__tag">Phong cách</div>
-                </div>
-                <div class="bl-card__body">
-                    <div class="bl-card__meta">
-                        <span>25 tháng 3, 2025</span>
-                        <span class="bl-card__sep">·</span>
-                        <span>3 phút đọc</span>
-                    </div>
-                    <h3 class="bl-card__title">
-                        Nón cói — Từ cánh đồng lúa đến sàn runway
-                    </h3>
-                    <p class="bl-card__excerpt">
-                        Chiếc nón lá, nón cói Việt Nam đã vươn ra thế giới
-                        như thế nào? Câu chuyện về hành trình của một
-                        di vật văn hoá trở thành biểu tượng thời trang.
-                    </p>
-                    <a href="#" class="bl-card__link">Đọc tiếp →</a>
-                </div>
-            </article>
-
-            <!-- Card 5 -->
-            <article class="bl-card reveal reveal--delay-2">
-                <div class="bl-card__media">
-                    <img th:src="@{/image/bag_charm.jpeg}"
-                         src="https://images.unsplash.com/photo-1567401893414-76b7b1e5a7a5?w=600&q=80"
-                         alt="Nghề thủ công Việt Nam">
-                    <div class="bl-card__tag">Làng nghề</div>
-                </div>
-                <div class="bl-card__body">
-                    <div class="bl-card__meta">
-                        <span>12 tháng 3, 2025</span>
-                        <span class="bl-card__sep">·</span>
-                        <span>7 phút đọc</span>
-                    </div>
-                    <h3 class="bl-card__title">
-                        Nghề đan mây tre — Di sản cần được trân trọng
-                    </h3>
-                    <p class="bl-card__excerpt">
-                        Hơn 40 làng nghề đan mây tre lá trải dài khắp
-                        Việt Nam, mỗi nơi có một kỹ thuật riêng.
-                        SUNILIES ghi lại những câu chuyện trước khi
-                        chúng bị lãng quên.
-                    </p>
-                    <a href="#" class="bl-card__link">Đọc tiếp →</a>
-                </div>
-            </article>
-
-            <!-- Card 6 -->
-            <article class="bl-card reveal reveal--delay-3">
-                <div class="bl-card__media">
-                    <img th:src="@{/image/SandyBag.jpg}"
-                         src="https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=600&q=80"
-                         alt="Du lịch bền vững">
-                    <div class="bl-card__tag">Bền vững</div>
-                </div>
-                <div class="bl-card__body">
-                    <div class="bl-card__meta">
-                        <span>01 tháng 3, 2025</span>
-                        <span class="bl-card__sep">·</span>
-                        <span>5 phút đọc</span>
-                    </div>
-                    <h3 class="bl-card__title">
-                        Du lịch làng nghề — Hành trình chữa lành và kết nối
-                    </h3>
-                    <p class="bl-card__excerpt">
-                        Ghé thăm làng nghề không chỉ là du lịch —
-                        đó là trải nghiệm văn hoá, là cách bạn
-                        đóng góp trực tiếp cho cộng đồng nghệ nhân Việt.
-                    </p>
-                    <a href="#" class="bl-card__link">Đọc tiếp →</a>
-                </div>
-            </article>
-
         </div>
 
-        <!-- Xem thêm -->
-        <div class="bl-load-more reveal">
-            <button class="bl-btn bl-btn--outline">Xem thêm bài viết</button>
+        <!-- Thông báo khi không có bài nào -->
+        <div th:if="${#lists.isEmpty(blogs)}" style="text-align:center;padding:60px 20px;color:#7a6a57;">
+            <p style="font-size:16px;">Chưa có bài viết nào. Hãy quay lại sau nhé!</p>
         </div>
 
+        <!-- Thông báo khi filter không có kết quả -->
+        <div id="noResultMsg" style="display:none;text-align:center;padding:40px 20px;color:#7a6a57;">
+            <p>Không có bài viết nào trong danh mục này.</p>
+        </div>
     </div>
 </section>
 
-<!-- ════════════════════════════════════════════════════
-     NEWSLETTER CTA
-═════════════════════════════════════════════════════ -->
+<!-- NEWSLETTER CTA -->
 <section class="bl-newsletter">
     <div class="bl-newsletter__bg-text">Sunilies</div>
     <div class="container">
         <div class="bl-newsletter__inner reveal">
             <div class="bl-newsletter__eyebrow">Đừng bỏ lỡ</div>
-            <h2 class="bl-newsletter__title">
-                Nhận câu chuyện mới nhất<br/>
-                từ <em>làng nghề Việt</em>
-            </h2>
+            <h2 class="bl-newsletter__title">Nhận câu chuyện mới nhất<br/>từ <em>làng nghề Việt</em></h2>
             <p class="bl-newsletter__desc">
-                Đăng ký để nhận bài viết, bí quyết chăm sóc sản phẩm
-                và ưu đãi đặc biệt dành riêng cho thành viên SUNILIES.
+                Đăng ký để nhận bài viết, bí quyết chăm sóc sản phẩm và ưu đãi đặc biệt
+                dành riêng cho thành viên SUNILIES.
             </p>
             <form class="bl-newsletter__form" onsubmit="return false;">
-                <input type="email" placeholder="Nhập email của bạn..." class="bl-newsletter__input">
+                <input type="email" placeholder="Nhập email của bạn..." class="bl-newsletter__input"/>
                 <button type="submit" class="bl-btn bl-btn--primary">Đăng ký</button>
             </form>
         </div>
     </div>
 </section>
 
-<!-- FOOTER fragment -->
 <div th:replace="~{fragments/footer :: footer}"></div>
 
 <script>
     /* Reveal on scroll */
-    const reveals = document.querySelectorAll('.reveal');
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(e => {
-            if (e.isIntersecting) {
-                e.target.classList.add('revealed');
-                observer.unobserve(e.target);
-            }
-        });
+    const observer = new IntersectionObserver(entries => {
+        entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('revealed'); observer.unobserve(e.target); } });
     }, { threshold: 0.12 });
-    reveals.forEach(el => observer.observe(el));
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
     /* Category filter */
     document.querySelectorAll('.bl-filter__btn').forEach(btn => {
         btn.addEventListener('click', function () {
             document.querySelectorAll('.bl-filter__btn').forEach(b => b.classList.remove('bl-filter__btn--active'));
             this.classList.add('bl-filter__btn--active');
+            const cat = this.dataset.cat;
+            const cards = document.querySelectorAll('.bl-card-item');
+            let visible = 0;
+            cards.forEach(card => {
+                const match = cat === 'all' || card.dataset.cat === cat;
+                card.style.display = match ? '' : 'none';
+                if (match) visible++;
+            });
+            document.getElementById('noResultMsg').style.display = visible === 0 ? 'block' : 'none';
         });
     });
-
-    /* Mobile menu */
-    const mobileToggle = document.querySelector('.mobile-menu-toggle');
-    const mobileMenu = document.getElementById('mobileMenu');
-    const mobileOverlay = document.getElementById('mobileOverlay');
-    const mobileClose = document.getElementById('mobileMenuClose');
-    if (mobileToggle) {
-        mobileToggle.addEventListener('click', () => {
-            mobileMenu.classList.add('active');
-            mobileOverlay.classList.add('active');
-        });
-    }
-    if (mobileClose) {
-        mobileClose.addEventListener('click', () => {
-            mobileMenu.classList.remove('active');
-            mobileOverlay.classList.remove('active');
-        });
-    }
-    if (mobileOverlay) {
-        mobileOverlay.addEventListener('click', () => {
-            mobileMenu.classList.remove('active');
-            mobileOverlay.classList.remove('active');
-        });
-    }
 </script>
-
 </body>
 </html>

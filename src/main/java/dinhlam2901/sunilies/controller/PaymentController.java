@@ -121,7 +121,8 @@ public class PaymentController {
             @RequestParam(defaultValue = "0") long  responseTime,
             @RequestParam(defaultValue = "") String extraData,
             @RequestParam(defaultValue = "") String signature,
-            @RequestParam(defaultValue = "0") long  amount,   // ← thêm dòng này
+            @RequestParam(defaultValue = "0") long  amount,
+            HttpSession session,
             Model model) {
 
         boolean success = (resultCode == 0);
@@ -139,12 +140,16 @@ public class PaymentController {
                 return "payment-result";
             }
 
-            // [FIX] Cập nhật database luôn ở Return URL vì môi trường localhost IPN (webhooks) không gọi được về.
-            // Trong production, bạn có thể bỏ phần này và chỉ dùng IPN.
+            // Cập nhật database ở Return URL vì môi trường localhost IPN không gọi được về.
             Order order = orderRepository.findById(orderId);
             if (order != null && !"PAID".equals(order.getStatus())) {
                 String newStatus = success ? "PAID" : "FAILED";
                 orderRepository.updatePaymentResult(orderId, newStatus, String.valueOf(transId));
+            }
+
+            // Xóa giỏ hàng sau khi thanh toán thành công
+            if (success) {
+                cartService.clearCart(session);
             }
         } catch (Exception e) {
             System.err.println("❌ Verify return signature lỗi: " + e.getMessage());

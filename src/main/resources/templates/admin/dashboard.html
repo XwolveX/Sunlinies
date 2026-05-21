@@ -204,6 +204,17 @@
                         <span class="adm-nav__badge" th:text="${totalProducts}">0</span>
                     </button>
 
+                    <!-- Blog -->
+                    <button class="adm-nav__item"
+                            th:classappend="${activeTab=='blogs'} ? ' is-active'"
+                            onclick="switchTab('blogs',this)">
+                        <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                            <path d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/>
+                        </svg>
+                        Blog
+                        <span class="adm-nav__badge" th:text="${totalBlogs}">0</span>
+                    </button>
+
                     <!-- Đơn hàng -->
                     <button class="adm-nav__item"
                             th:classappend="${activeTab=='orders'} ? ' is-active'"
@@ -576,6 +587,167 @@
                     </div>
                 </div>
 
+                <!-- ════════════════════════════════════
+                     TAB 4: BLOG
+                     ════════════════════════════════════ -->
+                <div id="tab-blogs" th:style="${activeTab != 'blogs'} ? 'display:none'">
+
+                    <!-- Stats nhanh -->
+                    <div class="adm-card">
+                        <div class="adm-card__header">
+                            <span class="adm-card__title">📝 Tổng quan Blog</span>
+                        </div>
+                        <div class="adm-card__body">
+                            <div class="adm-stats">
+                                <div class="adm-stat adm-stat--sp">
+                                    <div class="adm-stat__icon">📝</div>
+                                    <div class="adm-stat__num" th:text="${totalBlogs}">0</div>
+                                    <div class="adm-stat__label">Tổng bài</div>
+                                </div>
+                                <div class="adm-stat adm-stat--ok">
+                                    <div class="adm-stat__icon">🌐</div>
+                                    <div class="adm-stat__num" th:text="${publishedBlogs}">0</div>
+                                    <div class="adm-stat__label">Đang hiển thị</div>
+                                </div>
+                                <div class="adm-stat adm-stat--warn">
+                                    <div class="adm-stat__icon">📄</div>
+                                    <div class="adm-stat__num" th:text="${totalBlogs - publishedBlogs}">0</div>
+                                    <div class="adm-stat__label">Bản nháp</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Form thêm bài viết -->
+                    <div class="adm-card">
+                        <div class="adm-card__header">
+                            <span class="adm-card__title">➕ Thêm bài viết mới</span>
+                            <button class="adm-btn adm-btn--ghost adm-btn--sm" onclick="toggleBlogForm()">Thu gọn / Mở rộng</button>
+                        </div>
+                        <div id="blog-form-wrap" style="display:none;">
+                            <div class="adm-card__body">
+                                <form th:action="@{/admin/blogs/add}" method="post" class="adm-form">
+                                    <div class="adm-form-row adm-form-row--2">
+                                        <div>
+                                            <label class="adm-label">Tiêu đề <span class="req">*</span></label>
+                                            <input type="text" name="title" id="blog-add-title" class="adm-input" required placeholder="Phú Vinh — Làng đan cói..."/>
+                                        </div>
+                                        <div>
+                                            <label class="adm-label">Slug (URL) <span class="req">*</span></label>
+                                            <input type="text" name="slug" id="blog-add-slug" class="adm-input" required placeholder="phu-vinh-lang-dan-coi"/>
+                                        </div>
+                                    </div>
+                                    <div class="adm-form-row adm-form-row--3">
+                                        <div>
+                                            <label class="adm-label">Danh mục</label>
+                                            <select name="category" class="adm-input">
+                                                <option value="">-- Chọn --</option>
+                                                <option value="Làng nghề">Làng nghề</option>
+                                                <option value="Phong cách">Phong cách</option>
+                                                <option value="Chăm sóc sản phẩm">Chăm sóc sản phẩm</option>
+                                                <option value="Bền vững">Bền vững</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="adm-label">Thời gian đọc (phút)</label>
+                                            <input type="number" name="readTime" class="adm-input" min="1" value="5"/>
+                                        </div>
+                                        <div>
+                                            <label class="adm-label">Ảnh đại diện (URL)</label>
+                                            <input type="url" name="imageUrl" class="adm-input" placeholder="https://..."/>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="adm-label">Tóm tắt</label>
+                                        <textarea name="excerpt" class="adm-textarea" rows="2" placeholder="Một câu mô tả ngắn về bài viết..."></textarea>
+                                    </div>
+                                    <div>
+                                        <label class="adm-label">Nội dung (HTML) <span class="req">*</span></label>
+                                        <textarea name="content" class="adm-textarea" rows="8" placeholder="&lt;p&gt;Nội dung bài viết...&lt;/p&gt;"></textarea>
+                                    </div>
+                                    <div class="adm-form-row adm-form-row--2">
+                                        <div>
+                                            <label class="adm-label">Meta Title</label>
+                                            <input type="text" name="metaTitle" class="adm-input"/>
+                                        </div>
+                                        <div>
+                                            <label class="adm-label">Meta Description</label>
+                                            <input type="text" name="metaDescription" class="adm-input"/>
+                                        </div>
+                                    </div>
+                                    <div class="adm-checkrow">
+                                        <label class="adm-check"><input type="checkbox" name="published" checked/> Hiển thị</label>
+                                        <label class="adm-check"><input type="checkbox" name="featured"/> Bài nổi bật</label>
+                                    </div>
+                                    <div class="adm-form-actions">
+                                        <button type="submit" class="adm-btn adm-btn--primary">💾 Đăng bài</button>
+                                        <button type="reset" class="adm-btn adm-btn--ghost">🔄 Đặt lại</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Danh sách bài viết -->
+                    <div class="adm-card">
+                        <div class="adm-card__header">
+                            <span class="adm-card__title">📋 Danh sách bài viết</span>
+                            <div class="adm-search">
+                                <input type="text" id="blogSearchInput" class="adm-input" placeholder="Tìm tiêu đề, danh mục..." oninput="filterBlogTable()"/>
+                            </div>
+                        </div>
+                        <div class="adm-table-wrap">
+                            <table class="adm-table" id="blogTable">
+                                <thead>
+                                <tr>
+                                    <th>Ảnh</th><th>Tiêu đề</th><th>Danh mục</th>
+                                    <th>Đọc</th><th>Hiển thị</th><th>Ngày tạo</th><th>Thao tác</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="b : ${blogs}" th:id="'blog-row-' + ${b.id}">
+                                    <td>
+                                        <img class="adm-table__thumb" th:src="${b.imageUrl}" th:alt="${b.title}"
+                                             onerror="this.style.display='none'"/>
+                                    </td>
+                                    <td>
+                                        <div class="adm-table__name" th:text="${b.title}">-</div>
+                                        <div class="adm-table__sub" th:text="'/' + ${b.slug}">-</div>
+                                        <span th:if="${b.featured}" style="font-size:10px;color:#c8986a;font-weight:700;">⭐ Nổi bật</span>
+                                    </td>
+                                    <td><span class="adm-chip" th:text="${b.category}">-</span></td>
+                                    <td class="adm-table__sub" th:text="${b.readTime} + ' phút'">-</td>
+                                    <td>
+                                        <label class="adm-toggle">
+                                            <input type="checkbox" th:checked="${b.published}"
+                                                   th:data-id="${b.id}" onchange="toggleBlogPublished(this.dataset.id,this)"/>
+                                            <span class="adm-toggle__s"></span>
+                                        </label>
+                                    </td>
+                                    <td class="adm-table__sub"
+                                        th:text="${#dates.format(new java.util.Date(b.createdAt), 'dd/MM/yy')}">-</td>
+                                    <td>
+                                        <div class="adm-btn-actions">
+                                            <a th:href="@{/blogs/{slug}(slug=${b.slug})}" target="_blank"
+                                               class="adm-btn adm-btn--sm adm-btn--ghost">👁 Xem</a>
+                                            <button class="adm-btn adm-btn--sm adm-btn--outline"
+                                                    th:data-id="${b.id}" onclick="openBlogEditModal(this.dataset.id)">✏️ Sửa</button>
+                                            <form th:action="@{/admin/blogs/{id}/delete(id=${b.id})}" method="post" style="display:inline"
+                                                  onsubmit="return confirm('XOÁ bài viết này? Không thể phục hồi!')">
+                                                <button type="submit" class="adm-btn adm-btn--sm adm-btn--danger">🗑 Xoá</button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(blogs)}">
+                                    <td colspan="7" class="adm-table__empty">Chưa có bài viết nào.</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
             </div><!-- /main -->
         </div><!-- /grid -->
     </div><!-- /container -->
@@ -667,6 +839,60 @@
     </div>
 </div>
 
+<!-- ══════════════════════════════════════════
+     MODAL: CHỈNH SỬA BÀI VIẾT BLOG
+     ══════════════════════════════════════════ -->
+<div class="adm-overlay" id="blogEditOverlay" onclick="closeBlogEditModal()">
+    <div class="adm-modal" style="max-width:800px;" onclick="event.stopPropagation()">
+        <div class="adm-modal__head">
+            <span class="adm-modal__title">✏️ Chỉnh sửa bài viết</span>
+            <button class="adm-modal__close" onclick="closeBlogEditModal()">✕</button>
+        </div>
+        <div class="adm-modal__body">
+            <form id="blogEditForm" method="post" class="adm-form">
+                <div class="adm-form-row adm-form-row--2">
+                    <div><label class="adm-label">Tiêu đề *</label>
+                        <input type="text" name="title" id="be-title" class="adm-input" required/></div>
+                    <div><label class="adm-label">Slug (URL) *</label>
+                        <input type="text" name="slug" id="be-slug" class="adm-input" required/></div>
+                </div>
+                <div class="adm-form-row adm-form-row--3">
+                    <div><label class="adm-label">Danh mục</label>
+                        <select name="category" id="be-category" class="adm-input">
+                            <option value="">-- Chọn --</option>
+                            <option value="Làng nghề">Làng nghề</option>
+                            <option value="Phong cách">Phong cách</option>
+                            <option value="Chăm sóc sản phẩm">Chăm sóc sản phẩm</option>
+                            <option value="Bền vững">Bền vững</option>
+                        </select></div>
+                    <div><label class="adm-label">Thời gian đọc (phút)</label>
+                        <input type="number" name="readTime" id="be-readTime" class="adm-input" min="1"/></div>
+                    <div><label class="adm-label">Ảnh đại diện (URL)</label>
+                        <input type="url" name="imageUrl" id="be-imageUrl" class="adm-input"/></div>
+                </div>
+                <div><label class="adm-label">Tóm tắt</label>
+                    <textarea name="excerpt" id="be-excerpt" class="adm-textarea" rows="2"></textarea></div>
+                <div><label class="adm-label">Nội dung (HTML)</label>
+                    <textarea name="content" id="be-content" class="adm-textarea" rows="10"></textarea></div>
+                <div class="adm-form-row adm-form-row--2">
+                    <div><label class="adm-label">Meta Title</label>
+                        <input type="text" name="metaTitle" id="be-metaTitle" class="adm-input"/></div>
+                    <div><label class="adm-label">Meta Description</label>
+                        <input type="text" name="metaDescription" id="be-metaDescription" class="adm-input"/></div>
+                </div>
+                <div class="adm-checkrow">
+                    <label class="adm-check"><input type="checkbox" name="published" id="be-published"/> Hiển thị</label>
+                    <label class="adm-check"><input type="checkbox" name="featured"  id="be-featured"/>  Bài nổi bật</label>
+                </div>
+                <div class="adm-form-actions">
+                    <button type="submit" class="adm-btn adm-btn--primary">💾 Lưu thay đổi</button>
+                    <button type="button" class="adm-btn adm-btn--ghost" onclick="closeBlogEditModal()">Huỷ</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <!-- Data cho JS modal -->
 <script th:inline="javascript">
     const _productsArray = /*[[${products}]]*/ [];
@@ -676,6 +902,10 @@
     const _ordersArray = /*[[${orders}]]*/ [];
     const ORDERS_DATA  = {};
     _ordersArray.forEach(function(o){ if(o && o.id) ORDERS_DATA[o.id] = o; });
+
+    const _blogsArray = /*[[${blogs}]]*/ [];
+    const BLOGS_DATA  = {};
+    _blogsArray.forEach(function(b){ if(b && b.id) BLOGS_DATA[b.id] = b; });
 </script>
 
 <script th:src="@{/js/admin.js}"></script>

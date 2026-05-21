@@ -145,33 +145,12 @@
 
     /* ════════════════════════════════════════════════════
        ADD TO CART
+       Handled by inline script in product.html (real API call).
+       Toast is exposed for use from that handler.
        ════════════════════════════════════════════════════ */
+    window.showProductToast = showToast;
     function initCart() {
-        if (!btnCart) return;
-
-        btnCart.addEventListener('click', () => {
-            // Loading state
-            btnCart.disabled = true;
-            btnCart.classList.add('is-loading');
-            const textEl = btnCart.querySelector('span');
-            const origText = textEl ? textEl.textContent : '';
-            if (textEl) textEl.textContent = '...';
-
-            setTimeout(() => {
-                // Success state
-                btnCart.classList.remove('is-loading');
-                btnCart.classList.add('is-success');
-                if (textEl) textEl.textContent = '✓ Đã thêm vào giỏ';
-
-                showToast('🛒 Đã thêm sản phẩm vào giỏ hàng!');
-
-                setTimeout(() => {
-                    btnCart.classList.remove('is-success');
-                    btnCart.disabled = false;
-                    if (textEl) textEl.textContent = origText;
-                }, 2500);
-            }, 800);
-        });
+        // No-op: cart logic lives in product.html inline script
     }
 
     /* ════════════════════════════════════════════════════

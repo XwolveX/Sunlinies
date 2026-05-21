@@ -21,13 +21,12 @@ function showToast(msg, type) {
 
 // ── Tab switching ─────────────────────────────────────────────
 function switchTab(name, btn) {
-    ['stats','products','orders'].forEach(t => {
+    ['stats','products','orders','blogs'].forEach(t => {
         const el = document.getElementById('tab-' + t);
         if (el) el.style.display = t === name ? '' : 'none';
     });
     document.querySelectorAll('.adm-nav__item').forEach(b => b.classList.remove('is-active'));
     if (btn) btn.classList.add('is-active');
-    // Sync URL param without reload
     history.replaceState(null, '', '/admin?tab=' + name);
 }
 
@@ -216,7 +215,78 @@ function filterTable() {
     });
 }
 
+// ── Toggle form thêm blog ─────────────────────────────────────
+function toggleBlogForm() {
+    const w = document.getElementById('blog-form-wrap');
+    if (!w) return;
+    const open = w.style.display !== 'none' && w.style.display !== '';
+    w.style.display = open ? 'none' : 'block';
+    if (!open) w.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ── Tự sinh slug từ tiêu đề blog ─────────────────────────────
+(function() {
+    const t = document.getElementById('blog-add-title');
+    const s = document.getElementById('blog-add-slug');
+    if (!t || !s) return;
+    t.addEventListener('input', function() {
+        if (!s._touched) s.value = this.value
+            .toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
+            .replace(/đ/g, 'd').replace(/[^a-z0-9\s-]/g, '')
+            .trim().replace(/\s+/g, '-');
+    });
+    s.addEventListener('input', () => s._touched = true);
+})();
+
+// ── Toggle published blog AJAX ────────────────────────────────
+async function toggleBlogPublished(id, checkbox) {
+    try {
+        const r = await fetch('/admin/blogs/' + id + '/toggle', { method: 'POST' });
+        const d = await r.json();
+        if (d.success) {
+            checkbox.checked = d.published;
+            showToast(d.published ? '🌐 Bài viết đã hiển thị!' : '📄 Đã chuyển thành bản nháp!');
+        } else { checkbox.checked = !checkbox.checked; showToast('❌ ' + (d.error || ''), 'error'); }
+    } catch(e) { checkbox.checked = !checkbox.checked; showToast('❌ Lỗi kết nối', 'error'); }
+}
+
+// ── Modal chỉnh sửa blog ──────────────────────────────────────
+function openBlogEditModal(id) {
+    const b = BLOGS_DATA[id];
+    if (!b) { showToast('❌ Không tìm thấy dữ liệu!', 'error'); return; }
+    document.getElementById('blogEditForm').action = '/admin/blogs/' + id + '/update';
+    const s = (f, v) => { const el = document.getElementById(f); if (el) el.value = v ?? ''; };
+    const c = (f, v) => { const el = document.getElementById(f); if (el) el.checked = !!v; };
+    s('be-title',           b.title);
+    s('be-slug',            b.slug);
+    s('be-excerpt',         b.excerpt);
+    s('be-content',         b.content);
+    s('be-imageUrl',        b.imageUrl);
+    s('be-readTime',        b.readTime || 5);
+    s('be-metaTitle',       b.metaTitle);
+    s('be-metaDescription', b.metaDescription);
+    // Select category
+    const catEl = document.getElementById('be-category');
+    if (catEl) catEl.value = b.category || '';
+    c('be-published', b.published);
+    c('be-featured',  b.featured);
+    document.getElementById('blogEditOverlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+}
+function closeBlogEditModal() {
+    document.getElementById('blogEditOverlay').classList.remove('open');
+    document.body.style.overflow = '';
+}
+
+// ── Tìm kiếm blog ────────────────────────────────────────────
+function filterBlogTable() {
+    const q = document.getElementById('blogSearchInput')?.value.toLowerCase().trim() || '';
+    document.querySelectorAll('#blogTable tbody tr').forEach(r => {
+        r.style.display = r.textContent.toLowerCase().includes(q) ? '' : 'none';
+    });
+}
+
 // ── Đóng modal bằng Escape ────────────────────────────────────
 document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') { closeEditModal(); closeOrderModal(); }
+    if (e.key === 'Escape') { closeEditModal(); closeOrderModal(); closeBlogEditModal(); }
 });

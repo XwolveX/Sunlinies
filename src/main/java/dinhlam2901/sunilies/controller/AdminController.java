@@ -1,8 +1,10 @@
 package dinhlam2901.sunilies.controller;
 
+import dinhlam2901.sunilies.model.Blog;
 import dinhlam2901.sunilies.model.Order;
 import dinhlam2901.sunilies.model.Product;
 import dinhlam2901.sunilies.model.User;
+import dinhlam2901.sunilies.repository.BlogRepository;
 import dinhlam2901.sunilies.repository.OrderRepository;
 import dinhlam2901.sunilies.repository.ProductRepository;
 import dinhlam2901.sunilies.service.AuthService;
@@ -26,6 +28,7 @@ public class AdminController {
     @Autowired private AuthService       authService;
     @Autowired private ProductRepository productRepository;
     @Autowired private OrderRepository   orderRepository;
+    @Autowired private BlogRepository    blogRepository;
 
     private User requireAdmin(HttpSession session) throws Exception {
         if (!authService.isLoggedIn(session)) return null;
@@ -61,9 +64,17 @@ public class AdminController {
         double totalRevenue  = orders.stream().filter(o -> "PAID".equals(o.getStatus()))
                 .mapToDouble(Order::getTotalAmount).sum();
 
+        // Blog stats
+        java.util.List<Blog> blogs = java.util.List.of();
+        try { blogs = blogRepository.findAllAdmin(); }
+        catch (Exception e) { System.err.println("Load blogs lỗi: " + e.getMessage()); }
+        long totalBlogs     = blogs.size();
+        long publishedBlogs = blogs.stream().filter(Blog::isPublished).count();
+
         model.addAttribute("admin",          admin);
         model.addAttribute("products",       products);
         model.addAttribute("orders",         orders);
+        model.addAttribute("blogs",          blogs);
         model.addAttribute("activeTab",      tab);
         model.addAttribute("totalProducts",  totalProducts);
         model.addAttribute("activeProducts", activeProducts);
@@ -74,6 +85,8 @@ public class AdminController {
         model.addAttribute("pendingOrders",  pendingOrders);
         model.addAttribute("paidOrders",     paidOrders);
         model.addAttribute("totalRevenue",   totalRevenue);
+        model.addAttribute("totalBlogs",     totalBlogs);
+        model.addAttribute("publishedBlogs", publishedBlogs);
         return "admin/dashboard";
     }
 
@@ -231,6 +244,104 @@ public class AdminController {
         if (newStatus == null) return ResponseEntity.badRequest().body(Map.of("error","Thiếu status"));
         orderRepository.updateStatus(id, newStatus);
         return ResponseEntity.ok(Map.of("success",true,"status",newStatus));
+    }
+
+    // ══════════════════════════════════════════════════════
+    // THÊM BÀI VIẾT BLOG
+    // ══════════════════════════════════════════════════════
+    @PostMapping("/blogs/add")
+    public String addBlog(HttpSession session,
+                          @RequestParam String title,
+                          @RequestParam String slug,
+                          @RequestParam(defaultValue = "") String excerpt,
+                          @RequestParam(required = false) String content,
+                          @RequestParam(defaultValue = "") String imageUrl,
+                          @RequestParam(defaultValue = "") String category,
+                          @RequestParam(defaultValue = "5") int readTime,
+                          @RequestParam(defaultValue = "false") boolean published,
+                          @RequestParam(defaultValue = "false") boolean featured,
+                          @RequestParam(required = false) String metaTitle,
+                          @RequestParam(required = false) String metaDescription,
+                          RedirectAttributes ra) throws Exception {
+        if (requireAdmin(session) == null) return "redirect:/login?redirect=/admin";
+        Blog b = new Blog();
+        b.setTitle(title.trim());
+        b.setSlug(slug.trim().toLowerCase().replaceAll("\\s+", "-"));
+        b.setExcerpt(excerpt);
+        b.setContent(content);
+        b.setImageUrl(imageUrl.trim());
+        b.setCategory(category.trim());
+        b.setReadTime(readTime);
+        b.setPublished(published);
+        b.setFeatured(featured);
+        b.setMetaTitle(metaTitle);
+        b.setMetaDescription(metaDescription);
+        b.setCreatedAt(System.currentTimeMillis());
+        b.setUpdatedAt(System.currentTimeMillis());
+        try {
+            blogRepository.save(b);
+            ra.addFlashAttribute("success", "✅ Thêm bài viết \"" + title + "\" thành công!");
+        } catch (Exception e) { ra.addFlashAttribute("error", "❌ " + e.getMessage()); }
+        return "redirect:/admin?tab=blogs";
+    }
+
+    // ══════════════════════════════════════════════════════
+    // CẬP NHẬT BÀI VIẾT BLOG
+    // ══════════════════════════════════════════════════════
+    @PostMapping("/blogs/{id}/update")
+    public String updateBlog(HttpSession session, @PathVariable String id,
+                             @RequestParam String title,
+                             @RequestParam String slug,
+                             @RequestParam(defaultValue = "") String excerpt,
+                             @RequestParam(required = false) String content,
+                             @RequestParam(required = false) String imageUrl,
+                             @RequestParam(defaultValue = "") String category,
+                             @RequestParam(defaultValue = "5") int readTime,
+                             @RequestParam(defaultValue = "false") boolean published,
+                             @RequestParam(defaultValue = "false") boolean featured,
+                             @RequestParam(required = false) String metaTitle,
+                             @RequestParam(required = false) String metaDescription,
+                             RedirectAttributes ra) throws Exception {
+        if (requireAdmin(session) == null) return "redirect:/login?redirect=/admin";
+        try {
+            Blog b = blogRepository.findById(id);
+            if (b == null) { ra.addFlashAttribute("error", "Không tìm thấy bài viết!"); return "redirect:/admin?tab=blogs"; }
+            b.setTitle(title.trim());
+            b.setSlug(slug.trim().toLowerCase().replaceAll("\\s+", "-"));
+            b.setExcerpt(excerpt);
+            b.setContent(content);
+            if (imageUrl != null && !imageUrl.isBlank()) b.setImageUrl(imageUrl.trim());
+            b.setCategory(category.trim());
+            b.setReadTime(readTime);
+            b.setPublished(published);
+            b.setFeatured(featured);
+            b.setMetaTitle(metaTitle);
+            b.setMetaDescription(metaDescription);
+            b.setUpdatedAt(System.currentTimeMillis());
+            blogRepository.update(b);
+            ra.addFlashAttribute("success", "✅ Cập nhật \"" + title + "\" thành công!");
+        } catch (Exception e) { ra.addFlashAttribute("error", "❌ " + e.getMessage()); }
+        return "redirect:/admin?tab=blogs";
+    }
+
+    // ── AJAX: toggle published ────────────────────────────
+    @PostMapping("/blogs/{id}/toggle")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> toggleBlogPublished(HttpSession session, @PathVariable String id) throws Exception {
+        if (requireAdmin(session) == null) return ResponseEntity.status(403).body(Map.of("error", "Forbidden"));
+        try {
+            boolean published = blogRepository.togglePublished(id);
+            return ResponseEntity.ok(Map.of("success", true, "published", published));
+        } catch (Exception e) { return ResponseEntity.internalServerError().body(Map.of("error", e.getMessage())); }
+    }
+
+    // ── Xoá vĩnh viễn bài viết ───────────────────────────
+    @PostMapping("/blogs/{id}/delete")
+    public String deleteBlog(HttpSession session, @PathVariable String id, RedirectAttributes ra) throws Exception {
+        if (requireAdmin(session) == null) return "redirect:/login?redirect=/admin";
+        try { blogRepository.hardDelete(id); ra.addFlashAttribute("success", "✅ Đã xoá bài viết!"); }
+        catch (Exception e) { ra.addFlashAttribute("error", "❌ " + e.getMessage()); }
+        return "redirect:/admin?tab=blogs";
     }
 
     private List<String> split(String s) {
