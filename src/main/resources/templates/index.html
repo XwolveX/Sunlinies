@@ -33,44 +33,51 @@
     <div class="swiper sliderSwiper">
         <div class="swiper-wrapper">
 
-            <!-- th:each="slide : ${sliders}" khi có dữ liệu từ backend -->
-            <!-- Demo tĩnh dưới đây sẽ được thay bằng vòng lặp Thymeleaf -->
-
-            <div class="swiper-slide">
-                <img th:src="@{image/slider_1.jpg}"
-                     src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1920&q=80"
-                     alt="Slider 1" />
-                <div class="slide-overlay"></div>
-                <div class="slide-content">
-                    <span class="slide-sub">SUMMER COLLECTION 2025</span>
-                    <h2 class="slide-title">Tự do<br/>dưới nắng</h2>
-                    <a th:href="@{/collections/san-pham-moi}" class="btn-slide">Khám phá ngay</a>
+            <!-- ── Slides động từ Firestore ── -->
+            <th:block th:if="${!#lists.isEmpty(heroSlides)}">
+                <div class="swiper-slide" th:each="slide : ${heroSlides}">
+                    <img th:src="${slide.imageUrl}" th:alt="${slide.titleLine1}"
+                         onerror="this.src='https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1920&q=80'"/>
+                    <div class="slide-overlay"></div>
+                    <div class="slide-content">
+                        <span class="slide-sub"   th:text="${slide.subtitle}">Subtitle</span>
+                        <h2 class="slide-title"   th:text="${slide.titleLine1}">Tiêu đề</h2>
+                        <h2 class="slide-title"   th:text="${slide.titleLine2}" th:if="${slide.titleLine2 != null and !slide.titleLine2.isEmpty()}" style="margin-top:-8px;">Dòng 2</h2>
+                        <a  class="btn-slide"     th:href="${slide.buttonLink}" th:text="${slide.buttonText}">Khám phá</a>
+                    </div>
                 </div>
-            </div>
+            </th:block>
 
-            <div class="swiper-slide">
-                <img th:src="@{../static/image/img_cus_2.jpg}"
-                     src="https://images.unsplash.com/photo-1586105251261-72a756497a11?w=1920&q=80"
-                     alt="Slider 2" />
-                <div class="slide-overlay"></div>
-                <div class="slide-content">
-                    <span class="slide-sub">Phong cách biển cả</span>
-                    <h2 class="slide-title">Thời trang<br/>đẳng cấp</h2>
-                    <a th:href="@{/collections}" class="btn-slide">Xem bộ sưu tập</a>
+            <!-- ── Fallback tĩnh khi Firestore chưa có slide nào ── -->
+            <th:block th:if="${#lists.isEmpty(heroSlides)}">
+                <div class="swiper-slide">
+                    <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1920&q=80" alt="Slider 1"/>
+                    <div class="slide-overlay"></div>
+                    <div class="slide-content">
+                        <span class="slide-sub">SUMMER COLLECTION 2025</span>
+                        <h2 class="slide-title">Tự do<br/>dưới nắng</h2>
+                        <a th:href="@{/collections/san-pham-moi}" class="btn-slide">Khám phá ngay</a>
+                    </div>
                 </div>
-            </div>
-
-            <div class="swiper-slide">
-                <img th:src="@{/image/slider/slide-3.jpg}"
-                     src="https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=1920&q=80"
-                     alt="Slider 3" />
-                <div class="slide-overlay"></div>
-                <div class="slide-content">
-                    <span class="slide-sub">Ưu đãi đặc biệt</span>
-                    <h2 class="slide-title">Sale off<br/>đến 50%</h2>
-                    <a th:href="@{/collections/khuyen-mai}" class="btn-slide">Mua ngay</a>
+                <div class="swiper-slide">
+                    <img src="https://images.unsplash.com/photo-1586105251261-72a756497a11?w=1920&q=80" alt="Slider 2"/>
+                    <div class="slide-overlay"></div>
+                    <div class="slide-content">
+                        <span class="slide-sub">Phong cách biển cả</span>
+                        <h2 class="slide-title">Thời trang<br/>đẳng cấp</h2>
+                        <a th:href="@{/collections}" class="btn-slide">Xem bộ sưu tập</a>
+                    </div>
                 </div>
-            </div>
+                <div class="swiper-slide">
+                    <img src="https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=1920&q=80" alt="Slider 3"/>
+                    <div class="slide-overlay"></div>
+                    <div class="slide-content">
+                        <span class="slide-sub">Ưu đãi đặc biệt</span>
+                        <h2 class="slide-title">Sale off<br/>đến 50%</h2>
+                        <a th:href="@{/collections}" class="btn-slide">Mua ngay</a>
+                    </div>
+                </div>
+            </th:block>
 
         </div>
         <div class="swiper-pagination"></div>

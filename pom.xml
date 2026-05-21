@@ -20,6 +20,13 @@
     </properties>
 
     <dependencies>
+        <!-- Force Guava JRE variant — android variant thiếu ImmutableList.toImmutableList() -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>32.1.3-jre</version>
+        </dependency>
+
         <dependency>
             <groupId>io.grpc</groupId>
             <artifactId>grpc-netty-shaded</artifactId>
@@ -52,6 +59,13 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
+        <!-- Jsoup — sanitize HTML blog content chống stored XSS -->
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>1.17.2</version>
         </dependency>
 
         <!-- Thymeleaf Spring Security extras (th:sec:authorize) -->

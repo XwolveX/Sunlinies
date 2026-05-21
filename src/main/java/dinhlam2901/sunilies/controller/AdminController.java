@@ -1,19 +1,25 @@
 package dinhlam2901.sunilies.controller;
 
 import dinhlam2901.sunilies.model.Blog;
+import dinhlam2901.sunilies.model.HeroSlide;
 import dinhlam2901.sunilies.model.Order;
 import dinhlam2901.sunilies.model.Product;
 import dinhlam2901.sunilies.model.User;
 import dinhlam2901.sunilies.repository.BlogRepository;
+import dinhlam2901.sunilies.repository.HeroSlideRepository;
 import dinhlam2901.sunilies.repository.OrderRepository;
 import dinhlam2901.sunilies.repository.ProductRepository;
 import dinhlam2901.sunilies.service.AuthService;
+import dinhlam2901.sunilies.service.FirebaseStorageService;
 import jakarta.servlet.http.HttpSession;
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Safelist;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Arrays;
@@ -25,10 +31,12 @@ import java.util.stream.Collectors;
 @RequestMapping("/admin")
 public class AdminController {
 
-    @Autowired private AuthService       authService;
-    @Autowired private ProductRepository productRepository;
-    @Autowired private OrderRepository   orderRepository;
-    @Autowired private BlogRepository    blogRepository;
+    @Autowired private AuthService             authService;
+    @Autowired private ProductRepository       productRepository;
+    @Autowired private OrderRepository         orderRepository;
+    @Autowired private BlogRepository          blogRepository;
+    @Autowired private HeroSlideRepository     heroSlideRepository;
+    @Autowired private FirebaseStorageService  storageService;
 
     private User requireAdmin(HttpSession session) throws Exception {
         if (!authService.isLoggedIn(session)) return null;
@@ -63,6 +71,12 @@ public class AdminController {
         long   paidOrders    = orders.stream().filter(o -> "PAID".equals(o.getStatus())).count();
         double totalRevenue  = orders.stream().filter(o -> "PAID".equals(o.getStatus()))
                 .mapToDouble(Order::getTotalAmount).sum();
+
+        // Hero slides
+        java.util.List<HeroSlide> heroSlides = java.util.List.of();
+        try { heroSlides = heroSlideRepository.findAll(); }
+        catch (Exception e) { System.err.println("Load hero slides lỗi: " + e.getMessage()); }
+        model.addAttribute("heroSlides", heroSlides);
 
         // Blog stats
         java.util.List<Blog> blogs = java.util.List.of();
@@ -255,7 +269,7 @@ public class AdminController {
                           @RequestParam String slug,
                           @RequestParam(defaultValue = "") String excerpt,
                           @RequestParam(required = false) String content,
-                          @RequestParam(defaultValue = "") String imageUrl,
+                          @RequestParam(required = false) MultipartFile imageFile,
                           @RequestParam(defaultValue = "") String category,
                           @RequestParam(defaultValue = "5") int readTime,
                           @RequestParam(defaultValue = "false") boolean published,
@@ -264,12 +278,21 @@ public class AdminController {
                           @RequestParam(required = false) String metaDescription,
                           RedirectAttributes ra) throws Exception {
         if (requireAdmin(session) == null) return "redirect:/login?redirect=/admin";
+        String imageUrl = "";
+        try {
+            if (imageFile != null && !imageFile.isEmpty()) {
+                imageUrl = storageService.uploadBlogImage(imageFile);
+            }
+        } catch (Exception e) {
+            ra.addFlashAttribute("error", "❌ Upload ảnh thất bại: " + e.getMessage());
+            return "redirect:/admin?tab=blogs";
+        }
         Blog b = new Blog();
         b.setTitle(title.trim());
         b.setSlug(slug.trim().toLowerCase().replaceAll("\\s+", "-"));
         b.setExcerpt(excerpt);
-        b.setContent(content);
-        b.setImageUrl(imageUrl.trim());
+        b.setContent(sanitizeBlogContent(content));   // Sanitize HTML — chống stored XSS
+        b.setImageUrl(imageUrl);
         b.setCategory(category.trim());
         b.setReadTime(readTime);
         b.setPublished(published);
@@ -294,6 +317,7 @@ public class AdminController {
                              @RequestParam String slug,
                              @RequestParam(defaultValue = "") String excerpt,
                              @RequestParam(required = false) String content,
+                             @RequestParam(required = false) MultipartFile imageFile,
                              @RequestParam(required = false) String imageUrl,
                              @RequestParam(defaultValue = "") String category,
                              @RequestParam(defaultValue = "5") int readTime,
@@ -309,8 +333,12 @@ public class AdminController {
             b.setTitle(title.trim());
             b.setSlug(slug.trim().toLowerCase().replaceAll("\\s+", "-"));
             b.setExcerpt(excerpt);
-            b.setContent(content);
-            if (imageUrl != null && !imageUrl.isBlank()) b.setImageUrl(imageUrl.trim());
+            b.setContent(sanitizeBlogContent(content));   // Sanitize HTML — chống stored XSS
+            if (imageFile != null && !imageFile.isEmpty()) {
+                b.setImageUrl(storageService.uploadBlogImage(imageFile));
+            } else if (imageUrl != null && !imageUrl.isBlank()) {
+                b.setImageUrl(imageUrl.trim());
+            }
             b.setCategory(category.trim());
             b.setReadTime(readTime);
             b.setPublished(published);
@@ -344,7 +372,119 @@ public class AdminController {
         return "redirect:/admin?tab=blogs";
     }
 
+    // ══════════════════════════════════════════════════════
+    // HERO SLIDES – THÊM
+    // ══════════════════════════════════════════════════════
+    @PostMapping("/hero/add")
+    public String addHeroSlide(HttpSession session,
+                               @RequestParam(required = false) MultipartFile imageFile,
+                               @RequestParam(defaultValue = "") String subtitle,
+                               @RequestParam(defaultValue = "") String titleLine1,
+                               @RequestParam(defaultValue = "") String titleLine2,
+                               @RequestParam(defaultValue = "Khám phá ngay") String buttonText,
+                               @RequestParam(defaultValue = "/collections") String buttonLink,
+                               @RequestParam(defaultValue = "0") int sortOrder,
+                               @RequestParam(defaultValue = "true") boolean active,
+                               RedirectAttributes ra) throws Exception {
+        if (requireAdmin(session) == null) return "redirect:/login?redirect=/admin";
+        String imageUrl = "";
+        try {
+            if (imageFile != null && !imageFile.isEmpty()) {
+                imageUrl = storageService.uploadHeroImage(imageFile);
+            }
+        } catch (Exception e) {
+            ra.addFlashAttribute("error", "❌ Upload ảnh thất bại: " + e.getMessage());
+            return "redirect:/admin?tab=hero";
+        }
+        HeroSlide s = new HeroSlide();
+        s.setImageUrl(imageUrl);
+        s.setSubtitle(subtitle.trim());
+        s.setTitleLine1(titleLine1.trim());
+        s.setTitleLine2(titleLine2.trim());
+        s.setButtonText(buttonText.trim());
+        s.setButtonLink(buttonLink.trim());
+        s.setSortOrder(sortOrder);
+        s.setActive(active);
+        try { heroSlideRepository.save(s); ra.addFlashAttribute("success", "✅ Thêm slide thành công!"); }
+        catch (Exception e) { ra.addFlashAttribute("error", "❌ " + e.getMessage()); }
+        return "redirect:/admin?tab=hero";
+    }
+
+    // ── CẬP NHẬT HERO SLIDE ──────────────────────────────
+    @PostMapping("/hero/{id}/update")
+    public String updateHeroSlide(HttpSession session, @PathVariable String id,
+                                  @RequestParam(required = false) MultipartFile imageFile,
+                                  @RequestParam(required = false) String imageUrl,
+                                  @RequestParam(defaultValue = "") String subtitle,
+                                  @RequestParam(defaultValue = "") String titleLine1,
+                                  @RequestParam(defaultValue = "") String titleLine2,
+                                  @RequestParam(defaultValue = "Khám phá ngay") String buttonText,
+                                  @RequestParam(defaultValue = "/collections") String buttonLink,
+                                  @RequestParam(defaultValue = "0") int sortOrder,
+                                  @RequestParam(defaultValue = "false") boolean active,
+                                  RedirectAttributes ra) throws Exception {
+        if (requireAdmin(session) == null) return "redirect:/login?redirect=/admin";
+        try {
+            HeroSlide s = heroSlideRepository.findById(id);
+            if (s == null) { ra.addFlashAttribute("error", "Không tìm thấy slide!"); return "redirect:/admin?tab=hero"; }
+            if (imageFile != null && !imageFile.isEmpty()) {
+                s.setImageUrl(storageService.uploadHeroImage(imageFile));
+            } else if (imageUrl != null && !imageUrl.isBlank()) {
+                s.setImageUrl(imageUrl.trim());
+            }
+            s.setSubtitle(subtitle.trim());
+            s.setTitleLine1(titleLine1.trim());
+            s.setTitleLine2(titleLine2.trim());
+            s.setButtonText(buttonText.trim());
+            s.setButtonLink(buttonLink.trim());
+            s.setSortOrder(sortOrder);
+            s.setActive(active);
+            heroSlideRepository.update(s);
+            ra.addFlashAttribute("success", "✅ Cập nhật slide thành công!");
+        } catch (Exception e) { ra.addFlashAttribute("error", "❌ " + e.getMessage()); }
+        return "redirect:/admin?tab=hero";
+    }
+
+    // ── AJAX: toggle active ───────────────────────────────
+    @PostMapping("/hero/{id}/toggle")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> toggleHeroSlide(HttpSession session,
+                                                               @PathVariable String id,
+                                                               @RequestBody Map<String, Boolean> body) throws Exception {
+        if (requireAdmin(session) == null) return ResponseEntity.status(403).body(Map.of("error", "Forbidden"));
+        try {
+            boolean active = body.getOrDefault("active", false);
+            heroSlideRepository.toggleActive(id, active);
+            return ResponseEntity.ok(Map.of("success", true, "active", active));
+        } catch (Exception e) { return ResponseEntity.internalServerError().body(Map.of("error", e.getMessage())); }
+    }
+
+    // ── XOÁ HERO SLIDE ───────────────────────────────────
+    @PostMapping("/hero/{id}/delete")
+    public String deleteHeroSlide(HttpSession session, @PathVariable String id, RedirectAttributes ra) throws Exception {
+        if (requireAdmin(session) == null) return "redirect:/login?redirect=/admin";
+        try { heroSlideRepository.hardDelete(id); ra.addFlashAttribute("success", "✅ Đã xoá slide!"); }
+        catch (Exception e) { ra.addFlashAttribute("error", "❌ " + e.getMessage()); }
+        return "redirect:/admin?tab=hero";
+    }
+
     private List<String> split(String s) {
         return Arrays.stream(s.split(",")).map(String::trim).filter(x -> !x.isEmpty()).collect(Collectors.toList());
+    }
+
+    /**
+     * Sanitize HTML blog content với Jsoup Safelist.relaxed().
+     * Cho phép: h1-h6, p, div, span, a, img, ul/ol/li, blockquote, pre, code,
+     *           b, i, strong, em, br, table... Loại bỏ: script, style, onclick, v.v.
+     */
+    private String sanitizeBlogContent(String html) {
+        if (html == null || html.isBlank()) return html;
+        // relaxed() cho phép hầu hết thẻ HTML nội dung nhưng loại bỏ script/event handlers
+        Safelist safelist = Safelist.relaxed()
+                .addTags("span", "div", "section", "article", "header", "footer", "figure", "figcaption")
+                .addAttributes(":all", "class", "id", "style")
+                .addAttributes("a", "target", "rel")
+                .addAttributes("img", "width", "height", "loading");
+        return Jsoup.clean(html, safelist);
     }
 }

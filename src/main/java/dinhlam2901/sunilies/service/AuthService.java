@@ -4,6 +4,7 @@ import dinhlam2901.sunilies.model.User;
 import dinhlam2901.sunilies.repository.UserRepository;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,10 @@ public class AuthService {
     @Autowired private UserRepository userRepository;
     @Autowired private EmailService emailService;
     @Autowired private StringeeVoiceService stringeeVoiceService;
+
+    /** true = Stringee thật (production); false = dev mode, hiện OTP trong UI */
+    @Value("${stringee.enabled:false}")
+    private boolean stringeeEnabled;
 
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
     private static final String SESSION_USER = "SUNILIES_USER";
@@ -107,10 +112,15 @@ public class AuthService {
             stringeeVoiceService.callOtp(user.getPhone(), otp);
         } catch (Exception e) {
             System.err.println("⚠️ Stringee thất bại: " + e.getMessage());
-            System.out.println("🔧 DEV MODE — OTP: " + otp);
+            if (!stringeeEnabled) {
+                // Chỉ log OTP ra console khi ở dev mode
+                System.out.println("🔧 DEV MODE — OTP: " + otp);
+            }
         }
 
-        return otp; // Trả về để hiện dev box khi stringee.enabled=false
+        // Chỉ trả về OTP khi dev mode (stringee.enabled=false)
+        // → production: trả null để không lộ OTP ra giao diện
+        return stringeeEnabled ? null : otp;
     }
 
     public User verifyPhoneOtp(String userId, String inputOtp) throws Exception {

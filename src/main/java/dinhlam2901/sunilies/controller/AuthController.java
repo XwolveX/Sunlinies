@@ -4,6 +4,8 @@ import dinhlam2901.sunilies.model.Order;
 import dinhlam2901.sunilies.model.User;
 import dinhlam2901.sunilies.repository.OrderRepository;
 import dinhlam2901.sunilies.service.AuthService;
+import dinhlam2901.sunilies.service.LoginRateLimiter;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -17,6 +19,7 @@ import java.util.List;
 public class AuthController {
 
     @Autowired private AuthService       authService;
+    @Autowired private LoginRateLimiter  rateLimiter;
     @Autowired private OrderRepository   orderRepository;
     @Autowired private dinhlam2901.sunilies.repository.UserRepository userRepository;
 
@@ -33,12 +36,38 @@ public class AuthController {
     public String loginSubmit(@RequestParam String email,
                               @RequestParam String password,
                               @RequestParam(required = false) String redirect,
+                              HttpServletRequest request,
                               HttpSession session,
                               RedirectAttributes ra) {
+        String key = email.toLowerCase().trim();
+
+        // ── Kiểm tra rate limit (chống brute-force) ──────────────
+        if (rateLimiter.isBlocked(key)) {
+            long secs = rateLimiter.secondsRemaining(key);
+            long mins  = secs / 60;
+            String msg = mins > 0
+                    ? "Đăng nhập bị tạm khóa do nhập sai quá nhiều lần. Vui lòng thử lại sau " + mins + " phút."
+                    : "Đăng nhập bị tạm khóa. Vui lòng thử lại sau " + secs + " giây.";
+            ra.addFlashAttribute("error", msg);
+            return "redirect:/login";
+        }
+
         try {
             authService.login(email, password, session);
-            return "redirect:" + (redirect != null && !redirect.isBlank() ? redirect : "/account");
+            rateLimiter.recordSuccess(key);
+
+            // Tái tạo session ID sau khi đăng nhập — chống session fixation attack
+            request.changeSessionId();
+
+            // Chỉ cho redirect đến URL nội bộ (bắt đầu bằng / nhưng không phải //)
+            String safe = (redirect != null
+                    && redirect.startsWith("/")
+                    && !redirect.startsWith("//"))
+                    ? redirect : "/account";
+            return "redirect:" + safe;
+
         } catch (IllegalStateException e) {
+            rateLimiter.recordFailure(key);
             if ("EMAIL_NOT_VERIFIED".equals(e.getMessage())) {
                 ra.addFlashAttribute("error", "Email chưa được xác minh. Vui lòng kiểm tra hộp thư.");
                 ra.addFlashAttribute("showResend", true);
@@ -47,7 +76,14 @@ public class AuthController {
                 ra.addFlashAttribute("error", e.getMessage());
             }
         } catch (Exception e) {
-            ra.addFlashAttribute("error", e.getMessage());
+            rateLimiter.recordFailure(key);
+            // Hiện số lần thử còn lại khi gần đến giới hạn
+            int remaining = rateLimiter.attemptsRemaining(key);
+            String msg = e.getMessage();
+            if (remaining > 0 && remaining <= 2) {
+                msg += " (còn " + remaining + " lần thử trước khi bị khóa 15 phút)";
+            }
+            ra.addFlashAttribute("error", msg);
         }
         return "redirect:/login";
     }

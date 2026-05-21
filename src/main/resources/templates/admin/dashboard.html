@@ -204,6 +204,17 @@
                         <span class="adm-nav__badge" th:text="${totalProducts}">0</span>
                     </button>
 
+                    <!-- Hero -->
+                    <button class="adm-nav__item"
+                            th:classappend="${activeTab=='hero'} ? ' is-active'"
+                            onclick="switchTab('hero',this)">
+                        <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                            <path d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/>
+                        </svg>
+                        Hero Slider
+                        <span class="adm-nav__badge" th:text="${heroSlides != null ? heroSlides.size() : 0}">0</span>
+                    </button>
+
                     <!-- Blog -->
                     <button class="adm-nav__item"
                             th:classappend="${activeTab=='blogs'} ? ' is-active'"
@@ -588,7 +599,160 @@
                 </div>
 
                 <!-- ════════════════════════════════════
-                     TAB 4: BLOG
+                     TAB 4: HERO SLIDER
+                     ════════════════════════════════════ -->
+                <div id="tab-hero" th:style="${activeTab != 'hero'} ? 'display:none'">
+
+                    <!-- Form thêm slide mới -->
+                    <div class="adm-card">
+                        <div class="adm-card__header">
+                            <span class="adm-card__title">🖼 Thêm slide mới</span>
+                            <button class="adm-btn adm-btn--ghost adm-btn--sm" onclick="toggleHeroForm()">Thu gọn / Mở rộng</button>
+                        </div>
+                        <div id="hero-form-wrap" style="display:none;">
+                            <div class="adm-card__body">
+                                <form th:action="@{/admin/hero/add}" method="post" enctype="multipart/form-data" class="adm-form">
+                                    <div>
+                                        <label class="adm-label">Ảnh nền <span class="req">*</span></label>
+                                        <input type="file" name="imageFile" class="adm-input" accept="image/*"
+                                               onchange="previewHeroImage(this, 'hero-img-preview')"/>
+                                        <div id="hero-img-preview" style="margin-top:10px;display:none;">
+                                            <img src="" alt="Preview"
+                                                 style="width:100%;max-height:220px;object-fit:cover;border-radius:10px;border:1px solid var(--bd);"/>
+                                        </div>
+                                    </div>
+                                    <div class="adm-form-row adm-form-row--2">
+                                        <div>
+                                            <label class="adm-label">Dòng phụ (subtitle)</label>
+                                            <input type="text" name="subtitle" class="adm-input"
+                                                   placeholder="SUMMER COLLECTION 2025"/>
+                                        </div>
+                                        <div>
+                                            <label class="adm-label">Thứ tự (số nhỏ = trước)</label>
+                                            <input type="number" name="sortOrder" class="adm-input" value="0" min="0"/>
+                                        </div>
+                                    </div>
+                                    <div class="adm-form-row adm-form-row--2">
+                                        <div>
+                                            <label class="adm-label">Tiêu đề dòng 1 <span class="req">*</span></label>
+                                            <input type="text" name="titleLine1" class="adm-input" required
+                                                   placeholder="Tự do"/>
+                                        </div>
+                                        <div>
+                                            <label class="adm-label">Tiêu đề dòng 2</label>
+                                            <input type="text" name="titleLine2" class="adm-input"
+                                                   placeholder="dưới nắng"/>
+                                        </div>
+                                    </div>
+                                    <div class="adm-form-row adm-form-row--2">
+                                        <div>
+                                            <label class="adm-label">Text nút CTA</label>
+                                            <input type="text" name="buttonText" class="adm-input"
+                                                   value="Khám phá ngay"/>
+                                        </div>
+                                        <div>
+                                            <label class="adm-label">Link nút CTA</label>
+                                            <input type="text" name="buttonLink" class="adm-input"
+                                                   value="/collections"/>
+                                        </div>
+                                    </div>
+                                    <div class="adm-checkrow">
+                                        <label class="adm-check"><input type="checkbox" name="active" checked/> Hiển thị ngay</label>
+                                    </div>
+                                    <div class="adm-form-actions">
+                                        <button type="submit" class="adm-btn adm-btn--primary">💾 Thêm slide</button>
+                                        <button type="reset" class="adm-btn adm-btn--ghost" onclick="document.getElementById('hero-img-preview').style.display='none'">🔄 Đặt lại</button>
+
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Danh sách slides hiện tại -->
+                    <div class="adm-card">
+                        <div class="adm-card__header">
+                            <span class="adm-card__title">🎞 Các slide đang có</span>
+                            <a th:href="@{/}" target="_blank" class="adm-btn adm-btn--ghost adm-btn--sm">👁 Xem trang chủ</a>
+                        </div>
+                        <div class="adm-card__body" style="padding:0;">
+
+                            <!-- Thông báo khi chưa có slide -->
+                            <div th:if="${heroSlides == null or #lists.isEmpty(heroSlides)}"
+                                 style="text-align:center;padding:40px;color:var(--muted);font-style:italic;">
+                                Chưa có slide nào. Thêm slide đầu tiên bằng form bên trên.
+                            </div>
+
+                            <!-- Danh sách slide dạng card lớn -->
+                            <div th:each="slide : ${heroSlides}"
+                                 th:id="'hero-card-' + ${slide.id}"
+                                 style="display:grid;grid-template-columns:280px 1fr;border-bottom:1px solid var(--bd);">
+
+                                <!-- Thumbnail ảnh nền -->
+                                <div style="position:relative;overflow:hidden;height:160px;background:#f0ebe4;">
+                                    <img th:src="${slide.imageUrl}" th:alt="${slide.titleLine1}"
+                                         style="width:100%;height:100%;object-fit:cover;"
+                                         onerror="this.style.display='none'"/>
+                                    <!-- Overlay text preview -->
+                                    <div style="position:absolute;inset:0;background:rgba(0,0,0,.35);display:flex;flex-direction:column;justify-content:flex-end;padding:14px 16px;">
+                                        <span th:text="${slide.subtitle}" style="font-size:10px;color:rgba(255,255,255,.8);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px;">subtitle</span>
+                                        <span th:text="${slide.titleLine1}" style="font-size:18px;font-weight:700;color:#fff;line-height:1.2;">Line 1</span>
+                                        <span th:text="${slide.titleLine2}" style="font-size:18px;font-weight:700;color:#fff;line-height:1.2;">Line 2</span>
+                                    </div>
+                                    <!-- Badge thứ tự -->
+                                    <div style="position:absolute;top:8px;left:8px;background:rgba(200,152,106,.9);color:#fff;font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px;"
+                                         th:text="'#' + ${slide.sortOrder + 1}">#1</div>
+                                </div>
+
+                                <!-- Thông tin & controls -->
+                                <div style="padding:16px 20px;display:flex;flex-direction:column;gap:10px;">
+                                    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                                        <span style="font-size:13px;color:var(--muted);">Nút:</span>
+                                        <strong th:text="${slide.buttonText}" style="font-size:13px;">CTA</strong>
+                                        <span style="font-size:12px;color:var(--mc);" th:text="'→ ' + ${slide.buttonLink}">link</span>
+                                    </div>
+                                    <div style="display:flex;align-items:center;gap:8px;">
+                                        <span style="font-size:12px;color:var(--muted);">Hiển thị:</span>
+                                        <label class="adm-toggle">
+                                            <input type="checkbox" th:checked="${slide.active}"
+                                                   th:data-id="${slide.id}"
+                                                   onchange="toggleHeroSlide(this.dataset.id, this.checked, this)"/>
+                                            <span class="adm-toggle__s"></span>
+                                        </label>
+                                        <span th:text="${slide.active} ? 'Đang hiện' : 'Đang ẩn'"
+                                              style="font-size:11px;color:var(--muted);">-</span>
+                                    </div>
+                                    <div class="adm-btn-actions">
+                                        <button class="adm-btn adm-btn--sm adm-btn--outline"
+                                                th:data-id="${slide.id}" onclick="openHeroEditModal(this.dataset.id)">✏️ Chỉnh sửa</button>
+                                        <form th:action="@{/admin/hero/{id}/delete(id=${slide.id})}" method="post" style="display:inline"
+                                              onsubmit="return confirm('Xoá slide này?')">
+                                            <button type="submit" class="adm-btn adm-btn--sm adm-btn--danger">🗑 Xoá</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- Hướng dẫn nhanh -->
+                    <div class="adm-card">
+                        <div class="adm-card__header"><span class="adm-card__title">💡 Hướng dẫn</span></div>
+                        <div class="adm-card__body" style="font-size:13px;color:var(--muted);line-height:1.8;">
+                            <ul style="padding-left:20px;margin:0;">
+                                <li><strong>URL Ảnh nền:</strong> nên dùng ảnh rộng ≥1920px, tối màu để chữ dễ đọc (Unsplash, Cloudinary...)</li>
+                                <li><strong>Dòng phụ:</strong> chữ nhỏ phía trên tiêu đề, VD: <em>SUMMER COLLECTION 2025</em></li>
+                                <li><strong>Tiêu đề dòng 1 &amp; 2:</strong> hiển thị to, xuống dòng ở giữa slide</li>
+                                <li><strong>Thứ tự:</strong> số nhỏ hơn = xuất hiện trước (0, 1, 2...)</li>
+                                <li><strong>Toggle hiển thị</strong> để bật/tắt slide mà không cần xoá</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ════════════════════════════════════
+                     TAB 5: BLOG
                      ════════════════════════════════════ -->
                 <div id="tab-blogs" th:style="${activeTab != 'blogs'} ? 'display:none'">
 
@@ -626,7 +790,7 @@
                         </div>
                         <div id="blog-form-wrap" style="display:none;">
                             <div class="adm-card__body">
-                                <form th:action="@{/admin/blogs/add}" method="post" class="adm-form">
+                                <form th:action="@{/admin/blogs/add}" method="post" enctype="multipart/form-data" class="adm-form">
                                     <div class="adm-form-row adm-form-row--2">
                                         <div>
                                             <label class="adm-label">Tiêu đề <span class="req">*</span></label>
@@ -653,8 +817,12 @@
                                             <input type="number" name="readTime" class="adm-input" min="1" value="5"/>
                                         </div>
                                         <div>
-                                            <label class="adm-label">Ảnh đại diện (URL)</label>
-                                            <input type="url" name="imageUrl" class="adm-input" placeholder="https://..."/>
+                                            <label class="adm-label">Ảnh đại diện</label>
+                                            <input type="file" name="imageFile" class="adm-input" accept="image/*"
+                                                   onchange="previewBlogImage(this, 'blog-add-img-preview')"/>
+                                            <div id="blog-add-img-preview" style="display:none; margin-top:8px;">
+                                                <img style="max-height:140px; border-radius:6px; object-fit:cover;" alt="Preview"/>
+                                            </div>
                                         </div>
                                     </div>
                                     <div>
@@ -840,6 +1008,74 @@
 </div>
 
 <!-- ══════════════════════════════════════════
+     MODAL: CHỈNH SỬA HERO SLIDE
+     ══════════════════════════════════════════ -->
+<div class="adm-overlay" id="heroEditOverlay" onclick="closeHeroEditModal()">
+    <div class="adm-modal" onclick="event.stopPropagation()">
+        <div class="adm-modal__head">
+            <span class="adm-modal__title">🖼 Chỉnh sửa Hero Slide</span>
+            <button class="adm-modal__close" onclick="closeHeroEditModal()">✕</button>
+        </div>
+        <div class="adm-modal__body">
+            <form id="heroEditForm" method="post" enctype="multipart/form-data" class="adm-form">
+                <div>
+                    <label class="adm-label">Ảnh nền</label>
+                    <input type="hidden" name="imageUrl" id="he-imageUrl"/>
+                    <div id="he-preview-wrap" style="margin-bottom:10px;display:none;">
+                        <img id="he-preview-img" src="" alt="Ảnh hiện tại"
+                             style="width:100%;max-height:200px;object-fit:cover;border-radius:10px;border:1px solid var(--bd);"/>
+                    </div>
+                    <input type="file" name="imageFile" id="he-imageFile" class="adm-input" accept="image/*"
+                           onchange="previewHeroImage(this, 'he-new-preview')"/>
+                    <div id="he-new-preview" style="margin-top:10px;display:none;">
+                        <img src="" alt="Ảnh mới"
+                             style="width:100%;max-height:200px;object-fit:cover;border-radius:10px;border:1px solid var(--bd);"/>
+                    </div>
+                    <small class="adm-table__sub">Chọn file mới để thay ảnh, để trống để giữ ảnh hiện tại</small>
+                </div>
+                <div class="adm-form-row adm-form-row--2">
+                    <div>
+                        <label class="adm-label">Dòng phụ (subtitle)</label>
+                        <input type="text" name="subtitle" id="he-subtitle" class="adm-input"/>
+                    </div>
+                    <div>
+                        <label class="adm-label">Thứ tự</label>
+                        <input type="number" name="sortOrder" id="he-sortOrder" class="adm-input" min="0"/>
+                    </div>
+                </div>
+                <div class="adm-form-row adm-form-row--2">
+                    <div>
+                        <label class="adm-label">Tiêu đề dòng 1 *</label>
+                        <input type="text" name="titleLine1" id="he-titleLine1" class="adm-input" required/>
+                    </div>
+                    <div>
+                        <label class="adm-label">Tiêu đề dòng 2</label>
+                        <input type="text" name="titleLine2" id="he-titleLine2" class="adm-input"/>
+                    </div>
+                </div>
+                <div class="adm-form-row adm-form-row--2">
+                    <div>
+                        <label class="adm-label">Text nút CTA</label>
+                        <input type="text" name="buttonText" id="he-buttonText" class="adm-input"/>
+                    </div>
+                    <div>
+                        <label class="adm-label">Link nút CTA</label>
+                        <input type="text" name="buttonLink" id="he-buttonLink" class="adm-input"/>
+                    </div>
+                </div>
+                <div class="adm-checkrow">
+                    <label class="adm-check"><input type="checkbox" name="active" id="he-active"/> Hiển thị</label>
+                </div>
+                <div class="adm-form-actions">
+                    <button type="submit" class="adm-btn adm-btn--primary">💾 Lưu thay đổi</button>
+                    <button type="button" class="adm-btn adm-btn--ghost" onclick="closeHeroEditModal()">Huỷ</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════════
      MODAL: CHỈNH SỬA BÀI VIẾT BLOG
      ══════════════════════════════════════════ -->
 <div class="adm-overlay" id="blogEditOverlay" onclick="closeBlogEditModal()">
@@ -849,7 +1085,7 @@
             <button class="adm-modal__close" onclick="closeBlogEditModal()">✕</button>
         </div>
         <div class="adm-modal__body">
-            <form id="blogEditForm" method="post" class="adm-form">
+            <form id="blogEditForm" method="post" enctype="multipart/form-data" class="adm-form">
                 <div class="adm-form-row adm-form-row--2">
                     <div><label class="adm-label">Tiêu đề *</label>
                         <input type="text" name="title" id="be-title" class="adm-input" required/></div>
@@ -867,8 +1103,17 @@
                         </select></div>
                     <div><label class="adm-label">Thời gian đọc (phút)</label>
                         <input type="number" name="readTime" id="be-readTime" class="adm-input" min="1"/></div>
-                    <div><label class="adm-label">Ảnh đại diện (URL)</label>
-                        <input type="url" name="imageUrl" id="be-imageUrl" class="adm-input"/></div>
+                    <div>
+                        <label class="adm-label">Ảnh đại diện</label>
+                        <input type="hidden" name="imageUrl" id="be-imageUrl"/>
+                        <div id="be-img-current" style="margin-bottom:8px;">
+                            <img id="be-img-preview" style="max-height:120px; border-radius:6px; object-fit:cover; display:none;" alt="Ảnh hiện tại"/>
+                            <span id="be-img-none" class="adm-table__sub" style="display:none;">Chưa có ảnh</span>
+                        </div>
+                        <input type="file" name="imageFile" id="be-imageFile" class="adm-input" accept="image/*"
+                               onchange="previewBlogImageEdit(this)"/>
+                        <small class="adm-table__sub">Chọn file mới để thay ảnh, để trống để giữ ảnh hiện tại</small>
+                    </div>
                 </div>
                 <div><label class="adm-label">Tóm tắt</label>
                     <textarea name="excerpt" id="be-excerpt" class="adm-textarea" rows="2"></textarea></div>
@@ -906,6 +1151,10 @@
     const _blogsArray = /*[[${blogs}]]*/ [];
     const BLOGS_DATA  = {};
     _blogsArray.forEach(function(b){ if(b && b.id) BLOGS_DATA[b.id] = b; });
+
+    const _heroArray  = /*[[${heroSlides}]]*/ [];
+    const HERO_DATA   = {};
+    _heroArray.forEach(function(s){ if(s && s.id) HERO_DATA[s.id] = s; });
 </script>
 
 <script th:src="@{/js/admin.js}"></script>

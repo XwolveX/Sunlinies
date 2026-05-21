@@ -21,7 +21,7 @@ function showToast(msg, type) {
 
 // ── Tab switching ─────────────────────────────────────────────
 function switchTab(name, btn) {
-    ['stats','products','orders','blogs'].forEach(t => {
+    ['stats','products','orders','hero','blogs'].forEach(t => {
         const el = document.getElementById('tab-' + t);
         if (el) el.style.display = t === name ? '' : 'none';
     });
@@ -215,6 +215,87 @@ function filterTable() {
     });
 }
 
+// ── Hero Slider ──────────────────────────────────────────────
+
+function toggleHeroForm() {
+    const w = document.getElementById('hero-form-wrap');
+    if (!w) return;
+    const open = w.style.display !== 'none' && w.style.display !== '';
+    w.style.display = open ? 'none' : 'block';
+    if (!open) w.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// Preview ảnh hero khi chọn file (dùng chung cho form thêm mới và modal edit)
+function previewHeroImage(input, previewId) {
+    const wrap = document.getElementById(previewId);
+    if (!wrap) return;
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = e => {
+            wrap.style.display = 'block';
+            wrap.querySelector('img').src = e.target.result;
+        };
+        reader.readAsDataURL(input.files[0]);
+    } else {
+        wrap.style.display = 'none';
+    }
+}
+
+// Toggle active qua AJAX
+async function toggleHeroSlide(id, active, checkbox) {
+    try {
+        const r = await fetch('/admin/hero/' + id + '/toggle', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ active })
+        });
+        const d = await r.json();
+        if (d.success) {
+            showToast(active ? '🌟 Slide đang hiển thị!' : '🙈 Slide đã ẩn!');
+        } else {
+            checkbox.checked = !active;
+            showToast('❌ ' + (d.error || 'Lỗi'), 'error');
+        }
+    } catch(e) {
+        checkbox.checked = !active;
+        showToast('❌ Lỗi kết nối', 'error');
+    }
+}
+
+// Mở modal chỉnh sửa slide
+function openHeroEditModal(id) {
+    const s = HERO_DATA[id];
+    if (!s) { showToast('❌ Không tìm thấy slide!', 'error'); return; }
+    document.getElementById('heroEditForm').action = '/admin/hero/' + id + '/update';
+    const set = (fid, val) => { const el = document.getElementById(fid); if (el) el.value = val ?? ''; };
+    set('he-imageUrl',   s.imageUrl);
+    set('he-subtitle',   s.subtitle);
+    set('he-titleLine1', s.titleLine1);
+    set('he-titleLine2', s.titleLine2);
+    set('he-buttonText', s.buttonText);
+    set('he-buttonLink', s.buttonLink);
+    set('he-sortOrder',  s.sortOrder ?? 0);
+    const active = document.getElementById('he-active');
+    if (active) active.checked = !!s.active;
+    // Reset file input và ẩn preview ảnh mới
+    const fileInput = document.getElementById('he-imageFile');
+    if (fileInput) fileInput.value = '';
+    const newPreview = document.getElementById('he-new-preview');
+    if (newPreview) newPreview.style.display = 'none';
+    // Hiện ảnh hiện tại nếu có
+    const wrap = document.getElementById('he-preview-wrap');
+    const img  = document.getElementById('he-preview-img');
+    if (wrap && img) {
+        if (s.imageUrl) { img.src = s.imageUrl; wrap.style.display = 'block'; }
+        else              wrap.style.display = 'none';
+    }
+    document.getElementById('heroEditOverlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+}
+function closeHeroEditModal() {
+    document.getElementById('heroEditOverlay').classList.remove('open');
+    document.body.style.overflow = '';
+}
+
 // ── Toggle form thêm blog ─────────────────────────────────────
 function toggleBlogForm() {
     const w = document.getElementById('blog-form-wrap');
@@ -270,12 +351,64 @@ function openBlogEditModal(id) {
     if (catEl) catEl.value = b.category || '';
     c('be-published', b.published);
     c('be-featured',  b.featured);
+    // Reset file input và hiển thị ảnh hiện tại
+    const fileInput = document.getElementById('be-imageFile');
+    if (fileInput) fileInput.value = '';
+    const imgEl    = document.getElementById('be-img-preview');
+    const noneEl   = document.getElementById('be-img-none');
+    const newPreviewWrap = document.getElementById('be-img-preview-new');
+    if (newPreviewWrap) newPreviewWrap.style.display = 'none';
+    if (b.imageUrl) {
+        if (imgEl)  { imgEl.src = b.imageUrl; imgEl.style.display = 'block'; }
+        if (noneEl) noneEl.style.display = 'none';
+    } else {
+        if (imgEl)  imgEl.style.display = 'none';
+        if (noneEl) noneEl.style.display = 'inline';
+    }
     document.getElementById('blogEditOverlay').classList.add('open');
     document.body.style.overflow = 'hidden';
 }
 function closeBlogEditModal() {
     document.getElementById('blogEditOverlay').classList.remove('open');
     document.body.style.overflow = '';
+}
+
+// ── Preview ảnh blog (form thêm mới) ─────────────────────────
+function previewBlogImage(input, previewId) {
+    const wrap = document.getElementById(previewId);
+    if (!wrap) return;
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = e => {
+            wrap.style.display = 'block';
+            wrap.querySelector('img').src = e.target.result;
+        };
+        reader.readAsDataURL(input.files[0]);
+    } else {
+        wrap.style.display = 'none';
+    }
+}
+
+// ── Preview ảnh blog (modal edit) ────────────────────────────
+function previewBlogImageEdit(input) {
+    let wrap = document.getElementById('be-img-preview-new');
+    if (!wrap) {
+        wrap = document.createElement('div');
+        wrap.id = 'be-img-preview-new';
+        wrap.style.marginTop = '8px';
+        wrap.innerHTML = '<img style="max-height:120px;border-radius:6px;object-fit:cover;" alt="Ảnh mới"/>';
+        input.parentNode.insertBefore(wrap, input.nextSibling);
+    }
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = e => {
+            wrap.style.display = 'block';
+            wrap.querySelector('img').src = e.target.result;
+        };
+        reader.readAsDataURL(input.files[0]);
+    } else {
+        wrap.style.display = 'none';
+    }
 }
 
 // ── Tìm kiếm blog ────────────────────────────────────────────
@@ -288,5 +421,5 @@ function filterBlogTable() {
 
 // ── Đóng modal bằng Escape ────────────────────────────────────
 document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') { closeEditModal(); closeOrderModal(); closeBlogEditModal(); }
+    if (e.key === 'Escape') { closeEditModal(); closeOrderModal(); closeBlogEditModal(); closeHeroEditModal(); }
 });

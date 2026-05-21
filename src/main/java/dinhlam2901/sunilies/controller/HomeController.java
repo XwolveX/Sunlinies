@@ -1,7 +1,9 @@
 package dinhlam2901.sunilies.controller;
 
 import dinhlam2901.sunilies.model.Category;
+import dinhlam2901.sunilies.model.HeroSlide;
 import dinhlam2901.sunilies.model.Product;
+import dinhlam2901.sunilies.repository.HeroSlideRepository;
 import dinhlam2901.sunilies.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -18,9 +20,21 @@ public class HomeController {
     @Autowired
     private ProductRepository productRepository;
 
+    @Autowired
+    private HeroSlideRepository heroSlideRepository;
+
     @GetMapping("/")
     public String index(Model model) {
         model.addAttribute("categories", getCategories());
+
+        // Load hero slides từ Firestore; fallback về slides tĩnh nếu chưa có dữ liệu
+        try {
+            List<HeroSlide> slides = heroSlideRepository.findAllActive();
+            model.addAttribute("heroSlides", slides);
+        } catch (Exception e) {
+            System.err.println("❌ Lỗi load hero slides: " + e.getMessage());
+            model.addAttribute("heroSlides", List.of());
+        }
 
         try {
             List<Product> hotProducts = productRepository.findHotProducts(8);
