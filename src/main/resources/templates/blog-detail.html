@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{layout/base :: head(${blog.metaTitle ?: blog.title + ' – SUNILIES'})}"></head>
+
+<body>
+<link rel="stylesheet" th:href="@{/css/blog.css}">
+<style>
+    .bld-hero{background:linear-gradient(135deg,#faf2e6 0%,#f5e6d0 100%);padding:60px 0 0;}
+    .bld-hero__bc{font-size:12px;color:#7a6a57;margin-bottom:20px;}
+    .bld-hero__bc a{color:#7a6a57;text-decoration:none;} .bld-hero__bc a:hover{color:#c8986a;}
+    .bld-hero__bc span{margin:0 6px;}
+    .bld-hero__cat{display:inline-block;background:#c8986a;color:#fff;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:4px 14px;border-radius:20px;margin-bottom:16px;}
+    .bld-hero__title{font-family:'Playfair Display',serif;font-size:clamp(28px,4vw,46px);font-weight:700;color:#3d2e1c;line-height:1.25;margin-bottom:20px;max-width:820px;}
+    .bld-hero__meta{display:flex;align-items:center;gap:16px;font-size:13px;color:#7a6a57;flex-wrap:wrap;padding-bottom:40px;}
+    .bld-hero__meta-sep{color:#c8986a;}
+    .bld-hero__img-wrap{margin-top:0;border-radius:16px 16px 0 0;overflow:hidden;max-height:480px;}
+    .bld-hero__img-wrap img{width:100%;height:100%;object-fit:cover;display:block;}
+
+    .bld-body{padding:56px 0 80px;}
+    .bld-layout{display:grid;grid-template-columns:1fr 300px;gap:48px;align-items:start;}
+
+    .bld-content{background:#fff;border-radius:16px;padding:40px;border:1px solid #e8e4de;font-size:16px;line-height:1.85;color:#3d2e1c;}
+    .bld-content h2,.bld-content h3{font-family:'Playfair Display',serif;color:#3d2e1c;margin:32px 0 14px;}
+    .bld-content p{margin:0 0 18px;}
+    .bld-content img{max-width:100%;border-radius:10px;margin:16px 0;}
+    .bld-content blockquote{border-left:3px solid #c8986a;margin:24px 0;padding:16px 20px;background:#faf2e6;border-radius:0 8px 8px 0;font-style:italic;color:#7a6a57;}
+    .bld-content ul,bld-content ol{padding-left:24px;margin:0 0 18px;}
+    .bld-content li{margin-bottom:6px;}
+    .bld-content a{color:#c8986a;} .bld-content a:hover{text-decoration:underline;}
+
+    .bld-sidebar{position:sticky;top:100px;display:flex;flex-direction:column;gap:24px;}
+    .bld-side-card{background:#fff;border-radius:16px;border:1px solid #e8e4de;overflow:hidden;}
+    .bld-side-card__head{padding:16px 20px;border-bottom:1px solid #e8e4de;font-family:'Playfair Display',serif;font-size:15px;font-weight:600;color:#3d2e1c;}
+    .bld-side-card__body{padding:16px 20px;}
+    .bld-rel-item{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid #f0ebe4;text-decoration:none;}
+    .bld-rel-item:last-child{border-bottom:none;}
+    .bld-rel-item img{width:64px;height:64px;object-fit:cover;border-radius:8px;flex-shrink:0;}
+    .bld-rel-item__info .cat{font-size:10px;font-weight:700;color:#c8986a;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;}
+    .bld-rel-item__info .title{font-size:13px;font-weight:600;color:#3d2e1c;line-height:1.4;}
+    .bld-rel-item:hover .title{color:#c8986a;}
+
+    .bld-back{margin-top:40px;padding-top:32px;border-top:1px solid #e8e4de;text-align:center;}
+    .bld-back a{display:inline-flex;align-items:center;gap:8px;color:#c8986a;font-weight:600;text-decoration:none;font-size:14px;}
+    .bld-back a:hover{text-decoration:underline;}
+
+    @media(max-width:900px){
+        .bld-layout{grid-template-columns:1fr;}
+        .bld-sidebar{position:static;}
+    }
+    @media(max-width:600px){
+        .bld-content{padding:24px 18px;}
+        .bld-hero__title{font-size:26px;}
+    }
+</style>
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+<!-- HERO -->
+<div class="bld-hero">
+    <div class="container">
+        <div class="bld-hero__bc">
+            <a th:href="@{/}">Trang chủ</a>
+            <span>›</span>
+            <a th:href="@{/blogs}">Blog</a>
+            <span>›</span>
+            <span th:text="${blog.category}">Danh mục</span>
+        </div>
+        <div class="bld-hero__cat" th:text="${blog.category}">Danh mục</div>
+        <h1 class="bld-hero__title" th:text="${blog.title}">Tiêu đề bài viết</h1>
+        <div class="bld-hero__meta">
+            <span th:text="${#dates.format(new java.util.Date(blog.createdAt), 'dd MMMM, yyyy')}">01 tháng 1, 2025</span>
+            <span class="bld-hero__meta-sep">·</span>
+            <span th:text="${blog.readTime} + ' phút đọc'">5 phút đọc</span>
+        </div>
+    </div>
+    <div class="container" th:if="${blog.imageUrl != null and !blog.imageUrl.isEmpty()}">
+        <div class="bld-hero__img-wrap">
+            <img th:src="${blog.imageUrl}" th:alt="${blog.title}" onerror="this.closest('.bld-hero__img-wrap').style.display='none'"/>
+        </div>
+    </div>
+</div>
+
+<!-- BODY -->
+<div class="bld-body">
+    <div class="container">
+        <div class="bld-layout">
+
+            <!-- NỘI DUNG CHÍNH -->
+            <main>
+                <div class="bld-content" th:utext="${blog.content}">
+                    <!-- Nội dung HTML từ Firestore -->
+                </div>
+                <div class="bld-back">
+                    <a th:href="@{/blogs}">← Quay lại Blog</a>
+                </div>
+            </main>
+
+            <!-- SIDEBAR -->
+            <aside class="bld-sidebar">
+
+                <!-- Bài viết liên quan -->
+                <div class="bld-side-card" th:if="${!#lists.isEmpty(related)}">
+                    <div class="bld-side-card__head">Bài viết liên quan</div>
+                    <div class="bld-side-card__body" style="padding:8px 12px;">
+                        <a class="bld-rel-item" th:each="r : ${related}"
+                           th:href="@{/blogs/{slug}(slug=${r.slug})}">
+                            <img th:src="${r.imageUrl}" th:alt="${r.title}"
+                                 onerror="this.src='/image/SandyBag.jpg'"/>
+                            <div class="bld-rel-item__info">
+                                <div class="cat" th:text="${r.category}">Danh mục</div>
+                                <div class="title" th:text="${r.title}">Tiêu đề</div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Danh mục -->
+                <div class="bld-side-card">
+                    <div class="bld-side-card__head">Danh mục</div>
+                    <div class="bld-side-card__body">
+                        <div style="display:flex;flex-direction:column;gap:8px;">
+                            <a th:href="@{/blogs}" style="text-decoration:none;color:#7a6a57;font-size:14px;padding:6px 0;border-bottom:1px solid #f0ebe4;display:flex;justify-content:space-between;">
+                                <span>Tất cả bài viết</span>
+                            </a>
+                            <a th:href="@{/blogs(cat='Làng nghề')}" style="text-decoration:none;color:#7a6a57;font-size:14px;padding:6px 0;border-bottom:1px solid #f0ebe4;">Làng nghề</a>
+                            <a th:href="@{/blogs(cat='Phong cách')}" style="text-decoration:none;color:#7a6a57;font-size:14px;padding:6px 0;border-bottom:1px solid #f0ebe4;">Phong cách</a>
+                            <a th:href="@{/blogs(cat='Chăm sóc sản phẩm')}" style="text-decoration:none;color:#7a6a57;font-size:14px;padding:6px 0;border-bottom:1px solid #f0ebe4;">Chăm sóc sản phẩm</a>
+                            <a th:href="@{/blogs(cat='Bền vững')}" style="text-decoration:none;color:#7a6a57;font-size:14px;padding:6px 0;">Bền vững</a>
+                        </div>
+                    </div>
+                </div>
+
+            </aside>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>
